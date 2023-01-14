@@ -19,12 +19,12 @@ class UsersFactory extends Factory
     public function definition()
     {
         return [
-            'name'          => 'Super Admin',
-            'email'         => 'testing@mail.com',
-            'username'      => 'superadmin',
-            'password'      => Hash::make('superadmin'),
-            'phone_number'  => '081211112222',
-            'role'          => 1
+            'name'          => fake()->name(),
+            'email'         => fake()->email(),
+            'username'      => fake()->userName(),
+            'password'      => Hash::make('12345'),
+            'phone_number'  => "812" . fake()->randomNumber(8, true),
+            'group_id'      => 1
         ];
     }
 

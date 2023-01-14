@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -43,8 +44,18 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
+
         $this->reportable(function (Throwable $e) {
             //
+        });
+        $this->renderable(function (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e, $request) {
+            return Response::json(['error' => "Invalid token"], 401);
+        });
+        $this->renderable(function (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e, $request) {
+            return Response::json(['error' => "Token has expired"], 401);
+        });
+        $this->renderable(function (\Tymon\JWTAuth\Exceptions\JWTException $e, $request) {
+            return Response::json(['error' => "Token not parsed"], 401);
         });
     }
 }

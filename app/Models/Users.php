@@ -22,8 +22,8 @@ class Users extends Authenticatable implements JWTSubject
         'email_verified_at',
         'otp',
         'otp_timeout',
-        'role',
-        'remember_token'
+        'remember_token',
+        'group_id'
     ];
 
     protected $hidden = [
@@ -53,5 +53,10 @@ class Users extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function group()
+    {
+        return $this->belongsTo('\App\Models\Groups', 'group_id');
     }
 }

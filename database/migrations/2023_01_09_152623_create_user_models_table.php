@@ -23,7 +23,7 @@ return new class extends Migration
             $table->dateTimeTz('email_verified_at')->nullable();
             $table->integer('otp')->nullable();
             $table->dateTimeTz('otp_timeout')->nullable();
-            $table->integer('role');
+            $table->integer('group_id');
             $table->string('remember_token')->nullable();
             $table->timestamps();
             $table->softDeletes();

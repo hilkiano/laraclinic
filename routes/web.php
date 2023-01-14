@@ -13,9 +13,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-Route::get('/login', function () {
-    return view('login');
+Route::get('/login', '\App\Http\Controllers\Web\LoginController@index');
+
+Route::group(['middleware' => 'web.auth.jwt'], function () use ($router) {
+    $router->get('/', '\App\Http\Controllers\Web\DashboardController@index');
+
+    $router->group(['prefix' => 'master'], function () use ($router) {
+        $router->get('users', '\App\Http\Controllers\Web\UsersController@index');
+        $router->get('menus', '\App\Http\Controllers\Web\MenusController@index');
+        $router->get('privileges', '\App\Http\Controllers\Web\PrivilegesController@index');
+        $router->get('roles', '\App\Http\Controllers\Web\RolesController@index');
+        $router->get('groups', '\App\Http\Controllers\Web\GroupsController@index');
+    });
 });

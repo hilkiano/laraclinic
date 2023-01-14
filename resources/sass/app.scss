@@ -1,8 +1,30 @@
 // Fonts
-@import url('https://fonts.bunny.net/css?family=Nunito');
+@import url("https://fonts.bunny.net/css?family=Nunito");
 
 // Variables
-@import 'variables';
+@import "variables";
+
+// Custom variable
+// $primary: #007419;
 
 // Bootstrap
-@import 'bootstrap/scss/bootstrap';
+@import "bootstrap/scss/bootstrap";
+
+li > div.nav-link:hover {
+    cursor: pointer;
+}
+
+$breakpoint: 992px;
+
+@mixin md {
+    @media (max-width: #{$breakpoint}) {
+        @content;
+    }
+}
+
+div#mainContent {
+    width: calc(100vw - 280px);
+    @include md {
+        width: 100vw;
+    }
+}
