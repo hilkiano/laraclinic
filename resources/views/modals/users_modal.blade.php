@@ -1,4 +1,4 @@
-<div id="usersModal" class="modal fade" tabindex="-1">
+<div id="usersModal" class="modal fade" data-bs-backdrop="static" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">

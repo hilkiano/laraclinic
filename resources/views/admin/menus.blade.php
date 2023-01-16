@@ -15,7 +15,7 @@
                                 <div class="card-body">
                                     <div class="input-group">
                                         @if (in_array("CREATE_MENU", $privs))
-                                        <button class="btn btn-primary">
+                                        <button data-bs-toggle="modal" href="#menusModal" class="btn btn-primary">
                                             <i class="bi bi-plus"></i>
                                             Add Menu
                                         </button>
@@ -58,7 +58,7 @@
                                         @endphp
                                         @foreach ($data['rows'] as $row)
                                         <tr>
-                                            <th scope="row">{{ $i }}</th>
+                                            <td scope="row">{{ $i }}</td>
                                             <td>{{ $row->label }}</td>
                                             <td style="text-align: center;"><i class="bi {{ $row->icon }}"></i></td>
                                             <td>{{ $row->name }}</td>
@@ -67,10 +67,12 @@
                                             <td style="text-align: center;"><i class="bi {{ $row->deleted_at ? 'bi-x-lg text-danger' : 'bi-check-lg text-success' }}"></i></td>
                                             <td style="text-align: center;">
                                                 @if (in_array("UPDATE_MENU", $privs))
-                                                <button class="btn btn-sm btn-secondary">Edit</button>
+                                                <button data-bs-toggle="modal" href="#menusModal" data-row="{{ $row }}" class="btn btn-sm btn-secondary">Edit</button>
                                                 @endif
                                                 @if (in_array("DELETE_MENU", $privs))
-                                                <button class="btn btn-sm btn-danger">Deactivate</button>
+                                                <button data-bs-toggle="modal" href="#chgStateMenuModal" data-row="{{ $row }}" class="btn btn-sm {{ $row->deleted_at ? 'btn-success' : 'btn-danger' }}">
+                                                    {{ $row->deleted_at ? 'Activate' : 'Deactivate' }}
+                                                </button>
                                                 @endif
                                             </td>
                                         </tr>
@@ -93,6 +95,26 @@
             </div>
         </div>
     </div>
+    @include('toasts.live_toast')
+    @include('modals.menus_modal')
+    <div id="chgStateMenuModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="chgStateMenuModalHead"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="chgStateMenuModalBody">
+                    <p>Do you want to <span id="chgStateMenuModalDetail"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">No</button>
+                    <button type="button" id="chgStateMenuHandler" class="btn btn-primary">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>

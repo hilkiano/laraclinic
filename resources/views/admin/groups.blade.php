@@ -15,7 +15,7 @@
                                 <div class="card-body">
                                     <div class="input-group">
                                         @if (in_array("CREATE_GROUP", $privs))
-                                        <button class="btn btn-primary">
+                                        <button data-bs-toggle="modal" href="#groupsModal" class="btn btn-primary">
                                             <i class="bi bi-plus"></i>
                                             Add Group
                                         </button>
@@ -66,8 +66,14 @@
                                             </td>
                                             <td style="text-align: center;"><i class="bi {{ $row->deleted_at ? 'bi-x-lg text-danger' : 'bi-check-lg text-success' }}"></i></td>
                                             <td style="text-align: center;">
-                                                <button class="btn btn-sm btn-secondary">Edit</button>
-                                                <button class="btn btn-sm btn-danger">Deactivate</button>
+                                                @if (in_array("UPDATE_GROUP", $privs))
+                                                <button data-bs-toggle="modal" href="#groupsModal" data-row="{{ $row }}" class="btn btn-sm btn-secondary">Edit</button>
+                                                @endif
+                                                @if (in_array("DELETE_GROUP", $privs))
+                                                <button data-bs-toggle="modal" href="#chgStateGroupModal" data-row="{{ $row }}" class="btn btn-sm {{ $row->deleted_at ? 'btn-success' : 'btn-danger' }}">
+                                                    {{ $row->deleted_at ? 'Activate' : 'Deactivate' }}
+                                                </button>
+                                                @endif
                                             </td>
                                         </tr>
                                         @php
@@ -85,6 +91,25 @@
                             {!! $data['rows']->appends(request()->input())->links() !!}
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @include('toasts.live_toast')
+    @include('modals.groups_modal')
+    <div id="chgStateGroupModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="chgStateGroupModalHead"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="chgStateGroupModalBody">
+                    <p>Do you want to <span id="chgStateGroupModalDetail"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">No</button>
+                    <button type="button" id="chgStateGroupHandler" class="btn btn-primary">Yes</button>
                 </div>
             </div>
         </div>

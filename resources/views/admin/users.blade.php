@@ -68,10 +68,14 @@
                                             <td>{{ $row->created_at }}</td>
                                             <td style="text-align: center;"><i class="bi {{ $row->deleted_at ? 'bi-x-lg text-danger' : 'bi-check-lg text-success' }}"></i></td>
                                             <td style="text-align: center;">
+                                                @if (in_array("UPDATE_USER", $privs))
                                                 <button data-bs-toggle="modal" href="#usersModal" data-row="{{ $row }}" class="btn btn-sm btn-secondary">Edit</button>
+                                                @endif
+                                                @if (in_array("DELETE_USER", $privs))
                                                 <button data-bs-toggle="modal" href="#chgStateModal" data-row="{{ $row }}" class="btn btn-sm {{ $row->deleted_at ? 'btn-success' : 'btn-danger' }}">
                                                     {{ $row->deleted_at ? 'Activate' : 'Deactivate' }}
                                                 </button>
+                                                @endif
                                             </td>
                                         </tr>
                                         @php
@@ -94,7 +98,8 @@
         </div>
     </div>
 
-    <!-- Delete modal -->
+    @include('toasts.live_toast')
+    @include('modals.users_modal')
     <div id="chgStateModal" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -112,26 +117,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Toast -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div id="errorToastHeader" class="toast-header">
-                <i class="bi bi-exclamation-octagon-fill text-danger me-2"></i>
-                <strong class="me-auto">Error</strong>
-            </div>
-            <div id="successToastHeader" class="toast-header">
-                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                <strong class="me-auto">Success</strong>
-            </div>
-            <div class="toast-body" id="toastBody">
-                Internal error was happened.
-            </div>
-        </div>
-    </div>
-
-    @include('modals.users_modal')
-
 
 </body>
 

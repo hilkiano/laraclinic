@@ -6,6 +6,8 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class Users extends Authenticatable implements JWTSubject
 {
@@ -23,7 +25,8 @@ class Users extends Authenticatable implements JWTSubject
         'otp',
         'otp_timeout',
         'remember_token',
-        'group_id'
+        'group_id',
+        'extended_login'
     ];
 
     protected $hidden = [
@@ -52,6 +55,10 @@ class Users extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims()
     {
+        if ($this->can('use-extended-time')) {
+            $expiration = Carbon::now('UTC')->addYears(2)->getTimestamp();
+            return ['exp' => $expiration];
+        }
         return [];
     }
 

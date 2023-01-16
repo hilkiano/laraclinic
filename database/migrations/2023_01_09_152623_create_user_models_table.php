@@ -25,6 +25,7 @@ return new class extends Migration
             $table->dateTimeTz('otp_timeout')->nullable();
             $table->integer('group_id');
             $table->string('remember_token')->nullable();
+            $table->boolean('extended_login')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

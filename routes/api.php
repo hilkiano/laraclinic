@@ -27,6 +27,18 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
                 $router->post('/change-state', '\App\Http\Controllers\Web\UsersController@changeState');
                 $router->post('/save', '\App\Http\Controllers\Web\UsersController@save');
             });
+            $router->group(['prefix' => 'menus'], function () use ($router) {
+                $router->post('/change-state', '\App\Http\Controllers\Web\MenusController@changeState');
+                $router->post('/save', '\App\Http\Controllers\Web\MenusController@save');
+            });
+            $router->group(['prefix' => 'groups'], function () use ($router) {
+                $router->post('/change-state', '\App\Http\Controllers\Web\GroupsController@changeState');
+                $router->post('/save', '\App\Http\Controllers\Web\GroupsController@save');
+            });
+            $router->group(['prefix' => 'roles'], function () use ($router) {
+                $router->post('/change-state', '\App\Http\Controllers\Web\RolesController@changeState');
+                $router->post('/save', '\App\Http\Controllers\Web\RolesController@save');
+            });
         });
     });
 });

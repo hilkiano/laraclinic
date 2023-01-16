@@ -1,12 +1,17 @@
 import _ from "lodash";
 window._ = _;
 
+import jQuery from "jquery";
 import IMask from "imask";
 import * as bootstrap from "bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import selectize from "@selectize/selectize";
+import "@selectize/selectize/dist/css/selectize.bootstrap5.css";
 
+window.$ = jQuery;
 window.bootstrap = bootstrap;
 window.IMask = IMask;
+window.selectize = selectize;
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

@@ -28,7 +28,7 @@
                                     <div id="passwordFeedback" class="invalid-feedback">Please fill this field.</div>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="rememberMe" checked>
+                                    <input class="form-check-input" type="checkbox" value="" id="rememberMe">
                                     <label class="form-check-label" for="rememberMe">
                                         Remember me
                                     </label>

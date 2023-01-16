@@ -15,7 +15,9 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
+        "@selectize/selectize": "^0.15.2",
         "bootstrap-icons": "^1.10.3",
-        "imask": "^6.4.3"
+        "imask": "^6.4.3",
+        "jquery": "^3.6.3"
     }
 }

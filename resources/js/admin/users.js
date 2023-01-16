@@ -28,7 +28,7 @@ const clearFilter = () => {
         console.error("Filter value is not exist in URL.");
     }
 };
-const updateHtmlStateModal = (evt) => {
+const updateUserStateModal = (evt) => {
     const rowData = JSON.parse(evt.relatedTarget.getAttribute("data-row"));
     chgStateHandler.dataset.row = evt.relatedTarget.getAttribute("data-row");
     if (rowData) {
@@ -59,7 +59,6 @@ const updateHtmlUsersModal = (evt) => {
         document.getElementById("usersModalHead").innerHTML = "Add User";
         document.getElementById("username").readOnly = false;
     }
-    phoneMask.updateValue();
 };
 const handleStateUser = async () => {
     const csrfToken = document
@@ -174,7 +173,7 @@ if (clearFilterUsersBtn) {
     clearFilterUsersBtn.addEventListener("click", clearFilter);
 }
 if (chgStateModal) {
-    chgStateModal.addEventListener("show.bs.modal", updateHtmlStateModal);
+    chgStateModal.addEventListener("show.bs.modal", updateUserStateModal);
 }
 if (chgStateHandler) {
     chgStateHandler.addEventListener("click", handleStateUser);
@@ -188,12 +187,6 @@ if (usersModal) {
 if (usersForm) {
     usersForm.addEventListener("submit", submitHandler);
 }
-if (phoneNumberField) {
-    const phoneMask = IMask(phoneNumberField, {
-        mask: Number,
-        signed: false,
-    });
-}
 
 // DOM Events
 (function () {
@@ -201,5 +194,11 @@ if (phoneNumberField) {
         if (url.searchParams.has("filter")) {
             filterUsersField.value = url.searchParams.get("filter");
         }
+    }
+    if (phoneNumberField) {
+        IMask(phoneNumberField, {
+            mask: Number,
+            signed: false,
+        });
     }
 })();

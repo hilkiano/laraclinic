@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\UserController;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
+use App\Models\Users;
 
 class LoginController extends Controller
 {
@@ -26,10 +27,12 @@ class LoginController extends Controller
     public function __invoke(LoginRequest $request)
     {
         try {
-            if (!$token = auth()->attempt(
-                array('username' => $request->username, 'password' => $request->password),
-                ['exp' => $request->rememberMe ? Carbon::now()->addYears(2)->timestamp : Carbon::now()->addMinute()->timestamp]
-            )) {
+            $userModel = Users::where('username', $request->username)->first();
+            if ($userModel) {
+                $userModel->extended_login = $request->rememberMe;
+                $userModel->save();
+            }
+            if (!$token = auth()->attempt(array('username' => $request->username, 'password' => $request->password))) {
                 return response()->json([
                     'status'  => false,
                     'message' => "Username or password not matched."
