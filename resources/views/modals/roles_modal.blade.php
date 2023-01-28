@@ -25,6 +25,7 @@
                                 <option value="{{ $menu->id }}">{{ "($menu->name) " . $menu->label }}</option>
                                 @endforeach
                             </select>
+                            <div class="invalid-feedback">This field is required.</div>
                         </div>
                         <div class="col-sm-12">
                             <label for="privilege_ids" class="form-label">Privileges</label>
@@ -33,6 +34,7 @@
                                 <option value="{{ $priv->id }}">{{ $priv->name }}</option>
                                 @endforeach
                             </select>
+                            <div class="invalid-feedback">This field is required.</div>
                         </div>
                     </div>
                 </form>

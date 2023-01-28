@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Groups;
 use Illuminate\Database\Seeder;
 
 class GroupsSeeder extends Seeder
@@ -14,11 +14,38 @@ class GroupsSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\Groups::insert([
+        $data = [
             [
                 'name'      => 'Super Admin Group',
-                'role_ids'  => json_encode([1])
+                'role_ids'  => [1]
+            ],
+            [
+                'name'      => 'Receptionist Group',
+                'role_ids'  => [2]
+            ],
+            [
+                'name'      => 'Doctor Group',
+                'role_ids'  => [3]
+            ],
+            [
+                'name'      => 'Pharmacist Group',
+                'role_ids'  => [4]
+            ],
+            [
+                'name'      => 'Cashier Group',
+                'role_ids'  => [5]
+            ],
+            [
+                'name'      => 'Online Shop Admin Group',
+                'role_ids'  => [6]
             ]
-        ]);
+        ];
+
+        foreach ($data as $data) {
+            Groups::create([
+                'name'      => $data["name"],
+                'role_ids'  => $data["role_ids"]
+            ]);
+        }
     }
 }

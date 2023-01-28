@@ -15,9 +15,11 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
+        "@eonasdan/tempus-dominus": "^6.2.10",
         "@selectize/selectize": "^0.15.2",
         "bootstrap-icons": "^1.10.3",
         "imask": "^6.4.3",
-        "jquery": "^3.6.3"
+        "jquery": "^3.6.3",
+        "moment": "^2.29.4"
     }
 }

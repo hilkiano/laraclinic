@@ -15,11 +15,14 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            // Master seeder
             UsersSeeder::class,
             PrivilegesSeeder::class,
             MenusSeeder::class,
             RolesSeeder::class,
             GroupsSeeder::class,
+            // Clinics seeder
+            PatientsSeeder::class
         ]);
     }
 }

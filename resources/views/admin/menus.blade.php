@@ -120,3 +120,4 @@
 </html>
 
 @include('template.footer')
+@include('admin.menus_js')

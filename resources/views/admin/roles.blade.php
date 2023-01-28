@@ -44,11 +44,11 @@
                                         <tr>
                                             <th scope="col" style="width: 50px;">#</th>
                                             <th scope="col" style="width: 250px;">Name</th>
-                                            <th scope="col" style="width: 400px;">Description</th>
+                                            <th scope="col" style="width: 380px;">Description</th>
                                             <th scope="col" style="width: 150px; text-align: right;">Menus (count)</th>
                                             <th scope="col" style="width: 150px; text-align: right;">Privileges (count)</th>
                                             <th scope="col" style="width: 100px; text-align: center;">Is Active?</th>
-                                            <th scope="col" style="width: 150px; text-align: center;">Action</th>
+                                            <th scope="col" style="width: 170px; text-align: center;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -118,3 +118,4 @@
 </html>
 
 @include('template.footer')
+@include('admin.roles_js')

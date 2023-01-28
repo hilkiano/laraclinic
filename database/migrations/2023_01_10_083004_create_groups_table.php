@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('name', 60);
             $table->text('description')->nullable();
             $table->jsonb('role_ids');
+            $table->integer("created_by")->nullable();
+            $table->integer("updated_by")->nullable();
+            $table->integer("deleted_by")->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -22,6 +22,9 @@ return new class extends Migration
             $table->boolean("is_parent")->default(false);
             $table->string("parent")->nullable();
             $table->integer('order');
+            $table->integer("created_by")->nullable();
+            $table->integer("updated_by")->nullable();
+            $table->integer("deleted_by")->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

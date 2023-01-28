@@ -40,5 +40,10 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
                 $router->post('/save', '\App\Http\Controllers\Web\RolesController@save');
             });
         });
+        // patient
+        $router->group(['prefix' => 'patient'], function () use ($router) {
+            $router->post('save-info', '\App\Http\Controllers\Web\PatientFormController@save');
+            $router->post('add-potrait', '\App\Http\Controllers\Web\PatientFormController@addPotrait');
+        });
     });
 });

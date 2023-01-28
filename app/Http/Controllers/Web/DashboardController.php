@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\MenuController;
+use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -14,7 +15,7 @@ class DashboardController extends Controller
 
     public function __construct()
     {
-        $this->userData = auth()->user();
+        $this->userData = Users::with('group')->find(auth()->user()->id);
         $this->menuController = new MenuController();
     }
 

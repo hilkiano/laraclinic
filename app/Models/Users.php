@@ -7,7 +7,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class Users extends Authenticatable implements JWTSubject
 {
@@ -26,7 +25,8 @@ class Users extends Authenticatable implements JWTSubject
         'otp_timeout',
         'remember_token',
         'group_id',
-        'extended_login'
+        'extended_login',
+        'configs'
     ];
 
     protected $hidden = [

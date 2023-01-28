@@ -26,6 +26,10 @@ return new class extends Migration
             $table->integer('group_id');
             $table->string('remember_token')->nullable();
             $table->boolean('extended_login')->default(false);
+            $table->jsonb('configs')->nullable();
+            $table->integer("created_by")->nullable();
+            $table->integer("updated_by")->nullable();
+            $table->integer("deleted_by")->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

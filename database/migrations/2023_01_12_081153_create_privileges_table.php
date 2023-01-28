@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('name', 60);
             $table->text('description');
+            $table->integer("created_by")->nullable();
+            $table->integer("updated_by")->nullable();
             $table->timestamps();
         });
     }

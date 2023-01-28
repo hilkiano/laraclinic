@@ -1,17 +1,55 @@
 import _ from "lodash";
 window._ = _;
 
-import jQuery from "jquery";
 import IMask from "imask";
 import * as bootstrap from "bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import selectize from "@selectize/selectize";
 import "@selectize/selectize/dist/css/selectize.bootstrap5.css";
+import { TempusDominus } from "@eonasdan/tempus-dominus";
+import "@eonasdan/tempus-dominus/dist/css/tempus-dominus.min.css";
+import moment from "moment/moment";
 
-window.$ = jQuery;
 window.bootstrap = bootstrap;
 window.IMask = IMask;
 window.selectize = selectize;
+window.TempusDominus = TempusDominus;
+window.moment = moment;
+
+const tDConfigs = {
+    display: {
+        icons: {
+            type: "icons",
+            time: "bi bi-alarm-fill",
+            date: "bi bi-calendar",
+            up: "bi bi-arrow-up",
+            down: "bi bi-arrow-down",
+            previous: "bi bi-chevron-left",
+            next: "bi bi-chevron-right",
+            today: "bi bi-calendar-fill",
+            clear: "bi bi-trash",
+            close: "bi bi-x-lg",
+        },
+        theme: "light",
+        components: {
+            calendar: true,
+            date: true,
+            month: true,
+            year: true,
+            decades: true,
+            clock: false,
+            hours: false,
+            minutes: false,
+            seconds: false,
+        },
+        buttons: {
+            clear: true,
+        },
+    },
+    allowInputToggle: true,
+};
+
+window.tDConfigs = tDConfigs;
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

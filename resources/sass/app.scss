@@ -29,6 +29,16 @@ div#mainContent {
     }
 }
 
+div#patientCard {
+    max-width: 100%;
+    @include media-breakpoint-up(sm) {
+        max-width: 25%;
+    }
+    @include media-breakpoint-up(md) {
+        max-width: 20%;
+    }
+}
+
 .bootstrap-5-style .selectr-selected {
     background-color: #f8fafc;
     border: 1px solid #ced4da;
@@ -48,4 +58,34 @@ div#mainContent {
     appearance: none;
     border-radius: 0.375rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn-doctor {
+    background-color: $pink-500;
+    color: white;
+}
+.btn-doctor:hover {
+    background-color: $pink-600;
+    color: white;
+}
+.btn-doctor:active:focus {
+    background-color: $pink-700;
+    color: white;
+}
+.btn-pharmacy {
+    background-color: $teal-700;
+    color: white;
+}
+.btn-pharmacy:hover {
+    background-color: $teal-800;
+    color: white;
+}
+.btn-pharmacy:active:focus {
+    background-color: $teal-900;
+    color: white;
+}
+
+#sidebarItem:hover:not(.active),
+#sidebarChildItem:hover:not(.active) {
+    background-color: $blue-100;
 }

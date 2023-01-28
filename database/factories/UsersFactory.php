@@ -24,7 +24,7 @@ class UsersFactory extends Factory
             'username'      => fake()->userName(),
             'password'      => Hash::make('12345'),
             'phone_number'  => "812" . fake()->randomNumber(8, true),
-            'group_id'      => 1
+            'group_id'      => fake()->numberBetween(1, 6)
         ];
     }
 

@@ -148,7 +148,10 @@ class UsersController extends Controller
                         'group'         => 'required'
                     ]);
                     if ($validator->fails()) {
-                        return response()->json($validator->errors(), 422);
+                        return response()->json([
+                            'status'    => false,
+                            'message'   => $validator->errors()
+                        ], 422);
                     }
 
                     $modelUser = Users::find($request->input('id'));

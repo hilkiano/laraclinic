@@ -5,7 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
+    @if (App::environment())
     <title>{{ config('app.name', 'Apotek') }}</title>
+    @else
+    <title>{{ $title }} ~ DEVELOPMENT ~</title>
+    @endif
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 

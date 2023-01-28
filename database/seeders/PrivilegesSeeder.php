@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Privileges;
 use Illuminate\Database\Seeder;
 
 class PrivilegesSeeder extends Seeder
@@ -14,7 +14,7 @@ class PrivilegesSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\Privileges::insert([
+        $data = [
             [
                 'name'  => 'CREATE_USER',
                 'description'   => 'Ability to create new user'
@@ -63,6 +63,13 @@ class PrivilegesSeeder extends Seeder
                 'name'  => 'DELETE_GROUP',
                 'description'   => 'Ability to delete new group'
             ],
-        ]);
+        ];
+
+        foreach ($data as $data) {
+            Privileges::create([
+                'name'          => $data["name"],
+                'description'   => $data["description"]
+            ]);
+        }
     }
 }

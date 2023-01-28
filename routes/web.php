@@ -25,4 +25,10 @@ Route::group(['middleware' => 'web.auth.jwt'], function () use ($router) {
         $router->get('roles', '\App\Http\Controllers\Web\RolesController@index');
         $router->get('groups', '\App\Http\Controllers\Web\GroupsController@index');
     });
+
+    $router->group(['prefix' => 'patient'], function () use ($router) {
+        $router->get('list', '\App\Http\Controllers\Web\PatientListController@index');
+        $router->get('register', '\App\Http\Controllers\Web\PatientFormController@index');
+        $router->get('update/{id}', '\App\Http\Controllers\Web\PatientFormController@update');
+    });
 });

@@ -119,3 +119,4 @@
 </html>
 
 @include('template.footer')
+@include('admin.groups_js')
