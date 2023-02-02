@@ -20,7 +20,10 @@ jobs:
       - name: Install Dependencies Backend
         run: composer install
       - name: Install Dependencies Frontend
-        run: npm install
+        script: |
+          export NVM_DIR=~/.nvm
+          source ~/.nvm/nvm.sh
+          npm install
       - name: Clear App cache
         run: php artisan cache:clear
       - name: Clear Route cache
