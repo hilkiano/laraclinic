@@ -55,7 +55,6 @@ return [
             'driver' => 'stack',
             'channels' => ['daily'],
             'ignore_exceptions' => false,
-            'permission' => 0664,
         ],
 
         'single' => [
@@ -69,6 +68,7 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
+            'permission' => 0666,
         ],
 
         'slack' => [
