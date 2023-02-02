@@ -15,7 +15,9 @@ class DashboardController extends Controller
 
     public function __construct()
     {
-        $this->userData = Users::with('group')->find(auth()->user()->id);
+        if (auth()->user()) {
+            $this->userData = Users::with('group')->find(auth()->user()->id);
+        }
         $this->menuController = new MenuController();
     }
 
