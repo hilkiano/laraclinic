@@ -20,7 +20,7 @@ jobs:
       - name: Install Dependencies Backend
         run: composer install
       - name: Install Dependencies Frontend
-        script: |
+        run: |
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
           npm install
