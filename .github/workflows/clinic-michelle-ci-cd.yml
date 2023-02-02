@@ -2,12 +2,12 @@ name: Laravel
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 jobs:
- job_1:
+  job_1:
     name: Build Clinic Michelle App
     runs-on: self-hosted
 
@@ -28,5 +28,4 @@ jobs:
       - name: Clear Config cache
         run: php artisan config:clear
       - name: Directory Permissions Backend
-        run: echo kiano | sudo -S chmod -R 777 storage bootstrap/cache
-    
+        run: echo N0hansen!z | sudo -S chmod -R 777 storage bootstrap/cache
