@@ -1,0 +1,32 @@
+name: Laravel
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+ job_1:
+    name: Build Clinic Michelle App
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          clean: false
+      - name: Copy .env
+        run: cp .env.production .env
+      - name: Install Dependencies Backend
+        run: composer install
+      - name: Install Dependencies Frontend
+        run: npm install
+      - name: Clear App cache
+        run: php artisan cache:clear
+      - name: Clear Route cache
+        run: php artisan route:clear
+      - name: Clear Config cache
+        run: php artisan config:clear
+      - name: Directory Permissions Backend
+        run: echo kiano | sudo -S chmod -R 777 storage bootstrap/cache
+    
