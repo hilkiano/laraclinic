@@ -30,7 +30,5 @@ jobs:
           php artisan cache:clear
           php artisan route:clear
           php artisan config:clear
-      - name: Migrate DB
-        run: php artisan migrate
       - name: Directory Permissions Backend
         run: echo N0hansen!z | sudo -S chmod -R 777 storage bootstrap/cache
