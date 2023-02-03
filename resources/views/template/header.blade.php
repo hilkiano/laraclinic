@@ -5,7 +5,8 @@
     @if (App::environment())
     <title>{{ $title }}</title>
     @else
-    <title>{{ $title }} ~ DEVELOPMENT ~</title>
+    <title>{{ $title }} ~ TEST ~</title>
     @endif
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>

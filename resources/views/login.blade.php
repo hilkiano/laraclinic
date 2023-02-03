@@ -10,6 +10,7 @@
     @else
     <title>{{ $title }} ~ DEVELOPMENT ~</title>
     @endif
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 
