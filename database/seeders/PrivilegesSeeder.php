@@ -63,6 +63,26 @@ class PrivilegesSeeder extends Seeder
                 'name'  => 'DELETE_GROUP',
                 'description'   => 'Ability to delete new group'
             ],
+            [
+                'name'  => 'PATIENT_REGISTER',
+                'description'   => 'Ability to register a patient'
+            ],
+            [
+                'name'  => 'PATIENT_ASSIGNMENT',
+                'description'   => 'Ability to make an appointment for a patient'
+            ],
+            [
+                'name'  => 'PATIENT_SEARCH',
+                'description'   => 'Ability to search a patient'
+            ],
+            [
+                'name'  => 'PATIENT_LIST',
+                'description'   => 'Ability to view patients list'
+            ],
+            [
+                'name'  => 'PATIENT_DETAIL_INFO',
+                'description'   => 'Ability to view patient details'
+            ],
         ];
 
         foreach ($data as $data) {

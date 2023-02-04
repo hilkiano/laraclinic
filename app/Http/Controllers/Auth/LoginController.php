@@ -49,6 +49,12 @@ class LoginController extends Controller
                 false
             );
 
+            $user = Users::where('id', auth()->user()->id)->first();
+            if ($user) {
+                $user->logged_in_at = Carbon::now();
+                $user->save();
+            }
+
             return response()->json([
                 'status'    => true,
                 'user'      => $this->userController->__invoke($request)->original,

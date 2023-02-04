@@ -17,7 +17,7 @@
                                     <p class="text-muted">{{ $user->group->name }}</p>
                                 </div>
                                 <div class="card-footer">
-                                    <p class="text-muted mb-0">Last login: </p>
+                                    <p class="text-muted mb-0">Last login: {{ $user->logged_in_at }}</p>
                                 </div>
                             </div>
                         </div>

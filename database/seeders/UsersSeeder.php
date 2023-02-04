@@ -25,5 +25,50 @@ class UsersSeeder extends Seeder
             'phone_number'  => '081211112222',
             'group_id'      => 1
         ]);
+
+        Users::create([
+            'name'          => 'Demo Receptionist',
+            'email'         => 'testing2@mail.com',
+            'username'      => 'receptionist',
+            'password'      => Hash::make('12345'),
+            'phone_number'  => '081211112222',
+            'group_id'      => 2
+        ]);
+
+        Users::create([
+            'name'          => 'Demo Doctor',
+            'email'         => 'testing3g@mail.com',
+            'username'      => 'doctor',
+            'password'      => Hash::make('12345'),
+            'phone_number'  => '081211112222',
+            'group_id'      => 3
+        ]);
+
+        Users::create([
+            'name'          => 'Demo Pharmacist',
+            'email'         => 'testing4@mail.com',
+            'username'      => 'pharmacist',
+            'password'      => Hash::make('12345'),
+            'phone_number'  => '081211112222',
+            'group_id'      => 4
+        ]);
+
+        Users::create([
+            'name'          => 'Demo Cashier',
+            'email'         => 'testing5@mail.com',
+            'username'      => 'cashier',
+            'password'      => Hash::make('12345'),
+            'phone_number'  => '081211112222',
+            'group_id'      => 5
+        ]);
+
+        Users::create([
+            'name'          => 'Demo Olshop Admin',
+            'email'         => 'testing6@mail.com',
+            'username'      => 'olshop',
+            'password'      => Hash::make('12345'),
+            'phone_number'  => '081211112222',
+            'group_id'      => 6
+        ]);
     }
 }

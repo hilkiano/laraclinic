@@ -1,5 +1,5 @@
 // Fonts
-@import url("https://fonts.bunny.net/css?family=Nunito");
+@import url("https://fonts.bunny.net/css?family=Inter");
 
 // Variables
 @import "variables";
@@ -82,6 +82,10 @@ div#patientCard {
 }
 .btn-pharmacy:active:focus {
     background-color: $teal-900;
+    color: white;
+}
+.btn-pharmacy.disabled {
+    background-color: $teal-700;
     color: white;
 }
 

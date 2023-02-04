@@ -38,6 +38,10 @@ class GroupsSeeder extends Seeder
             [
                 'name'      => 'Online Shop Admin Group',
                 'role_ids'  => [6]
+            ],
+            [
+                'name'      => 'Owner Group',
+                'role_ids'  => [7]
             ]
         ];
 

@@ -31,4 +31,6 @@ Route::group(['middleware' => 'web.auth.jwt'], function () use ($router) {
         $router->get('register', '\App\Http\Controllers\Web\PatientFormController@index');
         $router->get('update/{id}', '\App\Http\Controllers\Web\PatientFormController@update');
     });
+
+    $router->get('/appointments', '\App\Http\Controllers\Web\AppointmentController@index');
 });

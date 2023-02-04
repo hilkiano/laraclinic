@@ -10,9 +10,12 @@
             <div id="mainContent" class="d-flex flex-column">
                 <div class="container-fluid mt-4">
                     <div class="row gy-3">
+                        @if (in_array("PATIENT_REGISTER", $privs))
                         <div class="col-sm-12 col-md-4 col-lg-3 d-grid">
                             <a href="/patient/register" class="btn btn-success"><i class="bi bi-plus-circle me-2"></i> Register New Patient</a>
                         </div>
+                        @endif
+                        @if (in_array("PATIENT_REGISTER", $privs) && in_array("PATIENT_SEARCH", $privs))
                         <div class="col-sm-12 col-md-8 col-lg-9">
                             <form id="filterForm">
                                 <div class="input-group">
@@ -30,6 +33,25 @@
                                 </div>
                             </form>
                         </div>
+                        @elseif (!in_array("PATIENT_REGISTER", $privs) && in_array("PATIENT_SEARCH", $privs))
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <form id="filterForm">
+                                <div class="input-group">
+                                    <select class="form-select" name="filter_by" style="max-width: 130px;" id="filterPatientSelect">
+                                        <option value="">Filter by...</option>
+                                        <option selected value="name">Name</option>
+                                    </select>
+                                    <input id="filterPatientField" placeholder="Search patient..." type="text" class="form-control" name="filter_field">
+                                    @if ($data["hasFilter"])
+                                    <button type="button" id="clearFilterPatientBtn" class="btn btn-secondary">
+                                        <i class="bi bi-eraser"></i>
+                                    </button>
+                                    @endif
+                                    <button type="submit" form="filterForm" class="btn btn-primary"><i class="bi bi-search"></i></button>
+                                </div>
+                            </form>
+                        </div>
+                        @endif
                     </div>
                     <div class="row mt-2 gy-1">
                         <div class="col-sm-12 mt-4">
@@ -78,7 +100,8 @@
             </div>
         </div>
     </div>
-    @include('modals.patient_list_modal')
+    @include('toasts.live_toast')
+    @include('modals.patient_list_modal', ['privs' => $privs])
 </body>
 
 </html>

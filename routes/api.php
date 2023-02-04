@@ -45,5 +45,9 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
             $router->post('save-info', '\App\Http\Controllers\Web\PatientFormController@save');
             $router->post('add-potrait', '\App\Http\Controllers\Web\PatientFormController@addPotrait');
         });
+        // appointment
+        $router->group(['prefix' => 'appointment'], function () use ($router) {
+            $router->post('make', '\App\Http\Controllers\Web\AppointmentController@make');
+        });
     });
 });

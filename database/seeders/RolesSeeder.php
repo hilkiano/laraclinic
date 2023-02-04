@@ -45,6 +45,11 @@ class RolesSeeder extends Seeder
                 'menu_ids'      => $this->getOlShopAdminMenuIds(),
                 'privilege_ids' => $this->getOlShopAdminPrivilegeIds()
             ],
+            [
+                'name'          => 'Owner',
+                'menu_ids'      => $this->getAllMenuIds(),
+                'privilege_ids' => $this->getOwnerPrivilegeIds()
+            ],
         ];
 
         foreach ($data as $data) {
@@ -84,7 +89,7 @@ class RolesSeeder extends Seeder
     {
         $menuIds = [];
 
-        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 10]);
+        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 10, 11]);
         foreach ($model as $menu) {
             array_push($menuIds, $menu->id);
         }
@@ -96,7 +101,7 @@ class RolesSeeder extends Seeder
     {
         $privIds = [];
 
-        $model = \App\Models\Privileges::select('id')->get();
+        $model = \App\Models\Privileges::select('id')->find([13, 14, 15, 16, 17]);
         foreach ($model as $privilege) {
             array_push($privIds, $privilege->id);
         }
@@ -196,6 +201,18 @@ class RolesSeeder extends Seeder
         foreach ($model as $privilege) {
             array_push($privIds, $privilege->id);
         }
+
+        return $privIds;
+    }
+
+    protected function getOwnerPrivilegeIds()
+    {
+        $privIds = [];
+
+        // $model = \App\Models\Privileges::select('id')->find();
+        // foreach ($model as $privilege) {
+        //     array_push($privIds, $privilege->id);
+        // }
 
         return $privIds;
     }
