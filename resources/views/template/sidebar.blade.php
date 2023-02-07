@@ -1,4 +1,4 @@
-<div class="d-flex d-lg-flex d-md-none d-sm-none d-none p-3 bg-white flex-column" style="width: 280px; min-height: calc(100vh - 55px)">
+<div class="d-flex d-lg-flex d-md-none d-sm-none d-none p-3 bg-white flex-column" style="width: 280px; min-height: calc(100vh - 80px)">
     <ul class="nav nav-pills flex-column mb-auto position-fixed" style="width: calc(280px - 2em);">
         @foreach ($menus["data"] as $menu)
         @if ($menu->route)
@@ -18,7 +18,7 @@
         <div class="mb-1">
             <ul class="nav nav-pills flex-column w-100 ps-2 pe-2 mt-2">
                 @foreach ($menu->child as $child)
-                <li>
+                <li class="mb-1">
                     <a id="sidebarChildItem" class="nav-link ps-3 py-1 {{ $child->is_active ? 'active' : 'link-dark' }}" href="{{ $child->is_active ? '#' : $child->route }}">
                         <i class="bi {{ $child->icon }} me-2"></i>
                         {{ $child->label }}

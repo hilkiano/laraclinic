@@ -8,6 +8,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PrivilegeController;
 use Illuminate\Support\Facades\Log;
 use App\Models\Appointments;
+use App\Models\AppointmentsDetail;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -81,7 +82,7 @@ class AppointmentController extends Controller
         $data = [
             "rows"  => $paginated,
             "hasFilter" => $filter ? true : false,
-            "today" => Carbon::now()->isoFormat('dddd, DD MMMM YYYY')
+            "today" => Carbon::now()->setTimezone(env('APP_TIME_ZONE'))->isoFormat('dddd, DD MMMM YYYY')
         ];
 
         return $data;
@@ -95,6 +96,7 @@ class AppointmentController extends Controller
                 $validator = Validator::make($request->all(), [
                     'patient_id'    => 'required',
                     'reason'        => 'required',
+                    'visit_time'    => 'required'
                 ]);
                 if ($validator->fails()) {
                     return response()->json([
@@ -106,15 +108,25 @@ class AppointmentController extends Controller
                 $newAppointment = Appointments::create([
                     'uuid'          => Str::uuid(),
                     'patient_id'    => $request->patient_id,
-                    'visit_time'    => Carbon::now(),
+                    'visit_time'    => Carbon::createFromIsoFormat('MM/DD/YYYY, HH:mm:ss A', $request->visit_time, env('APP_TIME_ZONE'))->setTimezone('UTC'),
                     'visit_reason'  => $request->reason,
-                    'status'        => 'waiting'
+                    'status'        => 'waiting',
+                    'additional_note' => $request->additional_note
+                ]);
+
+                $newAppointmentDetail = AppointmentsDetail::create([
+                    'appointment_uuid'  => $newAppointment->uuid,
+                    'status'            => $newAppointment->status,
+                    'additional_note'   => $newAppointment->additional_note
                 ]);
 
                 if ($newAppointment) {
                     return response()->json([
                         'status'    => true,
-                        'data'      => $newAppointment,
+                        'data'      => [
+                            'appointment' => $newAppointment,
+                            'detail'      => $newAppointmentDetail
+                        ],
                         'message'   => 'New appointment created. <br /> <a href="/appointment/detail/' . $newAppointment->uuid . '" _target="blank">See details</a>'
                     ], 200);
                 }

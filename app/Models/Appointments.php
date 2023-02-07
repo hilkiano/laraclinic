@@ -21,4 +21,9 @@ class Appointments extends Model
     {
         return $this->belongsTo(Patients::class, 'patient_id', 'id');
     }
+
+    public function detail()
+    {
+        return $this->hasMany(AppointmentsDetail::class, 'appointment_uuid', 'uuid');
+    }
 }

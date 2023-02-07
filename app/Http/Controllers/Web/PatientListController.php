@@ -69,4 +69,20 @@ class PatientListController extends Controller
 
         return $data;
     }
+
+    public function selectList(Request $request)
+    {
+        try {
+            return response()->json([
+                'status'    => true,
+                'data'      => Patients::orderBy('name', 'asc')->get()
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Unexpected error.'
+            ], 500);
+        }
+    }
 }

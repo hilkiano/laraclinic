@@ -48,6 +48,7 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
         // appointment
         $router->group(['prefix' => 'appointment'], function () use ($router) {
             $router->post('make', '\App\Http\Controllers\Web\AppointmentController@make');
+            $router->get('patient-list', '\App\Http\Controllers\Web\PatientListController@selectList');
         });
     });
 });

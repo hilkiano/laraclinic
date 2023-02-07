@@ -10,8 +10,8 @@
                     <div class="col-sm-4 d-grid">
                         <img id="patientPotrait" class="img-thumbnail mb-2" src="{{ asset('images/potrait-placeholder.png') }}" alt="potrait placeholder">
                         @if (in_array("PATIENT_ASSIGNMENT", $privs))
-                        <button class="btn mt-2 btn-sm btn-pharmacy" id="assignPharmacyBtn"><i class="bi bi-capsule me-2"></i>Go To Pharmacy</button>
-                        <button class="btn mt-2 btn-sm btn-doctor" id="assignDoctorBtn"><i class="bi bi-heart-pulse-fill me-2"></i>Make Doctor Appointment</button>
+                        <a class="btn mt-2 btn-sm btn-pharmacy" id="assignPharmacyBtn"><i class="bi bi-capsule me-2"></i>Go To Pharmacy</a>
+                        <a class="btn mt-2 btn-sm btn-doctor" id="assignDoctorBtn"><i class="bi bi-heart-pulse-fill me-2"></i>Make Doctor Appointment</a>
                         @endif
                         <a href="" id="patientUpdateBtn" class="btn mt-2 btn-sm btn-secondary"><i class="bi bi-pencil-fill me-2"></i>Update Information</a>
                     </div>

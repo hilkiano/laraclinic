@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 @include('template.header', ['title' => 'Roles'])
-<link href="https://unpkg.com/mobius1-selectr@latest/dist/selectr.min.css" rel="stylesheet" type="text/css">
 
 <body>
     @include('template.navbar', ['title' => 'Roles'])
