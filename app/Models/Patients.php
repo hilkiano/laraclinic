@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Patients extends Model
 {
-    use HasFactory;
 
     protected $table = "patients";
 
@@ -16,6 +14,7 @@ class Patients extends Model
         'birth_date',
         'address',
         'phone_number',
+        'email',
         'weight',
         'height',
         'additional_note'
@@ -23,6 +22,6 @@ class Patients extends Model
 
     public function patientPotrait()
     {
-        return $this->hasMany(PatientPotraits::class, 'patient_id', 'id')->orderBy('created_at', 'desc');
+        return $this->hasOne(PatientPotraits::class, 'patient_id', 'id')->orderBy('created_at', 'desc');
     }
 }

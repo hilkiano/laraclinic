@@ -9,7 +9,7 @@
             @include('template.sidebar')
             <div id="mainContent" class="d-flex flex-column">
                 <div class="container-fluid mt-4">
-                    <div class="row gy-3">
+                    <div class="row gy-4">
                         <div class="col-sm-12 col-md-4 col-lg-3 d-grid d-md-flex">
                             <a href="/patient/list" class="btn btn-secondary"><i class="bi bi-chevron-double-left me-2"></i> Back to Patient List</a>
                         </div>
@@ -76,6 +76,24 @@
                                 <button type="submit" form="patientForm" id="patientFormSubmitBtn" class="btn btn-lg btn-primary mt-2">Submit</button>
                             </form>
                         </div>
+                        @if (array_key_exists('patient', $data))
+                        <div class="col-sm-12 col-md-12 col-lg-6 d-grid">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <p class="fs-3">Patient Potraits</p>
+                                            @if ($data['patient']->patientPotrait)
+                                            @foreach ($data['patient']->patientPotrait->url as $img)
+                                            <img id="patientPotrait" class="img-thumbnail me-2" src="{{ $img }}" alt="potrait placeholder" style="width: 150px;">
+                                            @endforeach
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

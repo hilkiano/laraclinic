@@ -6,7 +6,10 @@ import * as bootstrap from "bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import selectize from "@selectize/selectize";
 import "@selectize/selectize/dist/css/selectize.bootstrap5.css";
-import { TempusDominus } from "@eonasdan/tempus-dominus";
+import {
+    TempusDominus,
+    Namespace as tdNamespace,
+} from "@eonasdan/tempus-dominus";
 import "@eonasdan/tempus-dominus/dist/css/tempus-dominus.min.css";
 import moment from "moment/moment";
 
@@ -14,6 +17,7 @@ window.bootstrap = bootstrap;
 window.IMask = IMask;
 window.selectize = selectize;
 window.TempusDominus = TempusDominus;
+window.tdNamespace = tdNamespace;
 window.moment = moment;
 
 const tDConfigs = {
@@ -49,7 +53,82 @@ const tDConfigs = {
     allowInputToggle: true,
 };
 
+const tDConfigsWithTime = {
+    display: {
+        icons: {
+            type: "icons",
+            time: "bi bi-alarm-fill",
+            date: "bi bi-calendar",
+            up: "bi bi-arrow-up",
+            down: "bi bi-arrow-down",
+            previous: "bi bi-chevron-left",
+            next: "bi bi-chevron-right",
+            today: "bi bi-calendar-fill",
+            clear: "bi bi-trash",
+            close: "bi bi-x-lg",
+        },
+        theme: "light",
+        components: {
+            calendar: true,
+            date: true,
+            month: true,
+            year: true,
+            decades: true,
+            clock: true,
+            hours: true,
+            minutes: true,
+            seconds: true,
+        },
+        buttons: {
+            today: true,
+            clear: true,
+        },
+    },
+    allowInputToggle: true,
+};
+
+const tDConfigsTime = {
+    useCurrent: false,
+    stepping: 30,
+    display: {
+        viewMode: "clock",
+        icons: {
+            type: "icons",
+            time: "bi bi-alarm-fill",
+            date: "bi bi-calendar",
+            up: "bi bi-arrow-up",
+            down: "bi bi-arrow-down",
+            previous: "bi bi-chevron-left",
+            next: "bi bi-chevron-right",
+            today: "bi bi-calendar-fill",
+            clear: "bi bi-trash",
+            close: "bi bi-x-lg",
+        },
+        theme: "light",
+        components: {
+            calendar: false,
+            date: false,
+            month: false,
+            year: false,
+            decades: false,
+            hours: true,
+            minutes: true,
+            seconds: false,
+        },
+        buttons: {
+            close: true,
+            clear: true,
+        },
+    },
+    localization: {
+        hourCycle: "h23",
+    },
+    allowInputToggle: false,
+};
+
 window.tDConfigs = tDConfigs;
+window.tDConfigsWithTime = tDConfigsWithTime;
+window.tDConfigsTime = tDConfigsTime;
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

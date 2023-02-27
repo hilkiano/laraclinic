@@ -93,3 +93,20 @@ div#patientCard {
 #sidebarChildItem:hover:not(.active) {
     background-color: $blue-100;
 }
+
+hr {
+    color: $gray-700;
+}
+
+.page-item:hover:not(.active, .disabled) {
+    cursor: pointer;
+}
+
+.patient-img {
+    width: 100%;
+    height: 350px;
+    background-color: $blue-100;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}

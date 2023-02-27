@@ -16,9 +16,10 @@ return new class extends Migration
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
-            $table->dateTime('birth_date');
+            $table->dateTime('birth_date')->nullable();
             $table->text('address')->nullable();
             $table->string('phone_number')->nullable();
+            $table->string('email')->nullable();
             $table->integer('weight')->nullable();
             $table->integer('height')->nullable();
             $table->text('additional_note')->nullable();

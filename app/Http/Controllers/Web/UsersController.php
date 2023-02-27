@@ -226,4 +226,64 @@ class UsersController extends Controller
             ], 500);
         }
     }
+
+    public function viewConfigs(Request $request)
+    {
+        try {
+            $data = [
+                "user"  => $this->userData,
+                "menus" => $this->menuController->__invoke($request)->original,
+                "privs" => $this->privilegeController->__invoke($request)->original["data"]
+            ];
+
+            return view('/admin/user-configs', $data);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Unexpected error happened.'
+            ], 500);
+        }
+    }
+
+    public function saveConfigs(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'name'          => 'required',
+                'email'         => 'nullable|email:rfc,dns',
+                'phone_number'  => 'nullable|digits_between:8,15',
+                'schedule'      => 'nullable|array'
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'    => false,
+                    'message'   => $validator->errors()
+                ], 422);
+            }
+
+            $user = Users::where('id', auth()->user()->id)->first();
+
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone_number = $request->phone_number;
+            $user->configs = [
+                "schedule" => $request->schedule
+            ];
+
+            $user->save();
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $user,
+                'message'   => 'Configuration saved.'
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Unexpected error happened.'
+            ], 500);
+        }
+    }
 }

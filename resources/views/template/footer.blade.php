@@ -8,6 +8,7 @@
         });
         const resLogout = await logout.json();
         if (resLogout.status) {
+            localStorage.removeItem("schedule");
             window.location = "/login";
         }
     };

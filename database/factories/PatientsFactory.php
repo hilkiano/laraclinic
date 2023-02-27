@@ -18,7 +18,7 @@ class PatientsFactory extends Factory
     public function definition()
     {
         return [
-            'name'              => fake()->name(),
+            'name'              => fake()->name('female'),
             'birth_date'        => fake()->dateTimeBetween('-30 years', '-25 years'),
             'address'           => fake()->address(),
             'phone_number'      => "813" . fake()->randomNumber(8, true),

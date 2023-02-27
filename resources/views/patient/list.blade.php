@@ -62,10 +62,10 @@
                             <div class="card-group mt-3">
                                 @foreach($chunk as $row)
                                 <div class="card" id="patientCard">
-                                    @if (count($row->patientPotrait) > 0)
-                                    <img src="{{ asset($row->patientPotrait[0]->url) }}" class="card-img-top" alt="{{ $row->name }} potrait">
+                                    @if ($row->last_potrait)
+                                    <div class="patient-img" style="background-image: url('{{ $row->last_potrait }}');"></div>
                                     @else
-                                    <img src="{{ asset('images/potrait-placeholder.png') }}" class="card-img-top" alt="placeholder potrait">
+                                    <div class="patient-img" style="background-image: url('{{ $image_placeholder }}');"></div>
                                     @endif
                                     <div class="card-body">
                                         <a class="card-title stretched-link text-reset text-decoration-none fs-5" data-bs-toggle="modal" href="#patientListModal" data-row="{{ $row }}">{{ $row->name }}</a>

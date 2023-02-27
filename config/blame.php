@@ -29,6 +29,7 @@ return [
         \App\Models\Roles::class,
         \App\Models\Users::class,
         \App\Models\Appointments::class,
+        \App\Models\AppointmentsDetail::class,
         \App\Models\PatientPotraits::class
     ],
 

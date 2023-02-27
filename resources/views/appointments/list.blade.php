@@ -21,7 +21,7 @@
                                 <div class="card-body">
                                     <div class="input-group">
                                         @if (in_array("PATIENT_ASSIGNMENT", $privs))
-                                        <button data-bs-toggle="modal" href="#appointmentModal" class="btn btn-success">
+                                        <button data-bs-toggle="modal" href="#appointmentsModal" class="btn btn-success">
                                             <i class="bi bi-plus"></i>
                                             Create Appointment
                                         </button>
@@ -92,6 +92,8 @@
                                             <td>
                                                 @if ($row->visit_reason === "pharmacy")
                                                 <p class="fs-5 mb-0"><span class="badge bg-secondary">Pharmacy</span></p>
+                                                @elseif ($row->visit_reason === "doctor")
+                                                <p class="fs-5 mb-0"><span class="badge bg-secondary">Doctor</span></p>
                                                 @endif
                                             </td>
                                             <td>
@@ -109,7 +111,7 @@
                                         @endforeach
                                         @else
                                         <tr>
-                                            <td colspan="9">No Data.</td>
+                                            <td colspan="6">No Data.</td>
                                         </tr>
                                         @endif
                                     </tbody>
@@ -120,7 +122,7 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <button class="btn btn-primary"><i class="bi bi-clock-history me-2"></i>See History</button>
+                            <a href="complete-list" class="btn btn-primary"><i class="bi bi-clock-history me-2"></i>See Complete List</a>
                         </div>
                     </div>
                 </div>
@@ -130,5 +132,7 @@
 </body>
 
 </html>
-@include('appointment_js', ['data' => $data])
+@include('modals.appointments_modal', ['data' => $data]);
+@include('toasts.live_toast')
+@include('appointments.js.list_js', ['data' => $data])
 @include('template.footer')

@@ -9,9 +9,10 @@
 
         <div class="d-flex flex-grow-0">
             <div class="btn-group">
-                <button class="btn btn-primary btn-sm" type="button">
+                <a href="/user-configs/{{ $user->id }}" class="btn btn-primary btn-sm" type="button">
+                    <i class="bi bi-person-fill-gear me-2"></i>
                     {{ $user->username }}
-                </button>
+                </a>
                 <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
