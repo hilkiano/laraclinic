@@ -117,4 +117,4 @@
 </html>
 
 @include('template.footer')
-@include('admin.roles_js')
+@include('admin.js.roles_js')

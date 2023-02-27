@@ -106,15 +106,33 @@ class MenusSeeder extends Seeder
                 'parent'    => 'patients',
                 'order'     => 2
             ],
-            // Doctors Menu
+            // Appointment Menu
             [
                 'name'      => 'appointments',
                 'label'     => 'Appointments',
-                'icon'      => 'bi-clock-fill',
-                'route'     => '/appointments',
-                'is_parent' => false,
+                'icon'      => 'bi-clipboard-fill',
+                'route'     => null,
+                'is_parent' => true,
                 'parent'    => null,
                 'order'     => 3
+            ],
+            [
+                'name'      => 'appointments-list',
+                'label'     => 'List',
+                'icon'      => 'bi-clipboard-plus-fill',
+                'route'     => '/appointments/list',
+                'is_parent' => false,
+                'parent'    => 'appointments',
+                'order'     => 1
+            ],
+            [
+                'name'      => 'appointments-assignment',
+                'label'     => 'My Assignment',
+                'icon'      => 'bi-clipboard-check-fill',
+                'route'     => '/appointments/assignment',
+                'is_parent' => false,
+                'parent'    => 'appointments',
+                'order'     => 2
             ]
         ];
 

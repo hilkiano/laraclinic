@@ -67,7 +67,7 @@ class PatientFormController extends Controller
         ];
 
         if ($type === "update" && $id !== 0) {
-            $model = Patients::find($id);
+            $model = Patients::with('patientPotrait')->find($id);
             $data["patient"] = $model;
         }
 

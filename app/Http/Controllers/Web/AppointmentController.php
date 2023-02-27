@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Appointments;
 use App\Models\AppointmentsDetail;
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -38,7 +37,7 @@ class AppointmentController extends Controller
                 "data"  => $appointmentData
             ];
 
-            return view('/appointment', $data);
+            return view('/appointments/list', $data);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([
@@ -136,6 +135,117 @@ class AppointmentController extends Controller
                     'message'   => 'You did not have permission to do this action.'
                 ], 403);
             }
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function viewCompleteList(Request $request)
+    {
+        try {
+            $data = [
+                "user"  => $this->userData,
+                "menus" => $this->menuController->__invoke($request)->original,
+                "privs" => $this->privilegeController->__invoke($request)->original["data"],
+            ];
+
+            return view('/appointments/complete-list', $data);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getCompleteList(Request $request)
+    {
+        try {
+            $dataPerPage = $request->input("limit");
+            $page = $request->input("page") + 1;
+            $name = $request->has("name") ? $request->input("name") : null;
+            $reason = $request->has("reason") ? $request->input("reason") : null;
+            $status = $request->has("status") ? $request->input("status") : null;
+            $startDate = $request->has("startDate") ? $request->input("startDate") : null;
+            $endDate = $request->has("endDate") ? $request->input("endDate") : null;
+            $offset = ($page === 1) ? 0 : ($page * $dataPerPage) - $dataPerPage;
+            $model = Appointments::with('patient')
+                ->when($name, function ($query) use ($name) {
+                    $query->whereHas('patient', function ($q) use ($name) {
+                        $q->where('name', 'ILIKE', "%$name%");
+                    });
+                })
+                ->when($reason, function ($query) use ($reason) {
+                    $query->where('visit_reason', $reason);
+                })
+                ->when($status, function ($query) use ($status) {
+                    $query->where('status', $status);
+                })
+                ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                    $query->where('visit_time', '>=', $startDate)
+                        ->where('visit_time', '<=', $endDate);
+                });
+            $count = $model->count();
+            $model = $model->limit($dataPerPage)
+                ->offset($offset);
+            $data = $model->get();
+
+            return response()->json([
+                'status'        => true,
+                'data'          => $data,
+                'count'         => $count,
+                'pagination'    => [
+                    'offset'    => $offset,
+                    'rowCount'  => $dataPerPage,
+                    'page'      => $page,
+                    'pageCount' => ceil($count / $dataPerPage)
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function viewAssignment(Request $request)
+    {
+        try {
+            $data = [
+                "user"  => $this->userData,
+                "menus" => $this->menuController->__invoke($request)->original,
+                "privs" => $this->privilegeController->__invoke($request)->original["data"]
+            ];
+
+            return view('/appointments/assignment', $data);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function viewDetail(Request $request)
+    {
+        try {
+            $uuid = $request->uuid;
+            $data = [
+                "user"  => $this->userData,
+                "menus" => $this->menuController->__invoke($request)->original,
+                "privs" => $this->privilegeController->__invoke($request)->original["data"],
+                "data"  => Appointments::with(['detail', 'patient'])->where('uuid', $uuid)->first()
+            ];
+
+            return view('/appointments/detail', $data);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([

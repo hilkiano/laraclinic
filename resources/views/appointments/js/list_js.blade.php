@@ -7,6 +7,7 @@
     const resetFilterBtn = document.getElementById("resetFilterBtn");
     const appointmentModal = document.getElementById("appointmentsModal");
     const appointmentForm = document.getElementById("appointmentForm");
+    const liveToast = document.getElementById("liveToast");
     const url = new URL(window.location.href);
 
     let patientSelector;
@@ -180,7 +181,7 @@
             document.getElementById("submitLoading").remove();
             if (response.status) {
                 const url = new URL(window.location.origin);
-                url.pathname = 'appointments';
+                url.pathname = 'appointments/list';
 
                 window.location = url.href;
             } else {

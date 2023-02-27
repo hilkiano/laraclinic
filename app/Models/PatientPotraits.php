@@ -12,4 +12,8 @@ class PatientPotraits extends Model
         'patient_id',
         'url'
     ];
+
+    protected $casts = [
+        'url'   => 'array'
+    ];
 }

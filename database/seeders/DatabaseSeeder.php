@@ -21,8 +21,6 @@ class DatabaseSeeder extends Seeder
             MenusSeeder::class,
             RolesSeeder::class,
             GroupsSeeder::class,
-            // Clinics seeder
-            PatientsSeeder::class
         ]);
     }
 }

@@ -111,7 +111,7 @@
                                         @endforeach
                                         @else
                                         <tr>
-                                            <td colspan="9">No Data.</td>
+                                            <td colspan="6">No Data.</td>
                                         </tr>
                                         @endif
                                     </tbody>
@@ -122,7 +122,7 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <button class="btn btn-primary"><i class="bi bi-clock-history me-2"></i>See History</button>
+                            <a href="complete-list" class="btn btn-primary"><i class="bi bi-clock-history me-2"></i>See Complete List</a>
                         </div>
                     </div>
                 </div>
@@ -134,5 +134,5 @@
 </html>
 @include('modals.appointments_modal', ['data' => $data]);
 @include('toasts.live_toast')
-@include('appointment_js', ['data' => $data])
+@include('appointments.js.list_js', ['data' => $data])
 @include('template.footer')

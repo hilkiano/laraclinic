@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('patient_potraits', function (Blueprint $table) {
             $table->id();
             $table->integer('patient_id');
-            $table->string('url');
+            $table->jsonb('url');
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();

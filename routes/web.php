@@ -17,6 +17,7 @@ Route::get('/login', '\App\Http\Controllers\Web\LoginController@index');
 
 Route::group(['middleware' => 'web.auth.jwt'], function () use ($router) {
     $router->get('/', '\App\Http\Controllers\Web\DashboardController@index');
+    $router->get('/user-configs/{id}', '\App\Http\Controllers\Web\UsersController@viewConfigs');
 
     $router->group(['prefix' => 'master'], function () use ($router) {
         $router->get('users', '\App\Http\Controllers\Web\UsersController@index');
@@ -32,5 +33,10 @@ Route::group(['middleware' => 'web.auth.jwt'], function () use ($router) {
         $router->get('update/{id}', '\App\Http\Controllers\Web\PatientFormController@update');
     });
 
-    $router->get('/appointments', '\App\Http\Controllers\Web\AppointmentController@index');
+    $router->group(['prefix' => 'appointments'], function () use ($router) {
+        $router->get('list', '\App\Http\Controllers\Web\AppointmentController@index');
+        $router->get('assignment', '\App\Http\Controllers\Web\AppointmentController@viewAssignment');
+        $router->get('complete-list', '\App\Http\Controllers\Web\AppointmentController@viewCompleteList');
+        $router->get('detail/{uuid}', '\App\Http\Controllers\Web\AppointmentController@viewDetail');
+    });
 });

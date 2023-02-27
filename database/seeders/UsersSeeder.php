@@ -22,7 +22,7 @@ class UsersSeeder extends Seeder
             'email'         => 'testing@mail.com',
             'username'      => 'superadmin',
             'password'      => Hash::make('superadmin'),
-            'phone_number'  => '081211112222',
+            'phone_number'  => '81211112222',
             'group_id'      => 1
         ]);
 
@@ -31,7 +31,7 @@ class UsersSeeder extends Seeder
             'email'         => 'testing2@mail.com',
             'username'      => 'receptionist',
             'password'      => Hash::make('12345'),
-            'phone_number'  => '081211112222',
+            'phone_number'  => '81211112222',
             'group_id'      => 2
         ]);
 
@@ -40,7 +40,7 @@ class UsersSeeder extends Seeder
             'email'         => 'testing3g@mail.com',
             'username'      => 'doctor',
             'password'      => Hash::make('12345'),
-            'phone_number'  => '081211112222',
+            'phone_number'  => '81211112222',
             'group_id'      => 3
         ]);
 
@@ -49,7 +49,7 @@ class UsersSeeder extends Seeder
             'email'         => 'testing4@mail.com',
             'username'      => 'pharmacist',
             'password'      => Hash::make('12345'),
-            'phone_number'  => '081211112222',
+            'phone_number'  => '81211112222',
             'group_id'      => 4
         ]);
 
@@ -58,7 +58,7 @@ class UsersSeeder extends Seeder
             'email'         => 'testing5@mail.com',
             'username'      => 'cashier',
             'password'      => Hash::make('12345'),
-            'phone_number'  => '081211112222',
+            'phone_number'  => '81211112222',
             'group_id'      => 5
         ]);
 
@@ -67,7 +67,7 @@ class UsersSeeder extends Seeder
             'email'         => 'testing6@mail.com',
             'username'      => 'olshop',
             'password'      => Hash::make('12345'),
-            'phone_number'  => '081211112222',
+            'phone_number'  => '81211112222',
             'group_id'      => 6
         ]);
     }

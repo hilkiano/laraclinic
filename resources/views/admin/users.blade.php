@@ -123,4 +123,4 @@
 </html>
 
 @include('template.footer')
-@include('admin.users_js')
+@include('admin.js.users_js')

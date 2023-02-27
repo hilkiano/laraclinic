@@ -24,18 +24,19 @@ const clearFilter = (evt) => {
 const updateModalContent = (evt) => {
     const rowData = JSON.parse(evt.relatedTarget.getAttribute("data-row"));
     if (rowData) {
-        document.getElementById("patientPotrait").src =
-            rowData.patient_potrait.length > 0
-                ? `${url.origin}${rowData.patient_potrait[0].url}`
-                : `${url.origin}/images/potrait-placeholder.png`;
+        document.getElementById("patientPotrait").src = rowData.last_potrait
+            ? `${rowData.last_potrait}`
+            : `${url.origin}/images/potrait-placeholder.png`;
         document.getElementById("patientListModalHead").innerHTML =
             '<i class="bi bi-person me-2"></i>' + rowData.name;
         document.getElementById("address").innerHTML = rowData.address
             ? rowData.address
             : "-";
         document.getElementById("birth_date").innerHTML =
-            rowData.birth_date_formatted;
-        document.getElementById("age").innerHTML = rowData.age;
+            rowData.birth_date_formatted ? rowData.birth_date_formatted : "-";
+        document.getElementById("age").innerHTML = rowData.age
+            ? rowData.age
+            : "-";
         document.getElementById("phone_number").innerHTML = rowData.phone_number
             ? "+62 " + rowData.phone_number
             : "-";
@@ -63,7 +64,7 @@ const updateModalContent = (evt) => {
 const redirectAssignment = (e, reason) => {
     const data = JSON.parse(e.target.getAttribute("data-row"));
     const newUrl = new URL(window.location.origin);
-    newUrl.pathname = '/appointments';
+    newUrl.pathname = "/appointments/list";
     newUrl.searchParams.set("make", "true");
     newUrl.searchParams.set("makeReason", reason);
     newUrl.searchParams.set("patient", data.id);
@@ -107,12 +108,12 @@ if (patientListModal) {
 }
 if (assignPharmacyBtn) {
     assignPharmacyBtn.addEventListener("click", function (e) {
-        redirectAssignment(e, "pharmacy")
+        redirectAssignment(e, "pharmacy");
     });
 }
 if (assignDoctorBtn) {
     assignDoctorBtn.addEventListener("click", function (e) {
-        redirectAssignment(e, "doctor")
+        redirectAssignment(e, "doctor");
     });
 }
 
