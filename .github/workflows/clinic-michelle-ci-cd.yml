@@ -8,18 +8,18 @@ jobs:
   job_1:
     name: Build Clinic Michelle App
     runs-on: self-hosted
-
+    environment: production
     steps:
       - uses: actions/checkout@v2
         with:
           clean: false
       - name: Copy .env
         env:
-          ENV_PROD: ${{ secrets.ENV_PROD }}
+          DOT_ENV: ${{ secrets.ENCRYPTED_DOT_ENV }}
         run: |
           rm -f .env
           touch .env
-          echo "${ENV_PROD// /}" | base64 --decode > .env
+          echo "${DOT_ENV// /}" | base64 --decode > .env
       - name: Install Dependencies Backend
         run: composer install
       - name: Install Dependencies Frontend
