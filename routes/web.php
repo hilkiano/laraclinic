@@ -38,5 +38,14 @@ Route::group(['middleware' => 'web.auth.jwt'], function () use ($router) {
         $router->get('assignment', '\App\Http\Controllers\Web\AppointmentController@viewAssignment');
         $router->get('complete-list', '\App\Http\Controllers\Web\AppointmentController@viewCompleteList');
         $router->get('detail/{uuid}', '\App\Http\Controllers\Web\AppointmentController@viewDetail');
+        $router->get('detail_blank/{uuid}', '\App\Http\Controllers\Web\AppointmentController@viewDetail');
+    });
+
+    $router->group(['prefix' => 'medicines'], function () use ($router) {
+        $router->get('/', '\App\Http\Controllers\Web\MedicinesController@index');
+    });
+
+    $router->group(['prefix' => 'services'], function () use ($router) {
+        $router->get('/', '\App\Http\Controllers\Web\ServicesController@index');
     });
 });

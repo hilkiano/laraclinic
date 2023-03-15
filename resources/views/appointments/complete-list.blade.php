@@ -30,21 +30,24 @@
                                                         <input autocomplete="off" type="text" class="form-control" id="patientName" placeholder="Filter by patient name...">
                                                     </div>
                                                     <div class="col-sm-12 col-md-4">
-                                                        <label for="reasonFilter" class="form-label">Visit Reason</label>
-                                                        <select autocomplete="off" id="reasonFilter" class="form-select" style="width: 100%">
+                                                        <label for="reasonFilter" class="form-label">Filter by reason</label>
+                                                        <select id="reasonFilter" class="form-select" style="width: 100%">
                                                             <option value="all">ALL</option>
-                                                            <option value="pharmacy">Pharmacy</option>
-                                                            <option value="doctor">Doctor</option>
+                                                            <option value="PHARMACY">Pharmacy</option>
+                                                            <option value="DOCTOR">Doctor</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-sm-12 col-md-4">
-                                                        <label for="statusFilter" class="form-label">Status</label>
-                                                        <select autocomplete="off" id="statusFilter" class="form-select" style="width: 100%">
+                                                        <label for="statusFilter" class="form-label">Filter by status</label>
+                                                        <select id="statusFilter" class="form-select" style="width: 100%">
                                                             <option value="all">ALL</option>
-                                                            <option value="waiting">Waiting</option>
-                                                            <option value="handled">Handled</option>
-                                                            <option value="completed">Completed</option>
-                                                            <option value="canceled">Canceled</option>
+                                                            <option value="DOC_WAITING">Doctor: Waiting</option>
+                                                            <option value="DOC_ASSIGNED">Doctor: Assigned</option>
+                                                            <option value="PHAR_WAITING">Pharmacy: Waiting</option>
+                                                            <option value="PHAR_ASSIGNED">Pharmacy: Assigned</option>
+                                                            <option value="IN_PAYMENT">In Payment</option>
+                                                            <option value="COMPLETED">Completed</option>
+                                                            <option value="CANCELED">Canceled</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-sm-12 col-md-6">

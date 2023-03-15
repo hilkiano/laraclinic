@@ -9,6 +9,9 @@
     const appointmentForm = document.getElementById("appointmentForm");
     const liveToast = document.getElementById("liveToast");
     const url = new URL(window.location.href);
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
 
     let patientSelector;
     let visitTimePicker;
@@ -112,43 +115,35 @@
 
     const openModal = () => {
         appointmentForm.reset();
-        loadPatient();
-    }
-
-    const loadPatient = async () => {
-        const csrfToken = document
-            .querySelector('meta[name="csrf-token"]')
-            .getAttribute("content");
-        const req = await fetch("/api/v1/appointment/patient-list", {
-            headers: {
-                Accept: "application/json, text-plain, */*",
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRF-TOKEN": csrfToken,
+        const $patientSelector = $('#patient_id').selectize({
+            valueField: 'id',
+            labelField: 'name',
+            searchField: 'name',
+            options: [],
+            onChange: function() {
+                $("#patient_id").removeClass("is-invalid");
             },
-            method: "get",
-            credentials: "same-origin",
+            load: function(query, callback) {
+                if (!query.length) return callback([]);
+                $.ajax({
+                    type: 'get',
+                    url: `/api/v1/appointment/patient-list/${query}`,
+                    headers: {
+                        Accept: "application/json, text-plain, */*",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRF-TOKEN": csrfToken,
+                    },
+                    dataType: 'json',
+                    error: function() {
+                        callback([]);
+                    },
+                    success: function(res) {
+                        callback(res.data);
+                    }
+                })
+            }
         });
-        const response = await req.json();
-        if (response.status) {
-            let opt = '';
-            for (let index in response.data) {
-                opt += `<option value="${response.data[index].id}">${response.data[index].name}</option>`;
-            }
-
-            $('#patient_id').append(opt);
-            const $patientSelector = $('#patient_id').selectize({
-                onChange: function() {
-                    $("#patient_id").removeClass("is-invalid");
-                }
-            });
-            patientSelector = $patientSelector[0].selectize;
-
-            if (url.searchParams.has("patient")) {
-                patientSelector.setValue(url.searchParams.get("patient"));
-            } else {
-                patientSelector.clear();
-            }
-        }
+        patientSelector = $patientSelector[0].selectize;
     }
 
     appointmentModal.addEventListener("show.bs.modal", openModal);
@@ -225,11 +220,5 @@
         $("#appointmentsModalSubmitBtn").click(function(e) {
             handleSubmit(e);
         });
-
-        if (url.searchParams.has("make") && url.searchParams.has("makeReason") && url.searchParams.has("patient")) {
-            appointmentModalEl.show();
-            assignmentSelector.setValue(url.searchParams.get("makeReason"));
-            visitTimePicker.dates.setFromInput(moment().toDate())
-        }
     });
 </script>

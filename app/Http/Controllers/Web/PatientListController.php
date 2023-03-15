@@ -48,7 +48,7 @@ class PatientListController extends Controller
 
     private function getViewData($request)
     {
-        $patientModel = Patients::query()->with('patientPotrait');
+        $patientModel = Patients::query()->with(['patientPotrait', 'appointments']);
         $limit = $request->has("limit") ? $request->input("limit") : 20;
         $filterBy = $request->has("filter_by") ? $request->input("filter_by") : null;
         $filterField = $request->has("filter_field") ? $request->input("filter_field") : null;
@@ -67,6 +67,14 @@ class PatientListController extends Controller
                 $row->age = Carbon::make($row->birth_date)->age;
             }
             $row->joined_at = Carbon::make($row->created_at)->setTimezone(env('APP_TIME_ZONE'))->isoFormat("D MMMM YYYY, HH:mm:ss");
+            $lastVisited = null;
+            if (count($row->appointments) > 0) {
+                $lastVisited = $row->appointments->first()
+                    ->created_at
+                    ->setTimezone(env('APP_TIME_ZONE'))
+                    ->isoFormat('DD MMMM YYYY HH:mm:ss');
+            }
+            $row->last_visited = $lastVisited;
         }
 
         $data = [
@@ -77,12 +85,15 @@ class PatientListController extends Controller
         return $data;
     }
 
-    public function selectList(Request $request)
+    public function selectList($query)
     {
         try {
             return response()->json([
                 'status'    => true,
-                'data'      => Patients::orderBy('name', 'asc')->get()
+                'data'      => Patients::select('id', 'name')
+                    ->where('name', 'ILIKE', "%$query%")
+                    ->orderBy('name', 'asc')
+                    ->get()
             ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());

@@ -24,4 +24,19 @@ class Patients extends Model
     {
         return $this->hasOne(PatientPotraits::class, 'patient_id', 'id')->orderBy('created_at', 'desc');
     }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointments::class, 'patient_id', 'id')->orderBy('created_at', 'desc');
+    }
+
+    public function medicalRecords()
+    {
+        return $this->hasMany(MedicalRecord::class, 'patient_id', 'id')->orderBy('created_at', 'desc');
+    }
+
+    public function prescriptions()
+    {
+        return $this->hasMany(Prescription::class, 'patient_id', 'id')->orderBy('created_at', 'desc');
+    }
 }

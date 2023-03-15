@@ -6,21 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Carbon;
 
-class AppointmentsDetail extends Model
+class Prescription extends Model
 {
-    protected $table = "appointments_details";
+    protected $table = 'prescriptions';
 
     protected $fillable = [
         'appointment_uuid',
-        'status',
-        'pic',
-        'additional_note'
+        'patient_id'
     ];
-
-    public function appointment()
-    {
-        return $this->belongsTo(Appointments::class, 'uuid', 'appointment_uuid');
-    }
 
     public function createdAt(): Attribute
     {
@@ -44,5 +37,10 @@ class AppointmentsDetail extends Model
     public function updatedBy()
     {
         return $this->belongsTo(Users::class, 'updated_by', 'id');
+    }
+
+    public function deletedBy()
+    {
+        return $this->belongsTo(Users::class, 'deleted_by', 'id');
     }
 }

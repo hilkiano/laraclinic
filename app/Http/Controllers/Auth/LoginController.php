@@ -29,7 +29,7 @@ class LoginController extends Controller
         try {
             $userModel = Users::where('username', $request->username)->first();
             if ($userModel) {
-                $userModel->extended_login = $request->rememberMe;
+                $userModel->extended_login = $request->rememberMe ? $request->rememberMe : false;
                 $userModel->save();
             }
             if (!$token = auth()->attempt(array('username' => $request->username, 'password' => $request->password))) {

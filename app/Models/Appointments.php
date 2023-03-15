@@ -14,7 +14,8 @@ class Appointments extends Model
         'visit_time',
         'visit_reason',
         'status',
-        'additional_note'
+        'additional_note',
+        'daily_code'
     ];
 
     public function patient()
@@ -25,5 +26,15 @@ class Appointments extends Model
     public function detail()
     {
         return $this->hasMany(AppointmentsDetail::class, 'appointment_uuid', 'uuid');
+    }
+
+    public function medicalRecord()
+    {
+        return $this->hasOne(MedicalRecord::class, 'appointment_uuid', 'uuid');
+    }
+
+    public function prescription()
+    {
+        return $this->hasOne(Prescription::class, 'appointment_uuid', 'uuid');
     }
 }

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Menus;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class MenusSeeder extends Seeder
 {
@@ -14,6 +15,7 @@ class MenusSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('menus')->truncate();
         $data = [
             [
                 'name'      => 'dashboard',
@@ -83,27 +85,9 @@ class MenusSeeder extends Seeder
                 'name'      => 'patients',
                 'label'     => 'Patients',
                 'icon'      => 'bi-person',
-                'route'     => null,
-                'is_parent' => true,
-                'parent'    => null,
-                'order'     => 2
-            ],
-            [
-                'name'      => 'patients-list',
-                'label'     => 'List',
-                'icon'      => 'bi-person-lines-fill',
                 'route'     => '/patient/list',
                 'is_parent' => false,
-                'parent'    => 'patients',
-                'order'     => 1
-            ],
-            [
-                'name'      => 'patients-form',
-                'label'     => 'Form',
-                'icon'      => 'bi-person-add',
-                'route'     => '/patient/register',
-                'is_parent' => false,
-                'parent'    => 'patients',
+                'parent'    => null,
                 'order'     => 2
             ],
             // Appointment Menu
@@ -133,7 +117,46 @@ class MenusSeeder extends Seeder
                 'is_parent' => false,
                 'parent'    => 'appointments',
                 'order'     => 2
-            ]
+            ],
+            // Medicines Menu
+            [
+                'name'      => 'medicines',
+                'label'     => 'Medicines',
+                'icon'      => 'bi-capsule',
+                'route'     => '/medicines',
+                'is_parent' => false,
+                'parent'    => null,
+                'order'     => 4
+            ],
+            // Services Menu
+            [
+                'name'      => 'services',
+                'label'     => 'Services',
+                'icon'      => 'bi-hand-thumbs-up',
+                'route'     => '/services',
+                'is_parent' => false,
+                'parent'    => null,
+                'order'     => 5
+            ],
+            // Transaction Menu
+            [
+                'name'      => 'transactions',
+                'label'     => 'Transactions',
+                'icon'      => 'bi-cash-coin',
+                'route'     => '/transactions',
+                'is_parent' => false,
+                'parent'    => null,
+                'order'     => 6
+            ],
+            [
+                'name'      => 'cashier',
+                'label'     => 'Cashier',
+                'icon'      => 'bi-wallet2',
+                'route'     => '/cashier',
+                'is_parent' => false,
+                'parent'    => null,
+                'order'     => 7
+            ],
         ];
 
         foreach ($data as $data) {

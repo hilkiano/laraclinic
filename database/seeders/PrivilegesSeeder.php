@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Privileges;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class PrivilegesSeeder extends Seeder
 {
@@ -14,6 +15,7 @@ class PrivilegesSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('privileges')->truncate();
         $data = [
             [
                 'name'  => 'CREATE_USER',
@@ -82,6 +84,46 @@ class PrivilegesSeeder extends Seeder
             [
                 'name'  => 'PATIENT_DETAIL_INFO',
                 'description'   => 'Ability to view patient details'
+            ],
+            [
+                'name'  => 'PATIENT_MEDICAL_HISTORY_CREATE',
+                'description'   => 'Ability to create patient medical history'
+            ],
+            [
+                'name'  => 'PATIENT_MEDICAL_HISTORY_VIEW',
+                'description'   => 'Ability to view patient medical history'
+            ],
+            [
+                'name'  => 'PATIENT_PRESCRIPTION_VIEW',
+                'description'   => 'Ability to view patient prescription'
+            ],
+            [
+                'name'  => 'PATIENT_PRESCRIPTION_CREATE',
+                'description'   => 'Ability to create patient prescription'
+            ],
+            [
+                'name'  => 'PATIENT_PRESCRIPTION_UPDATE',
+                'description'   => 'Ability to update patient prescription'
+            ],
+            [
+                'name'  => 'PATIENT_PRESCRIPTION_CHECKOUT',
+                'description'   => 'Ability to checkout patient prescription'
+            ],
+            [
+                'name'  => 'MEDICINE_SERVICE_LIST',
+                'description'   => 'Ability to view medicines and services'
+            ],
+            [
+                'name'  => 'MEDICINE_SERVICE_CREATE',
+                'description'   => 'Ability to create medicine'
+            ],
+            [
+                'name'  => 'MEDICINE_SERVICE_UPDATE',
+                'description'   => 'Ability to update medicine'
+            ],
+            [
+                'name'  => 'MEDICINE_SERVICE_DELETE',
+                'description'   => 'Ability to delete medicine'
             ],
         ];
 
