@@ -6,8 +6,25 @@ const filterPatientField = document.getElementById("filterPatientField");
 const clearFilterPatientBtn = document.getElementById("clearFilterPatientBtn");
 const filterForm = document.getElementById("filterForm");
 const patientListModal = document.getElementById("patientListModal");
+const patientListAppointmentModal = document.getElementById(
+    "patientListAppointmentModal"
+);
+const patientAppointmentForm = document.getElementById(
+    "patientAppointmentForm"
+);
 const assignPharmacyBtn = document.getElementById("assignPharmacyBtn");
 const assignDoctorBtn = document.getElementById("assignDoctorBtn");
+const csrfToken = document
+    .querySelector('meta[name="csrf-token"]')
+    .getAttribute("content");
+const toast = new bootstrap.Toast(liveToast);
+let _patientListAppointmentModal;
+if (patientListAppointmentModal) {
+    _patientListAppointmentModal = new bootstrap.Modal(
+        patientListAppointmentModal
+    );
+}
+
 const clearFilter = (evt) => {
     evt.preventDefault();
     if (
@@ -63,14 +80,60 @@ const updateModalContent = (evt) => {
 };
 const redirectAssignment = (e, reason) => {
     const data = JSON.parse(e.target.getAttribute("data-row"));
-    const newUrl = new URL(window.location.origin);
-    newUrl.pathname = "/appointments/list";
-    newUrl.searchParams.set("make", "true");
-    newUrl.searchParams.set("makeReason", reason);
-    newUrl.searchParams.set("patient", data.id);
 
-    window.location = newUrl.href;
+    $("#patientAppointmentName").html(data.name);
+    $("input[name='patient_id']").val(data.id);
+    $("input[name='reason']").val(reason);
+    let appointmentReason =
+        reason === "PHARMACY"
+            ? "Go to pharmacy"
+            : reason === "DOCTOR"
+            ? "Go to doctor"
+            : "UNKNOWN";
+
+    $("#patientAppointmentType").html(appointmentReason);
+    _patientListAppointmentModal.show();
 };
+const handleCreateAppointment = async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById(
+        "patientListAppointmentModalSubmitBtn"
+    );
+    submitBtn.classList.add("disabled");
+    submitBtn.insertAdjacentHTML(
+        "afterbegin",
+        '<div id="submitLoading" class="spinner-grow spinner-grow-sm me-2"></div>'
+    );
+    const requestBody = new FormData(patientAppointmentForm);
+    requestBody.append(
+        "visit_time",
+        moment().format("MM/DD/YYYY, hh:mm:ss A").toString()
+    );
+    const req = await fetch("/api/v1/appointment/make", {
+        headers: {
+            Accept: "application/json, text-plain, */*",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": csrfToken,
+        },
+        method: "post",
+        credentials: "same-origin",
+        body: requestBody,
+    });
+    const response = await req.json();
+    if (response) {
+        submitBtn.classList.remove("disabled");
+        document.getElementById("submitLoading").remove();
+        if (response.status) {
+            showResponse(response.status, response.message);
+            _patientListAppointmentModal.hide();
+        } else {
+            if (typeof response.message === "string") {
+                showResponse(response.status, response.message);
+            }
+        }
+    }
+};
+
 const showResponse = (status, message) => {
     const toast = new bootstrap.Toast(liveToast);
     const errorToastClasses =
@@ -105,16 +168,22 @@ if (filterForm) {
 }
 if (patientListModal) {
     patientListModal.addEventListener("show.bs.modal", updateModalContent);
+    patientListModal.addEventListener("hide.bs.modal", function (e) {
+        $("div.modal-backdrop").remove();
+    });
 }
 if (assignPharmacyBtn) {
     assignPharmacyBtn.addEventListener("click", function (e) {
-        redirectAssignment(e, "pharmacy");
+        redirectAssignment(e, "PHARMACY");
     });
 }
 if (assignDoctorBtn) {
     assignDoctorBtn.addEventListener("click", function (e) {
-        redirectAssignment(e, "doctor");
+        redirectAssignment(e, "DOCTOR");
     });
+}
+if (patientAppointmentForm) {
+    patientAppointmentForm.addEventListener("submit", handleCreateAppointment);
 }
 
 (function () {

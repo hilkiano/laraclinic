@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Appointments;
 use App\Models\AppointmentsDetail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -60,8 +61,8 @@ class AppointmentController extends Controller
         $end = Carbon::now()->setTimezone(env('APP_TIME_ZONE'))->endOfDay()->utc();
 
         $appointmentModel = Appointments::with('patient')
-            ->where('created_at', '>=', $start)
-            ->where('created_at', '<=', $end)
+            ->where('visit_time', '>=', $start)
+            ->where('visit_time', '<=', $end)
             ->when($status, function ($query) use ($status) {
                 $query->where('status', $status);
             })
@@ -104,13 +105,23 @@ class AppointmentController extends Controller
                     ], 422);
                 }
 
+                $status = null;
+                if ($request->reason === config('constants.reason.doctor')) {
+                    $status = config('constants.status.doctor_waiting');
+                } elseif ($request->reason === config('constants.reason.pharmacy')) {
+                    $status = config('constants.status.pharmacy_waiting');
+                }
+
+                $visitTime = Carbon::createFromIsoFormat('MM/DD/YYYY, HH:mm:ss A', $request->visit_time, env('APP_TIME_ZONE'))->setTimezone('UTC');
+
                 $newAppointment = Appointments::create([
                     'uuid'          => Str::uuid(),
                     'patient_id'    => $request->patient_id,
-                    'visit_time'    => Carbon::createFromIsoFormat('MM/DD/YYYY, HH:mm:ss A', $request->visit_time, env('APP_TIME_ZONE'))->setTimezone('UTC'),
+                    'visit_time'    => $visitTime,
                     'visit_reason'  => $request->reason,
-                    'status'        => 'waiting',
-                    'additional_note' => $request->additional_note
+                    'status'        => $status,
+                    'additional_note' => $request->additional_note,
+                    'daily_code'    => $this->getDailyCode($request->reason, $visitTime)
                 ]);
 
                 $newAppointmentDetail = AppointmentsDetail::create([
@@ -126,7 +137,7 @@ class AppointmentController extends Controller
                             'appointment' => $newAppointment,
                             'detail'      => $newAppointmentDetail
                         ],
-                        'message'   => 'New appointment created. <br /> <a href="/appointment/detail/' . $newAppointment->uuid . '" _target="blank">See details</a>'
+                        'message'   => 'New appointment created. <br /> <a href="/appointments/detail/' . $newAppointment->uuid . '" _target="blank">See details</a>'
                     ], 200);
                 }
             } else {
@@ -142,6 +153,16 @@ class AppointmentController extends Controller
                 'message'   => $e->getMessage()
             ], 500);
         }
+    }
+
+    private function getDailyCode(string $reason, $visitTime): string
+    {
+        $count = Appointments::whereDate('visit_time', $visitTime->toDateString())
+            ->where('visit_reason', $reason)
+            ->count();
+
+        $initial = $reason === config('constants.reason.doctor') ? "A" : "B";
+        return $initial . str_pad($count + 1, 3, "0", STR_PAD_LEFT);
     }
 
     public function viewCompleteList(Request $request)
@@ -191,6 +212,7 @@ class AppointmentController extends Controller
                         ->where('visit_time', '<=', $endDate);
                 });
             $count = $model->count();
+            $model = $model->orderBy('visit_time', 'desc');
             $model = $model->limit($dataPerPage)
                 ->offset($offset);
             $data = $model->get();
@@ -221,7 +243,9 @@ class AppointmentController extends Controller
             $data = [
                 "user"  => $this->userData,
                 "menus" => $this->menuController->__invoke($request)->original,
-                "privs" => $this->privilegeController->__invoke($request)->original["data"]
+                "privs" => $this->privilegeController->__invoke($request)->original["data"],
+                "today" => Carbon::now()->setTimezone(env('APP_TIME_ZONE'))->isoFormat('dddd, DD MMMM YYYY'),
+                "group" => $this->userData->group_id
             ];
 
             return view('/appointments/assignment', $data);
@@ -238,11 +262,43 @@ class AppointmentController extends Controller
     {
         try {
             $uuid = $request->uuid;
+            $model = Appointments::with(['detail', 'patient', 'patient.patientPotrait'])->where('uuid', $uuid)->first();
+            if ($model) {
+                $model->visit_time = Carbon::make($model->visit_time)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss');
+            }
+
             $data = [
                 "user"  => $this->userData,
                 "menus" => $this->menuController->__invoke($request)->original,
                 "privs" => $this->privilegeController->__invoke($request)->original["data"],
-                "data"  => Appointments::with(['detail', 'patient'])->where('uuid', $uuid)->first()
+                "data"  => $model
+            ];
+
+            $blade = "/appointments/" . $request->segment(2);
+            return view($blade, $data);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function viewDetailBlank(Request $request)
+    {
+        try {
+            $uuid = $request->uuid;
+            $model = Appointments::with(['detail', 'patient', 'patient.patientPotrait'])->where('uuid', $uuid)->first();
+            if ($model) {
+                $model->visit_time = Carbon::make($model->visit_time)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss');
+            }
+
+            $data = [
+                "user"  => $this->userData,
+                "menus" => $this->menuController->__invoke($request)->original,
+                "privs" => $this->privilegeController->__invoke($request)->original["data"],
+                "data"  => $model
             ];
 
             return view('/appointments/detail', $data);

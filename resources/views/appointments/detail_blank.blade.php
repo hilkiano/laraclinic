@@ -3,16 +3,11 @@
 @include('template.header', ['title' => 'Detail Assignment'])
 
 <body>
-    @include('template.navbar', ['title' => 'Detail Assignment'])
     <div class="container-fluid">
         <div class="row flex-nowrap">
-            @include('template.sidebar')
-            <div id="mainContent" class="d-flex flex-column">
+            <div id="mainContent" class="d-flex flex-column w-100">
                 <div class="container-fluid mt-4">
                     <div class="row gy-4">
-                        <div class="col-12">
-                            <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary"><i class="me-2 bi bi-arrow-bar-left"></i>Go Back</a>
-                        </div>
                         <div class="col-12">
                             <div class="row gy-4">
                                 <div class="col-sm-12 col-md-12 col-lg-5">
@@ -48,14 +43,6 @@
                                                 <p class="fs-5 mb-1">{{ $data->visit_time }}</p>
                                                 <p class="text-muted mb-0">Visit Reason</p>
                                                 <p class="fs-5 mb-1">{{ $data->visit_reason === 'DOCTOR' ? 'Doctor Consultation' : 'Pharmacy' }}</p>
-                                            </li>
-                                            <li id="assignmentActions" class="list-group-item p-3 d-flex justify-content-end d-none">
-                                                <button type="button" class="btn btn-outline-danger btn-sm me-2" id="cancelBtn">
-                                                    <i class="bi bi-x-lg me-2"></i>Cancel
-                                                </button>
-                                                <button type="button" class="btn btn-success btn-sm" id="completeBtn">
-                                                    <i class="bi bi-check-lg me-2"></i>Mark As Complete
-                                                </button>
                                             </li>
                                         </ul>
                                     </div>
@@ -112,5 +99,4 @@
 
 </html>
 @include('appointments.js.detail_js')
-@include('toasts.live_toast')
 @include('template.footer')

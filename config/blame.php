@@ -30,7 +30,9 @@ return [
         \App\Models\Users::class,
         \App\Models\Appointments::class,
         \App\Models\AppointmentsDetail::class,
-        \App\Models\PatientPotraits::class
+        \App\Models\PatientPotraits::class,
+        \App\Models\MedicalRecord::class,
+        \App\Models\Prescription::class
     ],
 
     /*

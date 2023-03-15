@@ -74,7 +74,7 @@
                                         <li class="list-group-item d-flex justify-content-between align-items-start p-1">
                                             <div class="ms-2 me-auto">
                                                 <div class="fw-bold">Date of birth</div>
-                                                {{ $row->birth_date_formatted }}
+                                                {{ $row->birth_date_formatted ? $row->birth_date_formatted : '-' }}
                                             </div>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between align-items-start p-1">
@@ -85,7 +85,8 @@
                                         </li>
                                     </ol>
                                     <div class="card-footer">
-                                        <small class="text-muted">Last visited 3 mins ago</small>
+                                        <p class="fs-6 text-muted mb-0">Last visited</p>
+                                        <p class="fs-6 text-muted mb-0">{{ $row->last_visited ? $row->last_visited : '-' }}</p>
                                     </div>
                                 </div>
                                 @endforeach
@@ -102,6 +103,7 @@
     </div>
     @include('toasts.live_toast')
     @include('modals.patient_list_modal', ['privs' => $privs])
+    @include('modals.patient_list_appointment_modal')
 </body>
 
 </html>

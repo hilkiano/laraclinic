@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Roles;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class RolesSeeder extends Seeder
 {
@@ -14,6 +15,7 @@ class RolesSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('roles')->truncate();
         $data = [
             [
                 'name'          => 'Super Admin',
@@ -89,7 +91,7 @@ class RolesSeeder extends Seeder
     {
         $menuIds = [];
 
-        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 10, 11, 12]);
+        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 10]);
         foreach ($model as $menu) {
             array_push($menuIds, $menu->id);
         }
@@ -113,7 +115,7 @@ class RolesSeeder extends Seeder
     {
         $menuIds = [];
 
-        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 10, 11, 13]);
+        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 11, 12, 13]);
         foreach ($model as $menu) {
             array_push($menuIds, $menu->id);
         }
@@ -125,7 +127,7 @@ class RolesSeeder extends Seeder
     {
         $privIds = [];
 
-        $model = \App\Models\Privileges::select('id')->get();
+        $model = \App\Models\Privileges::select('id')->find([15, 16, 17, 18, 19, 20, 21, 22, 24]);
         foreach ($model as $privilege) {
             array_push($privIds, $privilege->id);
         }
@@ -137,7 +139,7 @@ class RolesSeeder extends Seeder
     {
         $menuIds = [];
 
-        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 10]);
+        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 11, 12, 13]);
         foreach ($model as $menu) {
             array_push($menuIds, $menu->id);
         }
@@ -149,7 +151,7 @@ class RolesSeeder extends Seeder
     {
         $privIds = [];
 
-        $model = \App\Models\Privileges::select('id')->get();
+        $model = \App\Models\Privileges::select('id')->find([15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]);
         foreach ($model as $privilege) {
             array_push($privIds, $privilege->id);
         }

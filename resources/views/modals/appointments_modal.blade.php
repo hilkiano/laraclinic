@@ -26,8 +26,8 @@
                         <div class="col-sm-12">
                             <label for="reason" class="form-label">Assignment</label>
                             <select placeholder="Choose assignment type..." id="reason" name="reason">
-                                <option value="doctor">Doctor Assignment</option>
-                                <option value="pharmacy">Pharmacy Assignment</option>
+                                <option value="DOCTOR">Doctor Assignment</option>
+                                <option value="PHARMACY">Pharmacy Assignment</option>
                             </select>
                         </div>
                         <div class="col-sm-12">

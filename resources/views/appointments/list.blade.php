@@ -41,18 +41,21 @@
                                             <label for="reasonFilter" class="form-label">Filter by reason</label>
                                             <select id="reasonFilter" class="form-select" style="width: 100%">
                                                 <option value="all">ALL</option>
-                                                <option value="pharmacy">Pharmacy</option>
-                                                <option value="doctor">Doctor</option>
+                                                <option value="PHARMACY">Pharmacy</option>
+                                                <option value="DOCTOR">Doctor</option>
                                             </select>
                                         </div>
                                         <div class="col-sm-12 col-md-6">
                                             <label for="statusFilter" class="form-label">Filter by status</label>
                                             <select id="statusFilter" class="form-select" style="width: 100%">
                                                 <option value="all">ALL</option>
-                                                <option value="waiting">Waiting</option>
-                                                <option value="handled">Handled</option>
-                                                <option value="completed">Completed</option>
-                                                <option value="canceled">Canceled</option>
+                                                <option value="DOC_WAITING">Doctor: Waiting</option>
+                                                <option value="DOC_ASSIGNED">Doctor: Assigned</option>
+                                                <option value="PHAR_WAITING">Pharmacy: Waiting</option>
+                                                <option value="PHAR_ASSIGNED">Pharmacy: Assigned</option>
+                                                <option value="IN_PAYMENT">In Payment</option>
+                                                <option value="COMPLETED">Completed</option>
+                                                <option value="CANCELED">Canceled</option>
                                             </select>
                                         </div>
                                     </div>
@@ -90,15 +93,27 @@
                                             <td>{{ $row->patient->name }}</td>
                                             <td>{{ $row->visit_time }}</td>
                                             <td>
-                                                @if ($row->visit_reason === "pharmacy")
+                                                @if ($row->visit_reason === "PHARMACY")
                                                 <p class="fs-5 mb-0"><span class="badge bg-secondary">Pharmacy</span></p>
-                                                @elseif ($row->visit_reason === "doctor")
+                                                @elseif ($row->visit_reason === "DOCTOR")
                                                 <p class="fs-5 mb-0"><span class="badge bg-secondary">Doctor</span></p>
                                                 @endif
                                             </td>
                                             <td>
-                                                @if ($row->status === "waiting")
-                                                <p class="fs-5 mb-0"><span class="badge bg-info">Waiting</span></p>
+                                                @if ($row->status === "DOC_WAITING")
+                                                <p class="fs-5 mb-0"><span class="badge bg-info-subtle text-info">Doctor: Waiting</span></p>
+                                                @elseif ($row->status === "DOC_ASSIGNED")
+                                                <p class="fs-5 mb-0"><span class="badge bg-info">Doctor: Assigned</span></p>
+                                                @elseif ($row->status === "PHAR_WAITING")
+                                                <p class="fs-5 mb-0"><span class="badge bg-info-subtle text-info">Pharmacy: Waiting</span></p>
+                                                @elseif ($row->status === "PHAR_ASSIGNED")
+                                                <p class="fs-5 mb-0"><span class="badge bg-info">Pharmacy: Assigned</span></p>
+                                                @elseif ($row->status === "IN_PAYMENT")
+                                                <p class="fs-5 mb-0"><span class="badge bg-info">In Payment</span></p>
+                                                @elseif ($row->status === "COMPLETED")
+                                                <p class="fs-5 mb-0"><span class="badge bg-success-subtle text-success">Completed</span></p>
+                                                @elseif ($row->status === "CANCELED")
+                                                <p class="fs-5 mb-0"><span class="badge bg-danger-subtle text-danger">Canceled</span></p>
                                                 @endif
                                             </td>
                                             <td style="text-align: center;">

@@ -5,7 +5,7 @@
     let toDTPicker;
 
     const getList = async (page) => {
-        showLoading();
+        showTableLoading(6, "#appointmentRows");
         const csrfToken = document
             .querySelector('meta[name="csrf-token"]')
             .getAttribute("content");
@@ -74,64 +74,31 @@
         }
     }
 
-    const showLoading = () => {
-        let html = `
-            <tr>
-                <td colspan="6">
-                    <div class="d-flex justify-content-center">
-                        <div class="spinner-border m-5" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        `;
-
-        $("#appointmentRows").html(html);
-    }
-
-    const makePagination = (data) => {
-        let html;
-        let pages = '';
-
-        for (let i = 1; i <= data.pagination.pageCount; i++) {
-            pages += `
-                <li ${data.pagination.page !== i ? `onclick="window.getList(${i - 1})"` : ""}
-                    class="page-item${data.pagination.page === i ? " active" : ""}">
-                    ${data.pagination.page !== i ? `<a class="page-link">${i}</a>` : `<span class="page-link">${i}</span>`}
-                </li>
-            `;
-        }
-
-        html = `
-        <nav aria-label="...">
-            <ul class="pagination">
-                <li ${data.pagination.page !== 1 ? `onclick="window.getList(0)"` : ""} class="page-item ${data.pagination.page === 1 ? "disabled" : ""}">
-                ${data.pagination.page !== 1 ? `<a class="page-link"><i class="me-2 bi bi-chevron-double-left"></i>First</a>` : `<span class="page-link"><i class="me-2 bi bi-chevron-double-left"></i>First</span>`}
-                </li>
-                ${pages}
-                <li ${data.pagination.page !== data.pagination.pageCount ? `onclick="window.getList(${data.pagination.pageCount - 1})"` : ""} class="page-item ${data.pagination.page === data.pagination.pageCount ? "disabled" : ""}">
-                ${data.pagination.page !== data.pagination.pageCount ? `<a class="page-link"><i class="me-2 bi bi-chevron-double-right"></i>Last</a>` : `<span class="page-link"><i class="me-2 bi bi-chevron-double-right"></i>Last</span>`}
-                </li>
-            </ul>
-        </nav>
-        `;
-
-        return html;
-    }
-
     const iteratePaginationData = (row, i) => {
         let html;
-        let visitReason;
-        if (row.visit_reason === "pharmacy") {
+        let visitReason = '-';
+        if (row.visit_reason === "PHARMACY") {
             visitReason = `<p class="fs-5 mb-0"><span class="badge bg-secondary">Pharmacy</span></p>`;
-        } else {
+        } else if (row.visit_reason === "DOCTOR") {
             visitReason = `<p class="fs-5 mb-0"><span class="badge bg-secondary">Doctor</span></p>`;
         }
-        let status;
-        if (row.status === "waiting") {
-            status = `<p class="fs-5 mb-0"><span class="badge bg-info">Waiting</span></p>`;
+        let status = '-';
+        if (row.status === "DOC_WAITING") {
+            status = `<p class="fs-5 mb-0"><span class="badge bg-info-subtle text-info">Doctor: Waiting</span></p>`;
+        } else if (row.status === "DOC_ASSIGNED") {
+            status = `<p class="fs-5 mb-0"><span class="badge bg-info">Doctor: Assigned</span></p>`;
+        } else if (row.status === "PHAR_WAITING") {
+            status = `<p class="fs-5 mb-0"><span class="badge bg-info-subtle text-info">Pharmacy: Waiting</span></p>`;
+        } else if (row.status === "PHAR_ASSIGNED") {
+            status = `<p class="fs-5 mb-0"><span class="badge bg-info">Pharmacy: Assigned</span></p>`;
+        } else if (row.status === "IN_PAYMENT") {
+            status = `<p class="fs-5 mb-0"><span class="badge bg-info">In Payment</span></p>`;
+        } else if (row.status === "COMPLETED") {
+            status = `<p class="fs-5 mb-0"><span class="badge bg-success-subtle text-success">Completed</span></p>`;
+        } else if (row.status === "CANCELED") {
+            status = `<p class="fs-5 mb-0"><span class="badge bg-danger-subtle text-danger">Canceled</span></p>`;
         }
+
         html += `
             <tr>
                 <td scope="row">${ i + 1 }</td>

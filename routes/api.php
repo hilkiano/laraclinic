@@ -48,11 +48,25 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
         // appointment
         $router->group(['prefix' => 'appointment'], function () use ($router) {
             $router->post('make', '\App\Http\Controllers\Web\AppointmentController@make');
-            $router->get('patient-list', '\App\Http\Controllers\Web\PatientListController@selectList');
+            $router->get('patient-list/{query}', '\App\Http\Controllers\Web\PatientListController@selectList');
             $router->post('get-complete-list', '\App\Http\Controllers\Web\AppointmentController@getCompleteList');
+            $router->get('get-detail/{uuid}', '\App\Http\Controllers\Api\AppointmentApi@getDetail');
+            $router->post('make-detail', '\App\Http\Controllers\Api\AppointmentApi@makeDetail');
+            $router->get('mine', '\App\Http\Controllers\Api\AppointmentApi@getMyAppointments');
+            $router->post('take', '\App\Http\Controllers\Api\AppointmentApi@take');
+            $router->post('progress', '\App\Http\Controllers\Api\AppointmentApi@progress');
+            $router->post('get-assignation', '\App\Http\Controllers\Api\AppointmentApi@getAssignation');
         });
         $router->group(['prefix' => 'user'], function () use ($router) {
             $router->post('save-configs', '\App\Http\Controllers\Web\UsersController@saveConfigs');
+        });
+        // medicines
+        $router->group(['prefix' => 'medicines'], function () use ($router) {
+            $router->post('list', '\App\Http\Controllers\Api\MedicinesApi@list');
+        });
+        // services
+        $router->group(['prefix' => 'services'], function () use ($router) {
+            $router->post('list', '\App\Http\Controllers\Api\ServicesApi@list');
         });
     });
 });
