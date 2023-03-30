@@ -16,8 +16,14 @@ const cropperPotraitCloseBtn = document.getElementById(
 const cropperPotraitSubmitBtn = document.getElementById(
     "cropperPotraitSubmitBtn"
 );
-const patientPotraitModal = new bootstrap.Modal(_patientPotraitModal, {});
-const cropperPotraitModal = new bootstrap.Modal(_cropperPotraitModal, {});
+let patientPotraitModal;
+if (_patientPotraitModal) {
+    patientPotraitModal = new bootstrap.Modal(_patientPotraitModal, {});
+}
+let cropperPotraitModal;
+if (_cropperPotraitModal) {
+    cropperPotraitModal = new bootstrap.Modal(_cropperPotraitModal, {});
+}
 const capturedImg = document.getElementById("capturedImg");
 const video = document.getElementById("video");
 const url = new URL(window.location.href);
