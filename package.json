@@ -18,8 +18,10 @@
         "@eonasdan/tempus-dominus": "^6.2.10",
         "@selectize/selectize": "^0.15.2",
         "bootstrap-icons": "^1.10.3",
+        "cropperjs": "^1.5.13",
         "imask": "^6.4.3",
-        "jquery": "^3.6.3",
+        "jquery": "^3.6.4",
+        "jquery-cropper": "^1.0.1",
         "moment": "^2.29.4"
     }
 }

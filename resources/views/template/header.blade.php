@@ -8,5 +8,6 @@
     <title>{{ $title }} ~ TEST ~</title>
     @endif
     <link rel="icon" href="{{ asset('favicon.ico') }}">
+    <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.css" crossorigin="anonymous">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>

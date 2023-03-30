@@ -10,9 +10,12 @@ use App\Http\Controllers\PrivilegeController;
 use App\Models\PatientPotraits;
 use App\Models\Patients;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class PatientFormController extends Controller
 {
@@ -178,40 +181,86 @@ class PatientFormController extends Controller
     }
 
     /**
-     * Upload potrait image of patient
-     *
-     * @param  mixed $request
-     * @return void
+     * Add a portrait image to the patient potraits and save it to storage.
+     * 
+     * @param Request $request The HTTP request object.
+     * @return \Illuminate\Http\JsonResponse Returns a JSON response indicating whether the image was saved or not.
      */
     public function addPotrait(Request $request)
     {
         try {
-            $patientData = Patients::find($request->get('id'));
-            $now = Carbon::now()->setTimezone('Asia/Jakarta')->isoFormat('YYYY-MM-DD_hh-mm-ss');
-            $image = Image::make($request->get('img'));
-            $dir = public_path("/patients/$patientData->id");
-            $imageName = "$now.jpg";
-            $path = $dir . "/" . $imageName;
-            if (!File::isDirectory($dir)) {
-                File::makeDirectory($dir, 493, true);
-            }
-            $image->save($path);
+            $patientId = $request->input('id');
+            $dataUrl = $request->input('image');
+            $image = Image::make($dataUrl);
+            $image = $image->resize(1200, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })->encode('jpg', 90);
+            $timestamp = Carbon::now()->timestamp;
+            $imageName = "photo$timestamp.jpg";
 
-            $newPotrait = PatientPotraits::create([
-                'patient_id'    => $patientData->id,
-                'url'           => "/patients/$patientData->id/$now.jpg"
-            ]);
+            $upload = Storage::disk(env('FILESYSTEM_DISK', 's3'))->put('patients/' . $imageName, $image);
+            if ($upload) {
+                $url = Storage::disk(env('FILESYSTEM_DISK', 's3'))->url('patients/' . $imageName);
+            }
+
+            // Save to patient potraits
+            $potraits = PatientPotraits::where('patient_id', $patientId)->first();
+            if ($potraits) {
+                // Update existing list of URLs
+                $list = $potraits->url;
+                array_push($list, $url);
+
+                $potraits->url = $list;
+            } else {
+                // Create new row
+                $potraits = new PatientPotraits();
+                $potraits->patient_id = $patientId;
+                $potraits->url = [$url];
+            }
+            $potraits->save();
 
             return response()->json([
                 'status'    => true,
                 'message'   => 'Image saved.',
-                'data'      => $newPotrait
             ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => 'Unexpected error.'
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Retrieve the URLs of the portraits of a specific patient.
+     *
+     * @param int $patientId The ID of the patient whose portraits to retrieve.
+     * @return \Illuminate\Http\JsonResponse Returns a JSON response containing the status of the operation and the retrieved data.
+     * The status will be "true" if the operation was successful, and "false" otherwise.
+     * The data will contain an array of URLs of the patient's portraits if they exist, and an empty array otherwise.
+     * If an error occurs, the status will be "false", and the message will be returned either in the message field (in non-production environments),
+     * or in the log (in production environments).
+     */
+    public function getPotraits(int $patientId)
+    {
+        try {
+            $urls = [];
+            $patientPotraits = PatientPotraits::select('url')->where('patient_id', $patientId)->first();
+            if ($patientPotraits) {
+                $urls = $patientPotraits->url;
+            }
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $urls
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
             ], 500);
         }
     }

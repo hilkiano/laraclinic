@@ -97,8 +97,8 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <p class="fs-5"><i class="bi bi-prescription me-2 text-primary"></i> Prescription</p>
-                                            <div class="p-3 mb-4 border-primary rounded bg-body-secondary">
-                                                <p class="mb-0 text-muted">Nothing added yet.</p>
+                                            <div class="mb-3" id="rxBody">
+
                                             </div>
                                             <div class="d-flex justify-content-end">
                                                 <button id="clearPrescriptionBtn" type="button" class="btn btn-outline-secondary rounded-pill me-2"><i class="bi bi-eraser me-2"></i> Clear</button>
@@ -107,7 +107,7 @@
                                         </div>
                                         <div class="col-12">
                                             <p class="fs-5"><i class="bi bi-sticky me-2 text-primary"></i> Notes</p>
-                                            <textarea id="medicalNotes" class="form-control" rows="3"></textarea>
+                                            <textarea id="medicalNotes" class="form-control" rows="3" autocomplete="off"></textarea>
                                         </div>
                                     </div>
                                 </div>

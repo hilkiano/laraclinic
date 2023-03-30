@@ -1,4 +1,6 @@
 import $ from "jquery";
+import "cropperjs";
+import "jquery-cropper";
 window.$ = $;
 
 import "./bootstrap";
