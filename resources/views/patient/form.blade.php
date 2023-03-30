@@ -77,14 +77,13 @@
                             </form>
                         </div>
                         @if (array_key_exists('patient', $data))
-                        <div class="col-sm-12 col-md-12 col-lg-6 d-grid">
+                        <div class="col-sm-12 col-md-12 col-lg-6 d-grid mb-5">
                             <div class="row">
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="card-body">
                                             <p class="fs-3">Patient Potraits</p>
                                             <div id="potraits">
-                                                <!-- <img id="patientPotrait" class="img-thumbnail me-2" src="" alt="potrait placeholder" style="width: 150px;"> -->
                                             </div>
                                         </div>
                                     </div>

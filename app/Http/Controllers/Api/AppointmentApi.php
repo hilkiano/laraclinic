@@ -283,13 +283,11 @@ class AppointmentApi extends Controller
                     'message'   => $validator->errors()
                 ], 422);
             }
-
-            $model = Appointments::with(['patient', 'detail', 'patient.patientPotrait', 'patient.medicalRecords'])
+            $model = Appointments::with(['patient', 'detail', 'patient.patientPotrait', 'patient.medicalRecords' => function ($query) {
+                $query->take(5);
+            }])
                 ->whereHas('detail', function ($query) use ($request) {
                     return $query->where('pic', $request->input('pic'));
-                })
-                ->whereHas('patient.medicalRecords', function ($query) {
-                    return $query->limit(5);
                 })
                 ->where('status', $request->input("status"))
                 ->first();

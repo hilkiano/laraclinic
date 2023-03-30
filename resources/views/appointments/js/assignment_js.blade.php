@@ -40,8 +40,8 @@
             updateMainContent(assigned.data);
             $("#cancelBtn").attr("data-uuid", assigned.data.uuid);
             $("#submitBtn").attr("data-uuid", assigned.data.uuid);
-            updateRxBody(assigned.data.uuid);
             assignedUuid = assigned.data.uuid;
+            updateRxBody(assignedUuid);
             setTakeLoading(false);
             checkPrescription();
         }
