@@ -44,6 +44,7 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
         $router->group(['prefix' => 'patient'], function () use ($router) {
             $router->post('save-info', '\App\Http\Controllers\Web\PatientFormController@save');
             $router->post('add-potrait', '\App\Http\Controllers\Web\PatientFormController@addPotrait');
+            $router->get('get-potraits/{patientId}', '\App\Http\Controllers\Web\PatientFormController@getPotraits');
         });
         // appointment
         $router->group(['prefix' => 'appointment'], function () use ($router) {
@@ -56,9 +57,14 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
             $router->post('take', '\App\Http\Controllers\Api\AppointmentApi@take');
             $router->post('progress', '\App\Http\Controllers\Api\AppointmentApi@progress');
             $router->post('get-assignation', '\App\Http\Controllers\Api\AppointmentApi@getAssignation');
+            $router->get('item-list/{query}', '\App\Http\Controllers\Api\AppointmentApi@getItems');
         });
         $router->group(['prefix' => 'user'], function () use ($router) {
             $router->post('save-configs', '\App\Http\Controllers\Web\UsersController@saveConfigs');
+        });
+        // medical records
+        $router->group(['prefix' => 'records'], function () use ($router) {
+            $router->get('prescription/{id}', '\App\Http\Controllers\Api\MedicalRecordApi@getPrescription');
         });
         // medicines
         $router->group(['prefix' => 'medicines'], function () use ($router) {

@@ -5,6 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Appointments;
 use App\Models\AppointmentsDetail;
+use App\Models\MedicalRecord;
+use App\Models\Medicine;
+use App\Models\Prescription;
+use App\Models\Services;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -108,12 +113,10 @@ class AppointmentApi extends Controller
             $model = Appointments::with(['patient', 'patient.patientPotrait'])
                 ->whereDate('visit_time', Carbon::now()->toDateString())
                 ->when($group === config('constants.group.doctor'), function ($query) {
-                    $query->where('visit_reason', config('constants.reason.doctor'))
-                        ->where('status', config('constants.status.doctor_waiting'));
+                    $query->where('status', config('constants.status.doctor_waiting'));
                 })
                 ->when($group === config('constants.group.pharmacy'), function ($query) {
-                    $query->where('visit_reason', config('constants.reason.pharmacy'))
-                        ->where('status', config('constants.status.pharmacy_waiting'));
+                    $query->where('status', config('constants.status.pharmacy_waiting'));
                 })
                 ->when($group === config('constants.group.cashier'), function ($query) {
                     $query->where('status', config('constants.status.payment_waiting'));
@@ -217,7 +220,41 @@ class AppointmentApi extends Controller
                     'message'   => 'Assignment rolled back.'
                 ], 200);
             } elseif ($request->input('method') === 'submit') {
-                // progress assignment
+                $prescription = $request->has('prescription') ? json_decode($request->input('prescription')) : null;
+
+                // Change daily code
+                $appointment = Appointments::where('uuid', $request->input('uuid'))->first();
+                $appointment->status = config('constants.status.pharmacy_waiting');
+                $appointment->daily_code = $this->getDailyCode(config('constants.reason.pharmacy'), Carbon::now());
+                $appointment->save();
+
+                // Add new detail
+                $newDetail = new AppointmentsDetail();
+                $newDetail->appointment_uuid = $request->input('uuid');
+                $newDetail->status = config('constants.status.pharmacy_waiting');
+                $newDetail->pic = auth()->id();
+                $newDetail->save();
+
+                // Add prescription
+                $newRx = new Prescription();
+                $newRx->appointment_uuid = $request->input('uuid');
+                $newRx->patient_id = $appointment->patient_id;
+                $newRx->list = $prescription ? $prescription[0]->data : null;
+                $newRx->save();
+
+                // Add medical rec
+                $newMedRecord = new MedicalRecord();
+                $newMedRecord->appointment_uuid = $request->input('uuid');
+                $newMedRecord->record_no = Str::uuid();
+                $newMedRecord->patient_id = $appointment->patient_id;
+                $newMedRecord->prescription_id = $newRx->id;
+                $newMedRecord->additional_note = $request->has('medical_note') ? $request->input('medical_note') : null;
+                $newMedRecord->save();
+
+                return response()->json([
+                    'status'    => true,
+                    'message'   => 'Assignment completed.'
+                ], 200);
             }
 
             return response()->json([
@@ -251,6 +288,9 @@ class AppointmentApi extends Controller
                 ->whereHas('detail', function ($query) use ($request) {
                     return $query->where('pic', $request->input('pic'));
                 })
+                ->whereHas('patient.medicalRecords', function ($query) {
+                    return $query->limit(5);
+                })
                 ->where('status', $request->input("status"))
                 ->first();
 
@@ -272,5 +312,39 @@ class AppointmentApi extends Controller
                 'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getItems($query)
+    {
+        try {
+            $modelA = Medicine::select('sku', 'label')
+                ->where('label', 'ILIKE', "%$query%");
+            $modelB = Services::select('sku', 'label')
+                ->union($modelA)
+                ->where('label', 'ILIKE', "%$query%");
+
+            $data = $modelB->orderBy('label', 'asc')->get();
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $data
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function getDailyCode(string $reason, $visitTime): string
+    {
+        $count = Appointments::whereDate('visit_time', $visitTime->toDateString())
+            ->where('visit_reason', $reason)
+            ->count();
+
+        $initial = $reason === config('constants.reason.doctor') ? "A" : "B";
+        return $initial . str_pad($count + 1, 3, "0", STR_PAD_LEFT);
     }
 }

@@ -8,14 +8,24 @@ const weightField = document.getElementById("weight");
 const heightField = document.getElementById("height");
 const startCameraSwitch = document.getElementById("startCameraSwitch");
 const takePotraitBtn = document.getElementById("takePotraitBtn");
-const patientPotraitModal = document.getElementById("patientPotraitModal");
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const patientPotraitSubmitBtn = document.getElementById(
-    "patientPotraitSubmitBtn"
+const _patientPotraitModal = document.getElementById("patientPotraitModal");
+const _cropperPotraitModal = document.getElementById("cropperPotraitModal");
+const cropperPotraitCloseBtn = document.getElementById(
+    "cropperPotraitCloseBtn"
 );
+const cropperPotraitSubmitBtn = document.getElementById(
+    "cropperPotraitSubmitBtn"
+);
+const patientPotraitModal = new bootstrap.Modal(_patientPotraitModal, {});
+const cropperPotraitModal = new bootstrap.Modal(_cropperPotraitModal, {});
+const capturedImg = document.getElementById("capturedImg");
+const video = document.getElementById("video");
 const url = new URL(window.location.href);
+const csrfToken = document
+    .querySelector('meta[name="csrf-token"]')
+    .getAttribute("content");
 let mediaStream;
+let cropper;
 
 /**
  * Handle form submit to backend
@@ -111,29 +121,20 @@ const resetFormClass = () => {
 
 const handleAddPotrait = async (evt) => {
     const patientId = evt.target.getAttribute("data-id");
-    if (isCanvasBlank(canvas)) {
-        handleError("You haven't take a potrait.");
-        return false;
-    }
-    const dataImg = canvas.toDataURL("image/jpeg");
-    const submitBtn = document.getElementById("patientPotraitSubmitBtn");
-    submitBtn.classList.add("disabled");
-    submitBtn.insertAdjacentHTML(
-        "afterbegin",
-        '<div id="submitLoading" class="spinner-grow spinner-grow-sm me-2"></div>'
-    );
-    const csrfToken = document
-        .querySelector('meta[name="csrf-token"]')
-        .getAttribute("content");
+    const croppedCanvas = cropper.getCroppedCanvas({
+        maxWidth: 4096,
+        maxHeight: 4096,
+    });
+    const blobImg = croppedCanvas.toDataURL();
     const param = {
         id: patientId,
-        img: dataImg,
+        image: blobImg,
     };
     const formData = new FormData();
-    for (var key in param) {
+    for (let key in param) {
         formData.append(key, param[key]);
     }
-    const req = await fetch("/api/v1/patient/add-potrait", {
+    await fetch(`/api/v1/patient/add-potrait`, {
         headers: {
             Accept: "application/json, text-plain, */*",
             "X-Requested-With": "XMLHttpRequest",
@@ -142,19 +143,81 @@ const handleAddPotrait = async (evt) => {
         method: "post",
         credentials: "same-origin",
         body: formData,
-    });
-    const response = await req.json();
-    if (response) {
-        submitBtn.classList.remove("disabled");
-        document.getElementById("submitLoading").remove();
-        if (response.status) {
-            document.getElementById("patientPotraitCloseBtn").click();
-            showResponse(response.status, response.message);
-        } else {
-            showResponse(response.status, response.message);
-        }
-    }
+    })
+        .then((response) => {
+            if (!response.ok) {
+                return response
+                    .json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({ message }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+
+            return response.json();
+        })
+        .then((response) => {
+            showResponse(true, response.message);
+            cropperPotraitModal.hide();
+            getPatientPotraits(patientId);
+        })
+        .catch((error) => {
+            showResponse(false, error);
+            return null;
+        });
 };
+
+const getPatientPotraits = async (patientId) => {
+    await fetch(`/api/v1/patient/get-potraits/${patientId}`, {
+        headers: {
+            Accept: "application/json, text-plain, */*",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": csrfToken,
+        },
+        method: "get",
+        credentials: "same-origin",
+    })
+        .then((response) => {
+            if (!response.ok) {
+                return response
+                    .json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({ message }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+
+            return response.json();
+        })
+        .then((response) => {
+            if (response.data.length > 0) {
+                if (response.data.length > 0) {
+                    let html = "";
+                    response.data.map((d) => {
+                        html += `<img id="patientPotrait" class="img-thumbnail me-2" src="${d}" alt="potrait placeholder" style="width: 150px;">`;
+                    });
+                    $("#potraits").html(html);
+                } else {
+                    $("#potraits").html(
+                        '<p class="text-muted">No potrait saved.</p>'
+                    );
+                }
+            } else {
+                $("#potraits").html(
+                    '<p class="text-muted">No potrait saved.</p>'
+                );
+            }
+        })
+        .catch((error) => {
+            showResponse(false, error);
+            return null;
+        });
+};
+
 const showResponse = (status, message) => {
     const toast = new bootstrap.Toast(liveToast);
     const errorToastClasses =
@@ -175,11 +238,14 @@ const showResponse = (status, message) => {
     document.getElementById("toastBody").innerHTML = message;
     toast.show();
 };
-const isCanvasBlank = (canvas) => {
-    return !canvas
-        .getContext("2d")
-        .getImageData(0, 0, canvas.width, canvas.height)
-        .data.some((channel) => channel !== 0);
+
+const handleRetakePotrait = (e) => {
+    capturedImg.src = "";
+    cropperPotraitModal.hide();
+    patientPotraitModal.show();
+
+    startCameraSwitch.checked = true;
+    startCameraSwitch.dispatchEvent(new Event("change"));
 };
 
 // Elements events
@@ -191,19 +257,22 @@ if (birthDateField) {
         birthDateField.classList.remove("is-invalid");
     });
 }
-if (patientPotraitModal) {
-    patientPotraitModal.addEventListener("hide.bs.modal", function (evt) {
-        const context = canvas.getContext("2d");
-        context.clearRect(0, 0, canvas.width, canvas.height);
+if (_patientPotraitModal) {
+    _patientPotraitModal.addEventListener("hide.bs.modal", function (evt) {
         startCameraSwitch.checked = false;
         startCameraSwitch.dispatchEvent(new Event("change"));
+    });
+}
+if (_cropperPotraitModal) {
+    _cropperPotraitModal.addEventListener("hide.bs.modal", function (e) {
+        // do your thing
     });
 }
 if (startCameraSwitch) {
     startCameraSwitch.addEventListener("change", async function (evt) {
         if (startCameraSwitch.checked) {
             video.classList.remove("d-none");
-            takePotraitBtn.classList.remove("d-none");
+            takePotraitBtn.classList.remove("disabled");
             let stream = await navigator.mediaDevices.getUserMedia({
                 audio: false,
                 video: true,
@@ -215,17 +284,49 @@ if (startCameraSwitch) {
                 mediaStream.stop();
             }
             video.classList.add("d-none");
-            takePotraitBtn.classList.add("d-none");
+            takePotraitBtn.classList.add("disabled");
         }
     });
 }
 if (takePotraitBtn) {
     takePotraitBtn.addEventListener("click", function () {
-        canvas
-            .getContext("2d")
-            .drawImage(video, 200, 20, 240, 302.5, 0, 0, 240, 302.5);
+        // Create canvas element
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // Draw the current frame of the video onto the canvas
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Get the data URL representing the image data
+        const dataUrl = canvas.toDataURL();
+
+        // Set the src attribute of the img element to the data URL
+        capturedImg.src = dataUrl;
+        if (cropper) {
+            cropper.replace(dataUrl);
+        } else {
+            // Initialize cropper js
+            const imgInstance = $("#capturedImg");
+            imgInstance.cropper({
+                viewMode: 2,
+                minContainerHeight: 480,
+                minContainerWidth: 640,
+                aspectRatio: 2 / 3,
+            });
+
+            cropper = imgInstance.data("cropper");
+        }
+
+        // Close camera modal and open cropper modal
+        patientPotraitModal.hide();
+        cropperPotraitModal.show();
     });
 }
-if (patientPotraitSubmitBtn) {
-    patientPotraitSubmitBtn.addEventListener("click", handleAddPotrait);
+if (cropperPotraitCloseBtn) {
+    cropperPotraitCloseBtn.addEventListener("click", handleRetakePotrait);
+}
+if (cropperPotraitSubmitBtn) {
+    cropperPotraitSubmitBtn.addEventListener("click", handleAddPotrait);
 }

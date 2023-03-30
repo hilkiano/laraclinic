@@ -6,10 +6,12 @@
     const _approvalModal = new bootstrap.Modal("#approvementModal", {});
     const _medModal = document.getElementById("medSelectorModal");
     let medModal;
+    let prescription;
     if (_medModal) {
         medModal = new bootstrap.Modal('#medSelectorModal', {});
     }
     let liveToast;
+    let assignedUuid;
 
     const getMyAssignment = async () => {
         setLoading(true);
@@ -38,7 +40,10 @@
             updateMainContent(assigned.data);
             $("#cancelBtn").attr("data-uuid", assigned.data.uuid);
             $("#submitBtn").attr("data-uuid", assigned.data.uuid);
+            updateRxBody(assigned.data.uuid);
+            assignedUuid = assigned.data.uuid;
             setTakeLoading(false);
+            checkPrescription();
         }
     }
 
@@ -307,6 +312,7 @@
 
             return response.json();
         }).then(response => {
+            getMyAssignment();
             $(".take-assignment-btn").addClass("disabled");
             updateMainContent(response.data);
             $("#cancelBtn").attr("data-uuid", response.data.uuid);
@@ -344,6 +350,80 @@
             `;
         }
         $("#medicalRecordsRow").html(medRows);
+        // Prescription
+        const rx = localStorage.getItem("prescription");
+        if (rx) {
+            let parsedRx = JSON.parse(rx);
+            const filtered = parsedRx.filter(a => a.uuid === data.uuid);
+            if (filtered.length === 0) {
+                let obj = {
+                    uuid: data.uuid,
+                    data: []
+                };
+                parsedRx.push(obj);
+                localStorage.setItem("prescription", JSON.stringify(parsedRx));
+            } else {
+                // already inside local storage
+            }
+        }
+    }
+
+    const createMedicalRows = (data) => {
+        let html = '';
+        data.map((d, idx) => {
+            html += `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${d.record_no}</td>
+                    <td>${d.created_at}</td>
+                    <td><button type="button" onclick="window.getPrescription(event, ${d.prescription_id})" class="btn btn-outline-primary btn-sm">Copy Prescription</button></td>
+                </tr>
+            `;
+        });
+        return html;
+    }
+
+    const getPrescription = async (event, id) => {
+        const button = event.target;
+        button.classList.add('disabled');
+        await fetch(`/api/v1/records/prescription/${id}`, {
+            headers: {
+                Accept: "application/json, text-plain, */*",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            method: "get",
+            credentials: "same-origin",
+        }).then(response => {
+            if (!response.ok) {
+                return response.json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({
+                        message
+                    }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+
+            return response.json();
+        }).then(response => {
+            const prescription = response.data;
+            const storageRx = localStorage.getItem('prescription');
+            if (storageRx) {
+                const parsedRx = JSON.parse(storageRx);
+                parsedRx[0].data = prescription;
+
+                localStorage.setItem('prescription', JSON.stringify(parsedRx));
+                updateRxBody(assignedUuid);
+            }
+            showToast(response.message, false);
+            button.classList.remove('disabled');
+        }).catch(error => {
+            showToast(error, true);
+            button.classList.remove('disabled');
+        })
     }
 
     const handleSubmit = async (e) => {
@@ -361,7 +441,7 @@
             uuid: uuid,
             method: method,
             medical_note: $("#medicalNotes").val(),
-            prescription: localStorage.getItem(`prescription-${uuid}`) ? JSON.parse(localStorage.getItem(`prescription-${uuid}`)) : null
+            prescription: localStorage.getItem(`prescription`) ? localStorage.getItem(`prescription`) : null
         };
         for (var key in param) {
             formData.append(key, param[key]);
@@ -403,6 +483,7 @@
             btn.classList.remove('disabled');
             document.getElementById("submitLoading").remove();
             _approvalModal.hide();
+            localStorage.setItem('prescription', JSON.stringify([]));
         }).catch(error => {
             showToast(error, true);
             btn.classList.remove('disabled');
@@ -411,30 +492,124 @@
         })
     }
 
+    const editItem = (uuid, idx) => {
+        $('#medSelectorModalSave').attr('data-uuid', uuid);
+        medModal.toggle();
+    }
+
+    const deleteItem = (uuid, idx) => {
+        const rx = localStorage.getItem('prescription');
+        if (rx) {
+            let parsedRx = JSON.parse(rx);
+            const filtered = parsedRx.filter(a => a.uuid === uuid);
+            if (filtered[0].data.length > 0) {
+                filtered[0].data.splice(idx, 1);
+            }
+            localStorage.setItem('prescription', JSON.stringify(parsedRx));
+            updateRxBody(uuid);
+        }
+    }
+
+    const updateRxBody = (uuid) => {
+        // check uuid
+        const parsedRx = JSON.parse(localStorage.getItem("prescription"));
+        const filtered = parsedRx.filter(a => a.uuid === uuid);
+        let html = '';
+        if (filtered.length > 0) {
+            filtered.map(a => {
+                if (a.data.length > 0) {
+                    html = `
+                        <ol class="list-group list-group-numbered list-group-flush">
+                        ${a.data.map((d, idx) => {
+                            return `<li class="list-group-item d-flex justify-content-between align-items-start gap-2">
+                                    <div class="ms-2 w-100">
+                                        <div class="fw-bold mb-2">
+                                        ${d.label}
+                                        </div>
+                                        <div class="p-3 bg-body-secondary rounded text-break">
+                                        ${d.notes ? d.notes : '-'}
+                                        </div>
+                                        <div class="mt-2 mb-2">
+                                        <button type="button" id="editBtn-${idx}" onclick="window.editItem('${uuid}', ${idx})" class="btn btn-sm btn-outline-primary rounded-circle"><i id="editIcon-${idx}" class="bi bi-pencil-square"></i></button>
+                                        <button type="button" id="delBtn-${idx}" onclick="window.deleteItem('${uuid}', ${idx})" class="btn btn-sm btn-outline-danger rounded-circle ms-1"><i id="delIcon-${idx}" class="bi bi-trash3"></i></button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-primary rounded-pill fs-6">x ${d.qty}</span>
+                                    </div>
+                            </li>`
+                        }).join(" ")}
+                        </ol>
+                    `;
+                } else {
+                    html = '<p class="mb-0 text-muted">Nothing added yet.</p>';
+                }
+            });
+        } else {
+            html = '<p class="mb-0 text-muted">Nothing added yet.</p>';
+        }
+
+        $("#rxBody").html(html);
+    }
+
+    const checkPrescription = () => {
+        const rx = localStorage.getItem("prescription");
+        if (rx) {
+            // check data
+            const parsedRx = JSON.parse(rx);
+            if (parsedRx[0].data.length > 0) {
+                if ($("#submitBtn").hasClass("disabled")) {
+                    $("#submitBtn").removeClass("disabled");
+                }
+            } else {
+                if (!$("#submitBtn").hasClass("disabled")) {
+                    $("#submitBtn").addClass("disabled");
+                }
+            }
+        }
+    }
+
     window.takeAssignment = takeAssignment;
+    window.medModal = medModal;
+    window.editItem = editItem;
+    window.deleteItem = deleteItem;
+    window.checkPrescription = checkPrescription;
+    window.getPrescription = getPrescription;
 
     $(document).ready(function() {
         liveToast = new bootstrap.Toast(_liveToast);
+        prescription = localStorage.getItem('prescription');
+        if (!prescription) {
+            localStorage.setItem('prescription', JSON.stringify([]));
+        }
 
         getMyAssignment();
 
         $("#cancelBtn").click(function(e) {
-            const uuid = e.target.getAttribute("data-uuid");
+            const uuid = $(this).get(0).getAttribute("data-uuid");
             if (uuid) {
                 $("#approvementModalHeader").html("Cancel Assignment");
                 $("#approvementModalSubmit").attr("data-method", "cancel");
                 $("#approvementModalSubmit").attr("data-uuid", uuid);
+                if (!$("#approvementModalSubmit").hasClass("btn-danger")) {
+                    $("#approvementModalSubmit").addClass("btn-danger");
+                    $("#approvementModalSubmit").removeClass("btn-success");
+                }
                 _approvalModal.show();
             } else {
                 showToast('No UUID Found. Try to click the button again.', true);
             }
         });
         $("#submitBtn").click(function(e) {
-            const uuid = e.target.getAttribute("data-uuid");
+            const uuid = $(this).get(0).getAttribute("data-uuid");
             if (uuid) {
                 $("#approvementModalHeader").html("Submit Assignment");
                 $("#approvementModalSubmit").attr("data-method", "submit");
                 $("#approvementModalSubmit").attr("data-uuid", uuid);
+                if (!$("#approvementModalSubmit").hasClass("btn-success")) {
+                    $("#approvementModalSubmit").addClass("btn-success");
+                    $("#approvementModalSubmit").removeClass("btn-danger");
+                }
                 _approvalModal.show();
             } else {
                 showToast('No UUID Found. Try to click the button again.', true);
@@ -444,10 +619,29 @@
             handleSubmit(e);
         });
         $("#clearPrescriptionBtn").click(function(e) {
-            // Clear prescription in view
+            const parsedRx = JSON.parse(localStorage.getItem("prescription"));
+            let filtered = parsedRx.filter(a => a.uuid === assignedUuid);
+            if (filtered.length > 0) {
+                localStorage.setItem("prescription", JSON.stringify([]));
+                const clearedRx = JSON.parse(localStorage.getItem("prescription"));
+                let obj = {
+                    uuid: assignedUuid,
+                    data: []
+                };
+                clearedRx.push(obj);
+                localStorage.setItem("prescription", JSON.stringify(clearedRx));
+            }
+            updateRxBody(assignedUuid);
+            checkPrescription();
         });
         $("#addMedsBtn").click(function(e) {
             medModal.toggle();
+            const uuid = $("#submitBtn").get(0).getAttribute("data-uuid");
+            if (uuid) {
+                $('#medSelectorModalSubmit').attr('data-uuid', uuid);
+            } else {
+                showToast('No UUID Found. Try to click the button again.', true);
+            }
         });
     });
 </script>

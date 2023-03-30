@@ -12,7 +12,12 @@ class Prescription extends Model
 
     protected $fillable = [
         'appointment_uuid',
-        'patient_id'
+        'patient_id',
+        'list'
+    ];
+
+    protected $casts = [
+        'list' => 'array'
     ];
 
     public function createdAt(): Attribute

@@ -83,11 +83,9 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <p class="fs-3">Patient Potraits</p>
-                                            @if ($data['patient']->patientPotrait)
-                                            @foreach ($data['patient']->patientPotrait->url as $img)
-                                            <img id="patientPotrait" class="img-thumbnail me-2" src="{{ $img }}" alt="potrait placeholder" style="width: 150px;">
-                                            @endforeach
-                                            @endif
+                                            <div id="potraits">
+                                                <!-- <img id="patientPotrait" class="img-thumbnail me-2" src="" alt="potrait placeholder" style="width: 150px;"> -->
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -106,12 +104,84 @@
 @include('template.footer')
 
 <script type="module">
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
     let phoneNumberMask;
     let weightMask;
     let heightMask;
     let birthDatePicker;
 
+    const getPatientPotraits = async () => {
+        const patientId = parseInt("{{ $data['patient']->id }}");
+        await fetch(`/api/v1/patient/get-potraits/${patientId}`, {
+                headers: {
+                    Accept: "application/json, text-plain, */*",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": csrfToken,
+                },
+                method: "get",
+                credentials: "same-origin",
+            })
+            .then((response) => {
+                if (!response.ok) {
+                    return response
+                        .json()
+                        .catch(() => {
+                            throw new Error(response.status);
+                        })
+                        .then(({
+                            message
+                        }) => {
+                            throw new Error(message || response.status);
+                        });
+                }
+
+                return response.json();
+            })
+            .then((response) => {
+                if (response.data.length > 0) {
+                    let html = '';
+                    response.data.map(d => {
+                        html += `<img id="patientPotrait" class="img-thumbnail me-2" src="${d}" alt="potrait placeholder" style="width: 150px;">`;
+                    })
+                    $("#potraits").html(html);
+                } else {
+                    $("#potraits").html('<p class="text-muted">No potrait saved.</p>')
+                }
+            })
+            .catch((error) => {
+                showResponse(false, error);
+                return null;
+            });
+    }
+
+    const showResponse = (status, message) => {
+        const toast = new bootstrap.Toast(liveToast);
+        const errorToastClasses =
+            document.getElementById("errorToastHeader").classList;
+        const successToastClasses =
+            document.getElementById("successToastHeader").classList;
+        if (status) {
+            errorToastClasses.add("d-none");
+            errorToastClasses.remove("d-block");
+            successToastClasses.add("d-block");
+            successToastClasses.remove("d-none");
+        } else {
+            errorToastClasses.add("d-block");
+            errorToastClasses.remove("d-none");
+            successToastClasses.add("d-none");
+            successToastClasses.remove("d-block");
+        }
+        document.getElementById("toastBody").innerHTML = message;
+        toast.show();
+    };
+
+    window.getPatientPotraits = getPatientPotraits;
+
     $(document).ready(function() {
+        getPatientPotraits();
+
         phoneNumberMask = IMask(document.getElementById("phone_number"), {
             mask: Number,
             signed: false,
