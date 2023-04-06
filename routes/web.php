@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\AssignmentCreated;
 use Illuminate\Support\Facades\Route;
 
 /*

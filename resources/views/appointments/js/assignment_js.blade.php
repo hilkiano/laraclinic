@@ -420,6 +420,7 @@
             }
             showToast(response.message, false);
             button.classList.remove('disabled');
+            checkPrescription();
         }).catch(error => {
             showToast(error, true);
             button.classList.remove('disabled');
@@ -575,6 +576,12 @@
     window.deleteItem = deleteItem;
     window.checkPrescription = checkPrescription;
     window.getPrescription = getPrescription;
+    window.Echo.channel("assignment_created").listen(
+        "AssignmentCreated",
+        (event) => {
+            getMyAssignment();
+        }
+    );
 
     $(document).ready(function() {
         liveToast = new bootstrap.Toast(_liveToast);

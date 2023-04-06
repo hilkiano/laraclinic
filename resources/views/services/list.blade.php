@@ -25,7 +25,7 @@
                                                     <div class="col-sm-12">
                                                         <label for="filter" class="form-label">Filter</label>
                                                         <div class="input-group">
-                                                            <button type="button" data-bs-toggle="modal" href="#addServiceModal" class="btn btn-success">
+                                                            <button type="button" id="addServiceBtn" class="btn btn-success">
                                                                 <i class="bi bi-plus"></i>
                                                                 Add Service
                                                             </button>
@@ -56,8 +56,8 @@
                                                 <th scope="col">#</th>
                                                 <th scope="col">SKU</th>
                                                 <th scope="col">Name</th>
-                                                <th scope="col">Package</th>
                                                 <th scope="col">Category</th>
+                                                <th style="width: 170px" scope="col"></th>
                                             </tr>
                                         </thead>
                                         <tbody id="serviceRows">
@@ -83,5 +83,6 @@
 
 </html>
 @include('toasts.live_toast')
+@include('services.modal')
 @include('services.js.list_js')
 @include('template.footer')

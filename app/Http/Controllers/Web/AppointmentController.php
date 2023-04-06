@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Events\AssignmentCreated;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\MenuController;
@@ -131,6 +132,8 @@ class AppointmentController extends Controller
                 ]);
 
                 if ($newAppointment) {
+                    AssignmentCreated::dispatch();
+
                     return response()->json([
                         'status'    => true,
                         'data'      => [
