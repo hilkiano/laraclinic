@@ -69,10 +69,14 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
         // medicines
         $router->group(['prefix' => 'medicines'], function () use ($router) {
             $router->post('list', '\App\Http\Controllers\Api\MedicinesApi@list');
+            $router->post('save', '\App\Http\Controllers\Api\MedicinesApi@save');
+            $router->post('delete-restore', '\App\Http\Controllers\Api\MedicinesApi@deleteRestore');
         });
         // services
         $router->group(['prefix' => 'services'], function () use ($router) {
             $router->post('list', '\App\Http\Controllers\Api\ServicesApi@list');
+            $router->post('save', '\App\Http\Controllers\Api\ServicesApi@save');
+            $router->post('delete-restore', '\App\Http\Controllers\Api\ServicesApi@deleteRestore');
         });
     });
 });

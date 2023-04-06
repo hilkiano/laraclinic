@@ -121,7 +121,7 @@ class AppointmentApi extends Controller
                 ->when($group === config('constants.group.cashier'), function ($query) {
                     $query->where('status', config('constants.status.payment_waiting'));
                 })
-                ->orderBy('daily_code', 'asc')
+                ->orderBy('visit_time', 'asc')
                 ->limit(10);
 
             return response()->json([
@@ -225,7 +225,6 @@ class AppointmentApi extends Controller
                 // Change daily code
                 $appointment = Appointments::where('uuid', $request->input('uuid'))->first();
                 $appointment->status = config('constants.status.pharmacy_waiting');
-                $appointment->daily_code = $this->getDailyCode(config('constants.reason.pharmacy'), Carbon::now());
                 $appointment->save();
 
                 // Add new detail

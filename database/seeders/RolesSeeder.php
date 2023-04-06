@@ -115,7 +115,7 @@ class RolesSeeder extends Seeder
     {
         $menuIds = [];
 
-        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 11, 12, 13]);
+        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 11]);
         foreach ($model as $menu) {
             array_push($menuIds, $menu->id);
         }
@@ -139,7 +139,7 @@ class RolesSeeder extends Seeder
     {
         $menuIds = [];
 
-        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 11, 12, 13]);
+        $model = \App\Models\Menus::select('id')->find([1, 9, 11, 12, 13]);
         foreach ($model as $menu) {
             array_push($menuIds, $menu->id);
         }

@@ -20,6 +20,9 @@ const csrfToken = document
 const toast = new bootstrap.Toast(liveToast);
 let _patientListAppointmentModal;
 if (patientListAppointmentModal) {
+    patientListAppointmentModal.addEventListener("hide.bs.modal", function () {
+        patientAppointmentForm.reset();
+    });
     _patientListAppointmentModal = new bootstrap.Modal(
         patientListAppointmentModal
     );
@@ -68,12 +71,10 @@ const updateModalContent = (evt) => {
         document.getElementById(
             "patientUpdateBtn"
         ).href = `${window.location.origin}/patient/update/${rowData.id}`;
-        document
-            .getElementById("assignPharmacyBtn")
-            .setAttribute("data-row", JSON.stringify(rowData));
-        document
-            .getElementById("assignDoctorBtn")
-            .setAttribute("data-row", JSON.stringify(rowData));
+        if (assignPharmacyBtn && assignDoctorBtn) {
+            assignPharmacyBtn.setAttribute("data-row", JSON.stringify(rowData));
+            assignDoctorBtn.setAttribute("data-row", JSON.stringify(rowData));
+        }
     } else {
         console.error("No row data.");
     }
