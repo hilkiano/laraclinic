@@ -115,3 +115,35 @@ hr {
 #myList {
     scrollbar-width: none;
 }
+
+#assignmentAction {
+    background: rgb(0, 80, 241);
+    background: linear-gradient(
+        204deg,
+        rgba(0, 80, 241, 0.5088235977984944) 13%,
+        rgba(8, 85, 241, 0.5032213569021359) 45%,
+        rgba(84, 190, 236, 0.4920168751094187) 100%
+    );
+    top: 55px;
+    backdrop-filter: blur(15px) saturate(1.5);
+}
+
+#cashierAction {
+    top: 55px;
+    backdrop-filter: blur(20px) saturate(1.5);
+    width: calc(100% + 48px);
+    margin-left: -22px;
+}
+
+#mainContent {
+    margin-left: 280px;
+    @include md {
+        margin-left: 0;
+    }
+}
+
+#cardsRow {
+    @include media-breakpoint-up(md) {
+        top: 5em;
+    }
+}

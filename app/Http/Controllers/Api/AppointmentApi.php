@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\AssignmentCreated;
+use App\Events\AssignmentTaken;
 use App\Http\Controllers\Controller;
 use App\Models\Appointments;
 use App\Models\AppointmentsDetail;
@@ -12,6 +14,7 @@ use App\Models\Services;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -102,14 +105,21 @@ class AppointmentApi extends Controller
     }
 
     /**
-     * Get list of appointment by user group
+     * Get appointments for the current user.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request The HTTP request object.
+     * @return \Illuminate\Http\JsonResponse The HTTP response containing the appointments data.
      */
-    public function getMyAppointments()
+    public function getMyAppointments(Request $request)
     {
         try {
+            // Get the name filter from the request or set it to null.
+            $nameFilter = $request->has("name") ? $request->input("name") : null;
+
+            // Get the user's group ID.
             $group = $this->userData->group_id;
+
+            // Query the appointments table and eager-load the patient and patientPotrait relationships.
             $model = Appointments::with(['patient', 'patient.patientPotrait'])
                 ->whereDate('visit_time', Carbon::now()->toDateString())
                 ->when($group === config('constants.group.doctor'), function ($query) {
@@ -121,14 +131,22 @@ class AppointmentApi extends Controller
                 ->when($group === config('constants.group.cashier'), function ($query) {
                     $query->where('status', config('constants.status.payment_waiting'));
                 })
+                // Add a filter based on the nameFilter parameter if it is set.
+                ->when($nameFilter, function ($query) use ($nameFilter) {
+                    $query->whereHas('patient', function ($subquery) use ($nameFilter) {
+                        $subquery->where('name', 'ILIKE', "%$nameFilter%");
+                    });
+                })
                 ->orderBy('visit_time', 'asc')
                 ->limit(10);
 
+            // Return a JSON response with the appointments data.
             return response()->json([
                 'status'    => true,
                 'data'      => $model->get()
             ], 200);
         } catch (\Exception $e) {
+            // Log any errors and return an error response.
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
@@ -153,12 +171,24 @@ class AppointmentApi extends Controller
                 $status = config("constants.status.doctor_assigned");
             } elseif ($status === config("constants.status.pharmacy_waiting")) {
                 $status = config("constants.status.pharmacy_assigned");
+            } elseif ($status === config("constants.status.payment_waiting")) {
+                $status = config("constants.status.payment_assigned");
             }
             $request->merge(["status" => $status, "pic" => auth()->id()]);
             $makeDetail = $this->makeDetail($request);
 
             if ($makeDetail->getStatusCode() === 200) {
-                $model = Appointments::with(['patient', 'patient.patientPotrait', 'patient.medicalRecords'])
+                $model = Appointments::with(['patient', 'detail', 'patient.patientPotrait'])
+                    ->when($request->status === config("constants.status.doctor_assigned"), function ($query) {
+                        $query->with(['patient.medicalRecords' => function ($query) {
+                            $query->take(5);
+                        }]);
+                    })
+                    ->when($request->status === config("constants.status.pharmacy_assigned"), function ($query) {
+                        $query->with(['prescription', 'medicalRecord', 'patient.prescriptions' => function ($query) {
+                            $query->take(5);
+                        }]);
+                    })
                     ->where('uuid', $request->uuid)
                     ->first();
 
@@ -166,6 +196,8 @@ class AppointmentApi extends Controller
                     $model->patient->birth_date = Carbon::make($model->patient->birth_date)->isoFormat("D MMMM YYYY");
                     $model->patient->age = Carbon::make($model->patient->birth_date)->age;
                 }
+
+                AssignmentTaken::dispatch();
 
                 return response()->json([
                     'status'    => true,
@@ -215,6 +247,8 @@ class AppointmentApi extends Controller
                     $appointment->save();
                 }
 
+                AssignmentTaken::dispatch();
+
                 return response()->json([
                     'status'    => true,
                     'message'   => 'Assignment rolled back.'
@@ -222,15 +256,22 @@ class AppointmentApi extends Controller
             } elseif ($request->input('method') === 'submit') {
                 $prescription = $request->has('prescription') ? json_decode($request->input('prescription')) : null;
 
-                // Change daily code
+                // Change status
+                $newStatus = null;
                 $appointment = Appointments::where('uuid', $request->input('uuid'))->first();
-                $appointment->status = config('constants.status.pharmacy_waiting');
+                if ($appointment->status === config('constants.status.doctor_assigned')) {
+                    $newStatus = config('constants.status.pharmacy_waiting');
+                } elseif ($appointment->status === config('constants.status.pharmacy_assigned')) {
+                    $newStatus = config('constants.status.payment_waiting');
+                }
+
+                $appointment->status = $newStatus;
                 $appointment->save();
 
                 // Add new detail
                 $newDetail = new AppointmentsDetail();
                 $newDetail->appointment_uuid = $request->input('uuid');
-                $newDetail->status = config('constants.status.pharmacy_waiting');
+                $newDetail->status = $newStatus;
                 $newDetail->pic = auth()->id();
                 $newDetail->save();
 
@@ -241,14 +282,18 @@ class AppointmentApi extends Controller
                 $newRx->list = $prescription ? $prescription[0]->data : null;
                 $newRx->save();
 
-                // Add medical rec
-                $newMedRecord = new MedicalRecord();
-                $newMedRecord->appointment_uuid = $request->input('uuid');
-                $newMedRecord->record_no = Str::uuid();
-                $newMedRecord->patient_id = $appointment->patient_id;
-                $newMedRecord->prescription_id = $newRx->id;
-                $newMedRecord->additional_note = $request->has('medical_note') ? $request->input('medical_note') : null;
-                $newMedRecord->save();
+                if ($newStatus === config('constants.status.pharmacy_waiting')) {
+                    // Add medical rec
+                    $newMedRecord = new MedicalRecord();
+                    $newMedRecord->appointment_uuid = $request->input('uuid');
+                    $newMedRecord->record_no = Str::uuid();
+                    $newMedRecord->patient_id = $appointment->patient_id;
+                    $newMedRecord->prescription_id = $newRx->id;
+                    $newMedRecord->additional_note = $request->has('medical_note') ? $request->input('medical_note') : null;
+                    $newMedRecord->save();
+                }
+
+                AssignmentCreated::dispatch();
 
                 return response()->json([
                     'status'    => true,
@@ -282,9 +327,20 @@ class AppointmentApi extends Controller
                     'message'   => $validator->errors()
                 ], 422);
             }
-            $model = Appointments::with(['patient', 'detail', 'patient.patientPotrait', 'patient.medicalRecords' => function ($query) {
-                $query->take(5);
-            }])
+            $model = Appointments::with(['patient', 'detail', 'patient.patientPotrait'])
+                ->when($request->status === config("constants.status.doctor_assigned"), function ($query) {
+                    $query->with(['patient.medicalRecords' => function ($query) {
+                        $query->take(5);
+                    }]);
+                })
+                ->when($request->status === config("constants.status.pharmacy_assigned"), function ($query) {
+                    $query->with(['prescription', 'medicalRecord', 'patient.prescriptions' => function ($query) {
+                        $query->take(5);
+                    }]);
+                })
+                ->when($request->status === config("constants.status.payment_assigned"), function ($query) {
+                    $query->with('prescription');
+                })
                 ->whereHas('detail', function ($query) use ($request) {
                     return $query->where('pic', $request->input('pic'));
                 })
@@ -295,6 +351,29 @@ class AppointmentApi extends Controller
                 if ($model->patient->birth_date) {
                     $model->patient->birth_date = Carbon::make($model->patient->birth_date)->isoFormat("D MMMM YYYY");
                     $model->patient->age = Carbon::make($model->patient->birth_date)->age;
+                }
+                if ($request->status === config("constants.status.payment_assigned")) {
+                    if ($model->prescription->list) {
+                        // Get its price
+                        $model->prescription->list = Arr::map($model->prescription->list, function ($value, $key) {
+                            $sellPrice = null;
+                            $medSellPrice = Medicine::select('sell_price')
+                                ->where('sku', $value['sku'])
+                                ->first();
+                            if (!$medSellPrice) {
+                                $svcSellPrice = Services::select('sell_price')
+                                    ->where('sku', $value['sku'])
+                                    ->first();
+
+                                $sellPrice = $svcSellPrice;
+                            } else {
+                                $sellPrice = $medSellPrice;
+                            }
+                            $value['price'] = $sellPrice ? $sellPrice->sell_price : null;
+
+                            return $value;
+                        });
+                    }
                 }
             }
 

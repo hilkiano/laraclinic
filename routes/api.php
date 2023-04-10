@@ -78,5 +78,9 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
             $router->post('save', '\App\Http\Controllers\Api\ServicesApi@save');
             $router->post('delete-restore', '\App\Http\Controllers\Api\ServicesApi@deleteRestore');
         });
+        // cashier
+        $router->group(['prefix' => 'cashier'], function () use ($router) {
+            $router->post('progress', '\App\Http\Controllers\Api\CashierApi@progress');
+        });
     });
 });

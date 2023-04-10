@@ -30,7 +30,6 @@
 
                             </div>
                         </div>
-                        <hr class="mt-4 mb-0" />
                         <div id="loadingIndicator" class="mt-4 d-none">
                             <div class="text-center">
                                 <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -39,12 +38,11 @@
                             </div>
                         </div>
                         <div id="selectedAssignment" class="p-0 m-0 mb-5 d-none">
-                            <div id="assignmentAction" class="col-12 px-4 py-4 d-flex justify-content-end bg-primary-subtle">
+                            <div id="assignmentAction" style="z-index: 1" class="col-12 px-4 py-4 d-flex justify-content-end sticky-top">
                                 <button id="cancelBtn" type="button" class="btn btn-danger rounded-pill me-2"><i class="bi bi-x-lg me-2"></i>Cancel</button>
                                 <button id="submitBtn" type="button" class="btn btn-success rounded-pill disabled"><i class="bi bi-check-lg me-2"></i>Submit</button>
                             </div>
-                            <hr class="mb-4 mt-0" />
-                            <div class="row mx-2 gy-4">
+                            <div class="row mx-2 mt-1 gy-4">
                                 <div class="col-sm-12 col-md-12 col-lg-7">
                                     <div class="card border-0">
                                         <div class="card-body">
@@ -73,6 +71,7 @@
                                                     <p id="patientDetails" class="mb-1 fw-bold"></p>
                                                 </div>
                                                 <hr class="mt-3 mb-3" />
+                                                @if ($group === 3)
                                                 <div class="col-12">
                                                     <p class="mb-1 fw-bold">Medical Records</p>
                                                     <div class="table-responsive">
@@ -82,13 +81,30 @@
                                                                     <th scope="col">#</th>
                                                                     <th scope="col">Record No.</th>
                                                                     <th scope="col">Created At</th>
-                                                                    <th scope="col"></th>
+                                                                    <th scope="col" style="width: 150px"></th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody id="medicalRecordsRow"></tbody>
                                                         </table>
                                                     </div>
                                                 </div>
+                                                @elseif ($group === 4)
+                                                <div class="col-12">
+                                                    <p class="mb-1 fw-bold">Prescriptions</p>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-striped table-hover caption-top" style="min-width: 500px;">
+                                                            <thead class="table-primary">
+                                                                <tr>
+                                                                    <th scope="col">#</th>
+                                                                    <th scope="col">Created At</th>
+                                                                    <th scope="col" style="width: 150px"></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="prescriptionsRow"></tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -107,7 +123,11 @@
                                         </div>
                                         <div class="col-12">
                                             <p class="fs-5"><i class="bi bi-sticky me-2 text-primary"></i> Notes</p>
+                                            @if ($group === 3)
                                             <textarea id="medicalNotes" class="form-control" rows="3" autocomplete="off"></textarea>
+                                            @else
+                                            <textarea id="medicalNotes" class="form-control" rows="3" autocomplete="off" readonly></textarea>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

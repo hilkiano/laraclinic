@@ -91,6 +91,8 @@
             status = `<p class="fs-5 mb-0"><span class="badge bg-info-subtle text-info">Pharmacy: Waiting</span></p>`;
         } else if (row.status === "PHAR_ASSIGNED") {
             status = `<p class="fs-5 mb-0"><span class="badge bg-info">Pharmacy: Assigned</span></p>`;
+        } else if (row.status === "PAYMENT_WAITING") {
+            status = `<p class="fs-5 mb-0"><span class="badge bg-info">Waiting for Payment</span></p>`;
         } else if (row.status === "IN_PAYMENT") {
             status = `<p class="fs-5 mb-0"><span class="badge bg-info">In Payment</span></p>`;
         } else if (row.status === "COMPLETED") {
