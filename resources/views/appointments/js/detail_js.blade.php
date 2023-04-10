@@ -90,6 +90,9 @@
             case 'PHAR_ASSIGNED':
                 return 'border-primary';
                 break;
+            case 'PAYMENT_WAITING':
+                return 'border-info';
+                break;
             case 'IN_PAYMENT':
                 return 'border-info';
                 break;
@@ -134,6 +137,13 @@
                 return `
                     <div class="badge rounded-pill text-bg-primary">
                         <i class="bi bi-capsule me-2"></i> Pharmacist Assigned
+                    </div>
+                `;
+                break;
+            case 'PAYMENT_WAITING':
+                return `
+                    <div class="badge rounded-pill text-bg-info text-light">
+                        <i class="bi bi-wallet2 me-2"></i> Waiting for Payment
                     </div>
                 `;
                 break;

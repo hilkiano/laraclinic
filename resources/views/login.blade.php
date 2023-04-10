@@ -92,6 +92,10 @@
                     <p class="mb-1 fw-bold">Online Shop Admin</p>
                     <p class="mb-0">Username: <span class="fst-italic">olshop</span></p>
                     <p class="mb-0">Password: <span class="fst-italic">12345</span></p>
+                    <hr />
+                    <p class="mb-1 fw-bold">Owner</p>
+                    <p class="mb-0">Username: <span class="fst-italic">owner</span></p>
+                    <p class="mb-0">Password: <span class="fst-italic">12345</span></p>
                 </div>
             </div>
         </div>

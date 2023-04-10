@@ -5,7 +5,7 @@
 <body>
     <div class="container-fluid">
         <div class="row flex-nowrap">
-            <div id="mainContent" class="d-flex flex-column w-100">
+            <div class="d-flex flex-column w-100">
                 <div class="container-fluid mt-4">
                     <div class="row gy-4">
                         <div class="col-12">

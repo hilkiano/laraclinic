@@ -1,5 +1,5 @@
-<div class="d-flex d-lg-flex d-md-none d-sm-none d-none p-3 bg-white flex-column" style="width: 280px; min-height: calc(100vh - 80px)">
-    <ul class="nav nav-pills flex-column mb-auto position-fixed" style="width: calc(280px - 2em);">
+<div class="d-flex d-lg-flex d-md-none d-sm-none d-none p-3 bg-white flex-column position-fixed" style="width: 280px; min-height: calc(100vh - 55px); height: 100%;">
+    <ul class="nav nav-pills flex-column mb-auto position-fixed" style="width: calc(280px - 2.25em);">
         @foreach ($menus["data"] as $menu)
         @if ($menu->route)
         <li class="nav-item mb-1">
@@ -40,7 +40,7 @@
         <h5 class="offcanvas-title" id="mobileSidebarLabel">Menu</h5>
     </div>
     <div class="offcanvas-body p-0 pb-3 d-flex flex-column">
-        <ul class="nav nav-pills flex-column mb-auto position-fixed" style="width: calc(280px - 2em);">
+        <ul class="nav nav-pills flex-column mb-auto position-fixed" style="width: calc(280px - 2.25em);">
             @foreach ($menus["data"] as $menu)
             @if ($menu->route)
             <li class="nav-item mb-1">

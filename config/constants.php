@@ -10,7 +10,8 @@ return [
         'doctor_assigned'    => 'DOC_ASSIGNED',
         'pharmacy_waiting'   => 'PHAR_WAITING',
         'pharmacy_assigned'  => 'PHAR_ASSIGNED',
-        'payment_waiting'    => 'IN_PAYMENT',
+        'payment_waiting'    => 'PAYMENT_WAITING',
+        'payment_assigned'   => 'IN_PAYMENT',
         'completed'          => 'COMPLETED',
         'canceled'           => 'CANCELED'
     ],

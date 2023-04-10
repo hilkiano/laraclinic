@@ -49,7 +49,7 @@ class RolesSeeder extends Seeder
             ],
             [
                 'name'          => 'Owner',
-                'menu_ids'      => $this->getAllMenuIds(),
+                'menu_ids'      => $this->getOwnerMenuIds(),
                 'privilege_ids' => $this->getOwnerPrivilegeIds()
             ],
         ];
@@ -151,7 +151,7 @@ class RolesSeeder extends Seeder
     {
         $privIds = [];
 
-        $model = \App\Models\Privileges::select('id')->find([15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]);
+        $model = \App\Models\Privileges::select('id')->find([15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27]);
         foreach ($model as $privilege) {
             array_push($privIds, $privilege->id);
         }
@@ -163,7 +163,7 @@ class RolesSeeder extends Seeder
     {
         $menuIds = [];
 
-        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 10]);
+        $model = \App\Models\Menus::select('id')->find([1, 15]);
         foreach ($model as $menu) {
             array_push($menuIds, $menu->id);
         }
@@ -175,7 +175,7 @@ class RolesSeeder extends Seeder
     {
         $privIds = [];
 
-        $model = \App\Models\Privileges::select('id')->get();
+        $model = \App\Models\Privileges::select('id')->find([17, 19, 20, 23, 24]);
         foreach ($model as $privilege) {
             array_push($privIds, $privilege->id);
         }
@@ -207,14 +207,26 @@ class RolesSeeder extends Seeder
         return $privIds;
     }
 
+    protected function getOwnerMenuIds()
+    {
+        $menuIds = [];
+
+        $model = \App\Models\Menus::select('id')->find([1, 2, 3, 8, 9, 10, 12, 13, 14]);
+        foreach ($model as $privilege) {
+            array_push($menuIds, $privilege->id);
+        }
+
+        return $menuIds;
+    }
+
     protected function getOwnerPrivilegeIds()
     {
         $privIds = [];
 
-        // $model = \App\Models\Privileges::select('id')->find();
-        // foreach ($model as $privilege) {
-        //     array_push($privIds, $privilege->id);
-        // }
+        $model = \App\Models\Privileges::select('id')->find([1, 2, 3, 16, 19, 20, 24]);
+        foreach ($model as $privilege) {
+            array_push($privIds, $privilege->id);
+        }
 
         return $privIds;
     }

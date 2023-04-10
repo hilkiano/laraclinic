@@ -161,9 +161,11 @@ if (clearFilterPatientBtn) {
 }
 if (filterForm) {
     filterForm.addEventListener("submit", function (evt) {
-        if (filterPatientField.value === "") {
-            evt.preventDefault();
-            return false;
+        if (filterPatientField) {
+            if (filterPatientField.value === "") {
+                evt.preventDefault();
+                return false;
+            }
         }
     });
 }
