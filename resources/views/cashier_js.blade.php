@@ -13,8 +13,12 @@
     let prescription;
     let assignedUuid;
     let amountImask;
+    let discountAmtImask;
+    let discountPctgImask;
     let fullPrice;
     let amountChange;
+    let itemLength = 0;
+    let itemImask;
 
     const getMyAssignment = async (onlyCards = false) => {
         setLoading(true);
@@ -45,6 +49,7 @@
             $("#submitBtn").attr("data-uuid", assigned.data.uuid);
             assignedUuid = assigned.data.uuid;
             updateRxBody(assignedUuid);
+            initiateItemImask(itemLength);
             setTakeLoading(false);
             checkPrescription();
         }
@@ -219,6 +224,13 @@
             $("#submitBtn").attr("data-uuid", response.data.uuid);
             document.getElementById("submitLoading").remove();
             setTakeLoading(false);
+            amountImask.typedValue = 0;
+            discountPctgImask.typedValue = 0;
+            discountAmtImask.typedValue = 0;
+            amountImask.updateValue();
+            discountPctgImask.updateValue();
+            discountAmtImask.updateValue();
+            $('#pctgRadio').prop('checked', true);
         }).catch(error => {
             btn.classList.remove('disabled');
             document.getElementById("submitLoading").remove();
@@ -246,22 +258,25 @@
         }
     }
 
-    const updateRxBody = (uuid) => {
+    const updateRxBody = (uuid, disableHtmlUpdate = false) => {
         // check uuid
         const parsedRx = JSON.parse(localStorage.getItem("prescription"));
         const filtered = parsedRx.filter(a => a.uuid === uuid);
-        let html = '';
-        fullPrice = 0;
-        amountImask.typedValue = 0;
-        if (filtered.length > 0) {
-            filtered.map(a => {
-                if (a.data.length > 0) {
-                    a.data.map((item, idx) => {
-                        let totalPrice = item.price * item.qty;
-                        fullPrice += totalPrice;
-                        html += `
+        if (!disableHtmlUpdate) {
+            let html = '';
+            fullPrice = 0;
+            itemImask = {};
+            if (filtered.length > 0) {
+                filtered.map(a => {
+                    if (a.data.length > 0) {
+                        a.data.map((item, idx) => {
+                            itemLength++;
+                            itemImask[idx] = null;
+                            let totalPrice = item.price * item.qty;
+                            fullPrice += totalPrice;
+                            html += `
                             <li class="list-group-item">
-                                <div class="d-flex justify-content-between">
+                                <div class="d-flex justify-content-between mt-2" style="gap: 1em">
                                     <div class="flex-fill">
                                         <h5 class="mb-1">${item.label}</h5>
                                         <p class="mb-1 text-muted">${item.sku}</p>
@@ -270,32 +285,133 @@
                                     <div style="min-width: 75px; max-width: 100px">
                                         <div class="input-group input-group-sm">
                                             <button style="z-index: 0" onclick="window.subtractItem(${idx})" class="btn btn-dark rounded-start-pill" type="button"><i class="bi bi-dash-lg"></i></button>
-                                            <input id="qty-${idx}" class="form-control" type="text" value="${item.qty}" readonly>
+                                            <input style="z-index: 0" id="qty-${idx}" class="form-control" type="text" value="${item.qty}" readonly>
                                             <button style="z-index: 0" onclick="window.addItem(${idx})" class="btn btn-dark rounded-end-pill" type="button"><i class="bi bi-plus-lg"></i></button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="d-flex justify-content-between border-top mt-2">
-                                    <p class="mt-2">Price: ${item.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                                    <p class="mt-2 fw-bold">Subtotal: ${totalPrice.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                                <div class="pt-2 border-top mb-2 mt-2">
+                                    <label for="itemDiscount-${idx}" class="form-label">Item Discount Type</label>
+                                    <div class="input-group">
+                                        <select id="itemDiscountType-${idx}" class="form-select" style="max-width: 150px; z-index: 0">
+                                            <option value="pctg">Percentage</option>
+                                            <option value="amt">Amount</option>
+                                        </select>
+                                        <span id="itemPrefix-${idx}" class="input-group-text">Rp</span>
+                                        <input type="text" id="itemDiscount-${idx}" class="form-control" style="z-index: 0">
+                                        <span id="itemSuffix-${idx}" class="input-group-text">%</span>
+                                    </div>
                                 </div>
-                                <div class="d-flex justify-content-between border-top mb-2">
-                                    <button class="btn btn-sm btn-dark rounded-pill mt-3"><i class="bi bi-tag-fill me-2"></i>Add Discount</button>
+                                <div class="d-flex justify-content-between bg-body-secondary rounded p-2 mt-3 mb-3">
+                                    <p class="mb-0">Price: <span id="itemPrice-${idx}">${item.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span></p>
+                                    <p class="mb-0 fw-bold">Subtotal: <span id="itemSubtotalPrice-${idx}">${totalPrice.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span></p>
                                 </div>
                             </li>
                         `;
-                    });
-                }
-            });
+                        });
+                    }
+                });
+            }
+            $("#rxBody").html(html);
+        } else {
+            fullPrice = 0;
+            if (filtered.length > 0) {
+                filtered.map(a => {
+                    if (a.data.length > 0) {
+                        a.data.map((item, idx) => {
+                            const itemPrice = calculateItemPrice(item.price, item.discount_type, item.discount_value);
+                            const subTotalPrice = itemPrice * item.qty;
+
+                            fullPrice += subTotalPrice;
+
+                            $(`#qty-${idx}`).val(item.qty);
+                            $(`#itemPrice-${idx}`).html(itemPrice.toLocaleString('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0
+                            }));
+                            $(`#itemSubtotalPrice-${idx}`).html(subTotalPrice.toLocaleString('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0
+                            }));
+                        })
+                    }
+                })
+            }
         }
-        $("#rxBody").html(html);
-        $("#totalPrice").html(fullPrice.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }));
+
+        // Check total discount
+        if ($('#pctgRadio').is(':checked')) {
+            $("#totalDiscountPctg").trigger("keyup");
+        } else if ($('#amtRadio').is(':checked')) {
+            $("#totalDiscountAmt").trigger("keyup");
+        }
         calculateChange();
+    }
+
+    const initiateItemImask = (length) => {
+        for (let i = 1; i <= length; i++) {
+            $(`#itemDiscountType-${i - 1}`).change(function(e) {
+                let opt = null;
+                if ($(this).val() === "pctg") {
+                    opt = {
+                        mask: Number,
+                        scale: 0,
+                        thousandsSeparator: '.',
+                        padFractionalZeros: false,
+                        normalizeZeros: true,
+                        radix: ',',
+                        validate: function(value) {
+                            var intValue = parseInt(value.replace(/\D/g, ''));
+                            return intValue >= 0 && intValue <= 100;
+                        },
+                    };
+                    $(`#itemSuffix-${i - 1}`).show();
+                    $(`#itemPrefix-${i - 1}`).hide();
+                } else {
+                    opt = {
+                        mask: Number,
+                        scale: 0,
+                        thousandsSeparator: '.',
+                        padFractionalZeros: false,
+                        normalizeZeros: true,
+                        radix: ',',
+                    };
+                    $(`#itemSuffix-${i - 1}`).hide();
+                    $(`#itemPrefix-${i - 1}`).show();
+                }
+                if (itemImask[i - 1] !== null) {
+                    $(`#itemDiscount-${i - 1}`).val("");
+                    itemImask[i - 1].destroy();
+                }
+
+                const imask = IMask(document.getElementById(`itemDiscount-${i - 1}`), opt);
+                itemImask[i - 1] = imask;
+                handleItemDiscount(i - 1);
+            });
+            $(`#itemDiscount-${i - 1}`).keyup(function(e) {
+                handleItemDiscount(i - 1);
+            });
+            $(`#itemDiscount-${i - 1}`).click(function(e) {
+                $(this).select();
+            });
+            $(`#itemDiscountType-${i - 1}`).trigger("change");
+        }
+    }
+
+    const calculateItemPrice = (originalPrice, type, amount) => {
+        let price = 0;
+        if (type === 'pctg') {
+            let rate = amount / 100;
+            price = originalPrice - (originalPrice * rate);
+        } else if (type === 'amt') {
+            price = originalPrice - amount;
+        }
+
+        return price;
     }
 
     const setTakeLoading = (status) => {
@@ -408,7 +524,8 @@
         const formData = new FormData();
         const param = {
             uuid: uuid,
-            method: method
+            method: method,
+            prescription: localStorage.getItem(`prescription`) ? localStorage.getItem(`prescription`) : null
         };
         for (var key in param) {
             formData.append(key, param[key]);
@@ -478,8 +595,10 @@
     }
 
     const handleFullPrice = () => {
-        $("#amount").val(fullPrice);
-        amountImask.typedValue = fullPrice;
+        const totalPrice = $("#totalPrice")[0].innerText;
+        const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
+        $("#amount").val(totalPriceNum);
+        amountImask.typedValue = totalPriceNum;
         amountImask.updateValue();
         $("#amount").trigger("input");
 
@@ -494,7 +613,8 @@
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
         }));
-        let changeAmt = amountPaid - fullPrice;
+        const totalPrice = $("#totalPrice")[0].innerText;
+        let changeAmt = amountPaid - Number(totalPrice.replace(/\D/g, ""));
         if (changeAmt < 0) {
             changeAmt = 0;
         }
@@ -506,6 +626,26 @@
         }));
     }
 
+    const calculateTotalPrice = (isPctg, amount) => {
+        let discountRate = 0;
+        let discountedPrice = 0;
+        if (isPctg) {
+            discountRate = amount / 100;
+            discountedPrice = fullPrice - (fullPrice * discountRate);
+        } else {
+            discountedPrice = fullPrice - amount <= 0 ? 0 : fullPrice - amount;
+        }
+
+        $("#totalPrice").html(discountedPrice.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }));
+
+        calculateChange();
+    }
+
     const subtractItem = (idx) => {
         const rx = localStorage.getItem("prescription");
         if (rx) {
@@ -513,7 +653,7 @@
             if (parseInt(parsedRx[0].data[idx].qty) - 1 >= 1) {
                 parsedRx[0].data[idx].qty = parseInt(parsedRx[0].data[idx].qty) - 1;
                 localStorage.setItem("prescription", JSON.stringify(parsedRx));
-                updateRxBody(assignedUuid);
+                updateRxBody(assignedUuid, true);
             }
         }
     }
@@ -524,7 +664,18 @@
             const parsedRx = JSON.parse(rx);
             parsedRx[0].data[idx].qty = parseInt(parsedRx[0].data[idx].qty) + 1;
             localStorage.setItem("prescription", JSON.stringify(parsedRx));
-            updateRxBody(assignedUuid);
+            updateRxBody(assignedUuid, true);
+        }
+    }
+
+    const handleItemDiscount = (idx) => {
+        const rx = localStorage.getItem("prescription");
+        if (rx) {
+            const parsedRx = JSON.parse(rx);
+            parsedRx[0].data[idx].discount_type = $(`#itemDiscountType-${idx}`).val();
+            parsedRx[0].data[idx].discount_value = parseInt(itemImask[idx].unmaskedValue !== "" ? itemImask[idx].unmaskedValue : 0);
+            localStorage.setItem("prescription", JSON.stringify(parsedRx));
+            updateRxBody(assignedUuid, true);
         }
     }
 
@@ -562,6 +713,27 @@
             normalizeZeros: true,
             radix: ',',
         });
+        discountAmtImask = IMask(document.getElementById("totalDiscountAmt"), {
+            mask: Number,
+            scale: 0,
+            thousandsSeparator: '.',
+            padFractionalZeros: false,
+            normalizeZeros: true,
+            radix: ',',
+        });
+        discountPctgImask = IMask(document.getElementById("totalDiscountPctg"), {
+            mask: Number,
+            scale: 0,
+            thousandsSeparator: '.',
+            padFractionalZeros: false,
+            normalizeZeros: true,
+            radix: ',',
+            validate: function(value) {
+                var intValue = parseInt(value.replace(/\D/g, ''));
+                return intValue >= 0 && intValue <= 100;
+            },
+        });
+
 
         getMyAssignment();
 
@@ -610,9 +782,39 @@
         $("#amount").click(function(e) {
             $(this).select();
         });
+        $("#totalDiscountPctg").keyup(function(e) {
+            calculateTotalPrice(true, parseInt(e.target.value !== "" ? Number(e.target.value.replace(/\D/g, "")) : 0));
+        });
+        $("#totalDiscountPctg").click(function(e) {
+            $(this).select();
+        });
+        $("#totalDiscountAmt").keyup(function(e) {
+            calculateTotalPrice(false, parseInt(e.target.value !== "" ? Number(e.target.value.replace(/\D/g, "")) : 0));
+        });
+        $("#totalDiscountAmt").click(function(e) {
+            $(this).select();
+        });
         $("#filterForm").submit(function(e) {
             e.preventDefault();
             getMyAssignment(true);
         });
+        // Show/hide the discount divs based on the selected radio button
+        $('input[name="totalDiscType"]').change(function() {
+            if ($('#pctgRadio').is(':checked')) {
+                $('#totalDiscountPctgDiv').show();
+                $('#totalDiscountAmtDiv').hide();
+            } else if ($('#amtRadio').is(':checked')) {
+                $('#totalDiscountAmtDiv').show();
+                $('#totalDiscountPctgDiv').hide();
+            }
+            discountPctgImask.typedValue = 0;
+            discountAmtImask.typedValue = 0;
+            discountPctgImask.updateValue();
+            discountAmtImask.updateValue();
+            $("#totalDiscountAmt").trigger("keyup");
+            $("#totalDiscountPctg").trigger("keyup");
+        });
+        $("#pctgRadio").prop("checked", true);
+        $("#totalDiscountAmtDiv").hide();
     });
 </script>

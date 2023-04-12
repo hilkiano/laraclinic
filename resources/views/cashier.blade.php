@@ -72,23 +72,51 @@
                                                     <div class="col-12 p-3 bg-body-secondary rounded">
                                                         <div class="mb-3">
                                                             <label for="payment" class="form-label">Payment with</label>
-                                                            <select class="form-select" id="payment" name="payment" autocomplete="off">
-                                                                <option value="CASH">Cash</option>
-                                                                <option value="CREDIT_CARD">Credit Card</option>
-                                                                <option value="DEBIT_CARD">Debit Card</option>
-                                                                <option value="BANK_TRANSFER">Bank Transfer</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label for="amount" class="form-label">Payment amount</label>
                                                             <div class="input-group">
-                                                                <span class="input-group-text">Rp</span>
-                                                                <input type="text" id="amount" name="amount" class="form-control" autocomplete="off">
+                                                                <select class="form-select" id="payment" name="payment" autocomplete="off">
+                                                                    <option value="CASH">Cash</option>
+                                                                    <option value="CREDIT_CARD">Credit Card</option>
+                                                                    <option value="DEBIT_CARD">Debit Card</option>
+                                                                    <option value="BANK_TRANSFER">Bank Transfer</option>
+                                                                </select>
                                                                 <button id="fullPriceBtn" class="btn btn-primary" style="z-index: 0">Full Price</button>
                                                             </div>
                                                         </div>
-                                                        <div class="mb-2">
-                                                            <button class="btn btn-sm btn-primary rounded-pill"><i class="bi bi-tag-fill me-2"></i>Add Discount</button>
+                                                        <div class="row mb-2 gy-3">
+                                                            <div class="col-sm-12 col-lg-7">
+                                                                <label for="amount" class="form-label">Payment amount</label>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text">Rp</span>
+                                                                    <input type="text" id="amount" name="amount" class="form-control" autocomplete="off">
+                                                                </div>
+                                                            </div>
+                                                            <div id="totalDiscountPctgDiv" class="col-sm-12 col-lg-5">
+                                                                <label for="totalDiscountPctg" class="form-label">Discount</label>
+                                                                <div class="input-group">
+                                                                    <input type="text" id="totalDiscountPctg" class="form-control" autocomplete="off">
+                                                                    <span class="input-group-text">%</span>
+                                                                </div>
+                                                            </div>
+                                                            <div id="totalDiscountAmtDiv" class="col-sm-12 col-lg-5">
+                                                                <label for="totalDiscountAmt" class="form-label">Discount</label>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text">Rp</span>
+                                                                    <input type="text" id="totalDiscountAmt" class="form-control" autocomplete="off">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-12">
+                                                                <label class="form-label">Discount Type</label>
+                                                            </div>
+                                                            <div class="col-sm-12 mt-0">
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input" type="radio" name="totalDiscType" id="pctgRadio" value="pctg">
+                                                                    <label class="form-check-label" for="pctgRadio">Percentage</label>
+                                                                </div>
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input" type="radio" name="totalDiscType" id="amtRadio" value="amt">
+                                                                    <label class="form-check-label" for="amtRadio">Amount</label>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </form>
