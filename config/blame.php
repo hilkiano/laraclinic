@@ -34,7 +34,8 @@ return [
         \App\Models\MedicalRecord::class,
         \App\Models\Prescription::class,
         \App\Models\Medicine::class,
-        \App\Models\Services::class
+        \App\Models\Services::class,
+        \App\Models\Transaction::class
     ],
 
     /*
