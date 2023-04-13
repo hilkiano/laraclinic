@@ -14,10 +14,16 @@ return new class extends Migration
     public function up()
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
+            $table->string('id', 15)->primary();
             $table->string('appointment_uuid')->nullable();
-            $table->integer('prescription_id');
+            $table->integer('patient_id')->nullable();
+            $table->jsonb('prescription');
             $table->string('payment_type');
+            $table->decimal('total_amount', 20, 2);
+            $table->decimal('payment_amount', 20, 2);
+            $table->decimal('change', 20, 2)->nullable();
+            $table->string('discount_type')->nullable();
+            $table->integer('discount_amount')->nullable();
             $table->jsonb('additional_info')->nullable();
             $table->blameColumns();
             $table->timestamps();
