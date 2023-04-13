@@ -275,12 +275,14 @@ class AppointmentApi extends Controller
                 $newDetail->pic = auth()->id();
                 $newDetail->save();
 
-                // Add prescription
-                $newRx = new Prescription();
-                $newRx->appointment_uuid = $request->input('uuid');
-                $newRx->patient_id = $appointment->patient_id;
-                $newRx->list = $prescription ? $prescription[0]->data : null;
-                $newRx->save();
+                // Update or create prescription
+                $rx = Prescription::updateOrCreate(
+                    ['appointment_uuid' => $request->input('uuid')],
+                    [
+                        'patient_id' => $appointment->patient_id,
+                        'list' => $prescription ? $prescription[0]->data : null
+                    ]
+                );
 
                 if ($newStatus === config('constants.status.pharmacy_waiting')) {
                     // Add medical rec
@@ -288,7 +290,7 @@ class AppointmentApi extends Controller
                     $newMedRecord->appointment_uuid = $request->input('uuid');
                     $newMedRecord->record_no = Str::uuid();
                     $newMedRecord->patient_id = $appointment->patient_id;
-                    $newMedRecord->prescription_id = $newRx->id;
+                    $newMedRecord->prescription_id = $rx->id;
                     $newMedRecord->additional_note = $request->has('medical_note') ? $request->input('medical_note') : null;
                     $newMedRecord->save();
                 }

@@ -51,7 +51,7 @@
             updateRxBody(assignedUuid);
             initiateItemImask(itemLength);
             setTakeLoading(false);
-            checkPrescription();
+            checkAmountPaid();
         }
     }
 
@@ -514,6 +514,10 @@
     const handleSubmit = async (e) => {
         const uuid = e.target.getAttribute("data-uuid");
         const method = e.target.getAttribute("data-method");
+        const totalPrice = $("#totalPrice")[0].innerText;
+        const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
+        const amountChg = $("#amountChange")[0].innerText;
+        const amountChgNum = Number(amountChg.replace(/\D/g, ""));
         setTakeLoading(true);
         const btn = document.getElementById("approvementModalSubmit");
         btn.classList.add('disabled');
@@ -525,12 +529,23 @@
         const param = {
             uuid: uuid,
             method: method,
-            prescription: localStorage.getItem(`prescription`) ? localStorage.getItem(`prescription`) : null
+            prescription: localStorage.getItem(`prescription`) ? localStorage.getItem(`prescription`) : null,
+            payment_with: $("#payment").val(),
+            payment_amount: amountImask.typedValue,
+            total_discount_type: document.querySelector('input[name="totalDiscType"]:checked').value,
+            total_amount: totalPriceNum,
+            change: amountChgNum
         };
+        if (param.total_discount_type === 'pctg') {
+            param['total_discount'] = discountPctgImask.typedValue;
+        } else if (param.total_discount_type === 'amt') {
+            param['total_discount'] = discountAmtImask.typedValue;
+        }
         for (var key in param) {
             formData.append(key, param[key]);
         }
-        await fetch(`/api/v1/cashier/progress`, {
+
+        await fetch('/api/v1/cashier/progress', {
             headers: {
                 Accept: "application/json, text-plain, */*",
                 "X-Requested-With": "XMLHttpRequest",
@@ -577,19 +592,17 @@
         })
     }
 
-    const checkPrescription = () => {
-        const rx = localStorage.getItem("prescription");
-        if (rx) {
-            // check data
-            const parsedRx = JSON.parse(rx);
-            if (parsedRx[0].data.length > 0) {
-                if ($("#submitBtn").hasClass("disabled")) {
-                    $("#submitBtn").removeClass("disabled");
-                }
-            } else {
-                if (!$("#submitBtn").hasClass("disabled")) {
-                    $("#submitBtn").addClass("disabled");
-                }
+    const checkAmountPaid = () => {
+        const amountPaid = amountImask.typedValue;
+        const totalPrice = $("#totalPrice")[0].innerText;
+        const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
+        if (amountPaid >= totalPriceNum) {
+            if ($("#submitBtn").hasClass("disabled")) {
+                $("#submitBtn").removeClass("disabled");
+            }
+        } else {
+            if (!$("#submitBtn").hasClass("disabled")) {
+                $("#submitBtn").addClass("disabled");
             }
         }
     }
@@ -601,6 +614,7 @@
         amountImask.typedValue = totalPriceNum;
         amountImask.updateValue();
         $("#amount").trigger("input");
+        $("#amount").trigger("change");
 
         calculateChange();
     }
@@ -695,7 +709,6 @@
     );
 
     window.takeAssignment = takeAssignment;
-    window.checkPrescription = checkPrescription;
     window.subtractItem = subtractItem;
     window.addItem = addItem;
 
@@ -733,7 +746,6 @@
                 return intValue >= 0 && intValue <= 100;
             },
         });
-
 
         getMyAssignment();
 
@@ -778,6 +790,10 @@
         });
         $("#amount").keyup(function(e) {
             calculateChange();
+            checkAmountPaid();
+        });
+        $("#amount").change(function(e) {
+            checkAmountPaid();
         });
         $("#amount").click(function(e) {
             $(this).select();

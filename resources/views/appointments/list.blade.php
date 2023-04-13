@@ -53,6 +53,7 @@
                                                 <option value="DOC_ASSIGNED">Doctor: Assigned</option>
                                                 <option value="PHAR_WAITING">Pharmacy: Waiting</option>
                                                 <option value="PHAR_ASSIGNED">Pharmacy: Assigned</option>
+                                                <option value="PAYMENT_WAITING">Waiting for Payment</option>
                                                 <option value="IN_PAYMENT">In Payment</option>
                                                 <option value="COMPLETED">Completed</option>
                                                 <option value="CANCELED">Canceled</option>
@@ -108,6 +109,8 @@
                                                 <p class="fs-5 mb-0"><span class="badge bg-info-subtle text-info">Pharmacy: Waiting</span></p>
                                                 @elseif ($row->status === "PHAR_ASSIGNED")
                                                 <p class="fs-5 mb-0"><span class="badge bg-info">Pharmacy: Assigned</span></p>
+                                                @elseif ($row->status === "PAYMENT_WAITING")
+                                                <p class="fs-5 mb-0"><span class="badge bg-info-subtle text-info">Waiting for Payment</span></p>
                                                 @elseif ($row->status === "IN_PAYMENT")
                                                 <p class="fs-5 mb-0"><span class="badge bg-info">In Payment</span></p>
                                                 @elseif ($row->status === "COMPLETED")
