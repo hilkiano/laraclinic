@@ -5,10 +5,18 @@
     const _liveToast = document.getElementById("liveToast");
     const _approvalModal = new bootstrap.Modal("#approvementModal", {});
     const _medModal = document.getElementById("medSelectorModal");
+    const _cancelModal = document.getElementById("cancelAssignmentModal");
     let medModal;
+    let cancelModal;
     let prescription;
     if (_medModal) {
         medModal = new bootstrap.Modal('#medSelectorModal', {});
+    }
+    if (_cancelModal) {
+        cancelModal = new bootstrap.Modal('#cancelAssignmentModal', {});
+        _cancelModal.addEventListener("hidden.bs.modal", function (e) {
+            $("#cancelAssignmentForm")[0].reset();
+        });
     }
     let liveToast;
     let assignedUuid;
@@ -138,10 +146,11 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
                     <div class="row">
-                        <div class="col">
+                        <div class="col d-flex flex-grow-0">
                             <i class="me-2 bi ${getIcon(row.status)} fs-4 text-primary"></i><span class="text-primary fs-4">${row.daily_code}</span>
                         </div>
-                        <div class="col d-flex justify-content-end align-items-center">
+                        <div class="col d-flex justify-content-end align-items-center gap-2 flex-grow-1">
+                            <button onclick="window.cancelAssignment(event)" data-uuid="${row.uuid}" class="btn btn-sm btn-outline-danger">Cancel</button>
                             <a href="/appointments/detail_blank/${row.uuid}" target="_blank" class="btn btn-sm btn-outline-primary">View Detail</a>
                         </div>
                     </div>
@@ -513,7 +522,6 @@
             }
             $("#loadingIndicator").addClass("d-none");
             $("#medicalNotes").val("");
-            btn.classList.remove('disabled');
             document.getElementById("submitLoading").remove();
             _approvalModal.hide();
             localStorage.setItem('prescription', JSON.stringify([]));
@@ -603,12 +611,72 @@
         }
     }
 
+    const handleCancleAssignment = async (e) => {
+        $("#cancelAssignmentSubmitBtn").addClass("disabled");
+        $("#cancelAssignmentSubmitBtn").prepend(
+            '<div id="submitLoading" class="spinner-grow spinner-grow-sm me-2"></div>'
+        );
+        const requestBody = new FormData($("#cancelAssignmentForm")[0]);
+        await fetch("/api/v1/appointment/make-detail", {
+                headers: {
+                    Accept: "application/json, text-plain, */*",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": csrfToken,
+                },
+                method: "post",
+                credentials: "same-origin",
+                body: requestBody
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json()
+                        .catch(() => {
+                            throw new Error(response.status);
+                        })
+                        .then(({
+                            message
+                        }) => {
+                            throw new Error(message || response.status);
+                        });
+                }
+
+                return response.json();
+            })
+            .then(response => {
+                cancelModal.hide();
+                getMyAssignment();
+                if ($("#selectedAssignment").hasClass("d-block")) {
+                    $("#selectedAssignment").removeClass("d-block");
+                }
+                $("#selectedAssignment").addClass("d-none");
+                if ($("#loadingIndicator").hasClass("d-block")) {
+                    $("#loadingIndicator").removeClass("d-block");
+                }
+                $("#loadingIndicator").addClass("d-none");
+                $("#medicalNotes").val("");
+                showToast(response.message);
+            })
+            .catch(error => {
+                showToast(error, true);
+                $("#cancelAssignmentSubmitBtn").removeClass("disabled");
+                $("#submitLoading").remove();
+                cancelModal.hide();
+            });
+    }
+
     window.takeAssignment = takeAssignment;
     window.medModal = medModal;
     window.editItem = editItem;
     window.deleteItem = deleteItem;
     window.checkPrescription = checkPrescription;
     window.getPrescription = getPrescription;
+    window.cancelAssignment = (e) => {
+        const uuid = e.target.getAttribute("data-uuid");
+        $("#cancelUuid").val(uuid);
+        $("#cancelStatus").val("CANCELED");
+        cancelModal.toggle();
+    };
+
     // Listen when assignment is created
     window.Echo.channel("assignment_created").listen(
         "AssignmentCreated",
@@ -616,7 +684,7 @@
             getMyAssignment();
         }
     );
-    // Listen when assignment is taken 
+    // Listen when assignment is taken
     window.Echo.channel("assignment_taken").listen(
         "AssignmentTaken",
         (event) => {
@@ -690,6 +758,14 @@
             } else {
                 showToast('No UUID Found. Try to click the button again.', true);
             }
+        });
+        $("#cancelAssignmentSubmitBtn").click(function(e) {
+            handleCancleAssignment(e);
+        });
+        $("#markAsCancelBtn").click(function(e) {
+            $("#cancelUuid").val(assignedUuid);
+            $("#cancelStatus").val("CANCELED");
+            cancelModal.toggle();
         });
     });
 </script>

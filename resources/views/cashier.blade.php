@@ -13,13 +13,15 @@
                         <div class="col-sm-12 col-md-8">
                             <div id="loadingIndicator" class="mt-4 d-none">
                                 <div class="text-center">
-                                    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                                    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"
+                                        role="status">
                                         <span class="visually-hidden">Loading...</span>
                                     </div>
                                 </div>
                             </div>
                             <div id="selectedAssignment" class="p-0 m-0 d-none">
-                                <div id="cashierAction" style="z-index: 1" class="col-12 px-4 py-4 d-flex justify-content-between sticky-top gap-3 align-items-center">
+                                <div id="cashierAction" style="z-index: 1"
+                                    class="col-12 px-4 py-4 d-flex justify-content-between sticky-top gap-3 align-items-center">
                                     <div style="flex: 1">
                                         <div class="p-2 bg-body-secondary rounded">
                                             <div class="row">
@@ -38,8 +40,21 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <button id="cancelBtn" type="button" class="btn btn-danger rounded-pill me-2"><i class="bi bi-x-lg me-2"></i>Cancel</button>
-                                        <button id="submitBtn" type="button" class="btn btn-success rounded-pill disabled"><i class="bi bi-check-lg me-2"></i>Submit</button>
+                                        <div class="d-flex flex-column gap-2">
+                                            <div class="w-100">
+                                                <button id="cancelBtn" type="button"
+                                                    class="btn btn-danger rounded-pill me-2"><i
+                                                        class="bi bi-x-lg me-2"></i>Cancel</button>
+                                                <button id="submitBtn" type="button"
+                                                    class="btn btn-success rounded-pill disabled"><i
+                                                        class="bi bi-check-lg me-2"></i>Submit</button>
+                                            </div>
+                                            <div class="w-100 d-grid">
+                                                <button id="markAsCancelBtn" type="button"
+                                                    class="btn btn-light rounded-pill text-danger-emphasis"><i
+                                                        class="bi bi-x-lg me-2"></i>Mark As Cancelled</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-12">
@@ -47,7 +62,9 @@
                                         <div class="col-sm-12 col-md-6 col-lg-5">
                                             <div class="row">
                                                 <div class="col-sm-5 col-md-5">
-                                                    <img id="patientPotrait" src="{{ asset('images/potrait-placeholder.png') }}" class="img-thumbnail" />
+                                                    <img id="patientPotrait"
+                                                        src="{{ asset('images/potrait-placeholder.png') }}"
+                                                        class="img-thumbnail" />
                                                 </div>
                                                 <div class="col-sm-7 col-md-7">
                                                     <p class="mb-0 text-muted">Name</p>
@@ -71,37 +88,47 @@
                                                 <form id="cashierForm" class="px-0 mb-5">
                                                     <div class="col-12 p-3 bg-body-secondary rounded">
                                                         <div class="mb-3">
-                                                            <label for="payment" class="form-label">Payment with</label>
+                                                            <label for="payment" class="form-label">Payment
+                                                                with</label>
                                                             <div class="input-group">
-                                                                <select class="form-select" id="payment" name="payment" autocomplete="off">
+                                                                <select class="form-select" id="payment"
+                                                                    name="payment" autocomplete="off">
                                                                     <option value="CASH">Cash</option>
                                                                     <option value="CREDIT_CARD">Credit Card</option>
                                                                     <option value="DEBIT_CARD">Debit Card</option>
                                                                     <option value="BANK_TRANSFER">Bank Transfer</option>
                                                                 </select>
-                                                                <button id="fullPriceBtn" class="btn btn-primary" style="z-index: 0">Full Price</button>
+                                                                <button id="fullPriceBtn" class="btn btn-primary"
+                                                                    style="z-index: 0">Full Price</button>
                                                             </div>
                                                         </div>
                                                         <div class="row mb-2 gy-3">
                                                             <div class="col-sm-12 col-lg-7">
-                                                                <label for="amount" class="form-label">Payment amount</label>
+                                                                <label for="amount" class="form-label">Payment
+                                                                    amount</label>
                                                                 <div class="input-group">
                                                                     <span class="input-group-text">Rp</span>
-                                                                    <input type="text" id="amount" name="amount" class="form-control" autocomplete="off">
+                                                                    <input type="text" id="amount"
+                                                                        name="amount" class="form-control"
+                                                                        autocomplete="off">
                                                                 </div>
                                                             </div>
                                                             <div id="totalDiscountPctgDiv" class="col-sm-12 col-lg-5">
-                                                                <label for="totalDiscountPctg" class="form-label">Discount</label>
+                                                                <label for="totalDiscountPctg"
+                                                                    class="form-label">Discount</label>
                                                                 <div class="input-group">
-                                                                    <input type="text" id="totalDiscountPctg" class="form-control" autocomplete="off">
+                                                                    <input type="text" id="totalDiscountPctg"
+                                                                        class="form-control" autocomplete="off">
                                                                     <span class="input-group-text">%</span>
                                                                 </div>
                                                             </div>
                                                             <div id="totalDiscountAmtDiv" class="col-sm-12 col-lg-5">
-                                                                <label for="totalDiscountAmt" class="form-label">Discount</label>
+                                                                <label for="totalDiscountAmt"
+                                                                    class="form-label">Discount</label>
                                                                 <div class="input-group">
                                                                     <span class="input-group-text">Rp</span>
-                                                                    <input type="text" id="totalDiscountAmt" class="form-control" autocomplete="off">
+                                                                    <input type="text" id="totalDiscountAmt"
+                                                                        class="form-control" autocomplete="off">
                                                                 </div>
                                                             </div>
                                                             <div class="col-sm-12">
@@ -109,12 +136,18 @@
                                                             </div>
                                                             <div class="col-sm-12 mt-0">
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio" name="totalDiscType" id="pctgRadio" value="pctg">
-                                                                    <label class="form-check-label" for="pctgRadio">Percentage</label>
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="totalDiscType" id="pctgRadio"
+                                                                        value="pctg">
+                                                                    <label class="form-check-label"
+                                                                        for="pctgRadio">Percentage</label>
                                                                 </div>
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio" name="totalDiscType" id="amtRadio" value="amt">
-                                                                    <label class="form-check-label" for="amtRadio">Amount</label>
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="totalDiscType" id="amtRadio"
+                                                                        value="amt">
+                                                                    <label class="form-check-label"
+                                                                        for="amtRadio">Amount</label>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -135,25 +168,31 @@
                                 <div class="col-12">
                                     <form id="filterForm">
                                         <div class="input-group mb-3 px-3">
-                                            <input type="text" class="form-control" id="filterName" placeholder="Search by customer name">
-                                            <button class="btn btn-outline-secondary" type="submit" form="filterForm" id="filterBtn"><i class="bi bi-search"></i></button>
+                                            <input type="text" class="form-control" id="filterName"
+                                                placeholder="Search by customer name">
+                                            <button class="btn btn-outline-secondary" type="submit"
+                                                form="filterForm" id="filterBtn"><i
+                                                    class="bi bi-search"></i></button>
                                         </div>
                                     </form>
                                 </div>
                                 <div style="height: calc(100vh - 220px); overflow: scroll;">
                                     <div class="col-12">
                                         <div id="loadingList" class="d-flex flex-column flex-nowrap overflow-scroll">
-                                            @foreach ([0,1,2,3,4,5,6,7,8,9] as $idx => $card)
-                                            <div class="card mb-4 flex-shrink-0 border-0" style="width: 100%">
-                                                <div class="card-body p-0">
-                                                    <span class="placeholder-glow">
-                                                        <span class="placeholder border-0 bg-dark-subtle col-12 rounded" style="height: 247.733px"></span>
-                                                    </span>
+                                            @foreach ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as $idx => $card)
+                                                <div class="card mb-4 flex-shrink-0 border-0" style="width: 100%">
+                                                    <div class="card-body p-0">
+                                                        <span class="placeholder-glow">
+                                                            <span
+                                                                class="placeholder border-0 bg-dark-subtle col-12 rounded"
+                                                                style="height: 247.733px"></span>
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
                                             @endforeach
                                         </div>
-                                        <div id="myList" class="d-none flex-column flex-nowrap overflow-scroll px-3">
+                                        <div id="myList"
+                                            class="d-none flex-column flex-nowrap overflow-scroll px-3">
 
                                         </div>
                                     </div>
@@ -179,7 +218,37 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="approvementModalSubmit">Yes</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                    id="approvementModalSubmit">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="cancelAssignmentModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelAssignmentHead">Cancel Assignment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="cancelAssignmentBody">
+                <form id="cancelAssignmentForm">
+                    <input type="hidden" name="uuid" id="cancelUuid" />
+                    <input type="hidden" id="cancelStatus" name="status" />
+                    <div class="row gy-2">
+                        <div class="col-12">
+                            <label for="additionalNote" class="form-label">Add Notes</label>
+                            <textarea autocomplete="off" class="form-control" name="additional_note" rows="3" autocomplete="off"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal"
+                    id="cancelAssignmentCloseBtn">Cancel</button>
+                <button type="submit" form="detailForm" class="btn btn-primary"
+                    id="cancelAssignmentSubmitBtn">Submit</button>
             </div>
         </div>
     </div>

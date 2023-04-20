@@ -135,10 +135,23 @@ hr {
     margin-left: -22px;
 }
 
-#mainContent {
-    margin-left: 280px;
-    @include md {
-        margin-left: 0;
+@-moz-document url-prefix() {
+    #mainContent {
+        margin-left: 280px;
+        @include md {
+            margin-left: 0;
+        }
+    }
+}
+
+@supports not (-moz-appearance: none) {
+    #mainContent {
+        margin-left: 260px;
+        padding-left: 2em;
+        @include md {
+            padding-left: 0;
+            margin-left: 0;
+        }
     }
 }
 
