@@ -53,4 +53,8 @@ Route::group(['middleware' => 'web.auth.jwt'], function () use ($router) {
     $router->group(['prefix' => 'cashier'], function () use ($router) {
         $router->get('/', '\App\Http\Controllers\Web\CashierController@index');
     });
+
+    $router->group(['prefix' => 'transactions'], function () use ($router) {
+        $router->get('/', '\App\Http\Controllers\Web\TransactionController@index');
+    });
 });

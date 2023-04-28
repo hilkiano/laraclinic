@@ -1,0 +1,226 @@
+<script type="module">
+    const _liveToast = document.getElementById("liveToast");
+    const _receiptModal = document.getElementById("receiptModal");
+    let receiptModal;
+    if (_receiptModal) {
+        receiptModal = new bootstrap.Modal("#receiptModal", {});
+    }
+    let liveToast;
+    let tableData;
+    let fromDTPicker;
+    let toDTPicker;
+
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
+
+    // Get transaction list
+    const getList = async (p) => {
+        showTableLoading(6, "#trxRows");
+        const page = p ? p : 0;
+        const param = {
+            limit: 10,
+            page: page ? page : 0,
+            patient_name: $("#patientName").val() !== "" ? $("#patientName").val() : undefined
+        };
+        if (fromDTPicker.dates.lastPicked && toDTPicker.dates.lastPicked) {
+            param['startDate'] = moment.parseZone(fromDTPicker.dates.lastPicked).utc().format();
+            param['endDate'] = moment.parseZone(toDTPicker.dates.lastPicked).utc().format();
+        }
+        const formData = new FormData();
+        for (var key in param) {
+            if (typeof param[key] !== "undefined") {
+                formData.append(key, param[key]);
+            }
+        }
+
+        await fetch("/api/v1/transactions/list", {
+            headers: {
+                Accept: "application/json, text-plain, */*",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            method: "post",
+            credentials: "same-origin",
+            body: formData
+        }).then(response => {
+            if (!response.ok) {
+                return response.json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({
+                        message
+                    }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+
+            return response.json();
+        }).then(response => {
+            $("#trxRows").empty();
+            if (response.data.length > 0) {
+                tableData = response.data;
+                response.data.map((row, i) => iteratePaginationData(page, row, i));
+                $("#allCount").html(`${response.count}`);
+                $("#pagination").html(makePagination(response));
+            } else {
+                let html = `
+                    <tr>
+                        <td colspan="6">No Data.</td>
+                    </tr>
+                `;
+
+                $("#trxRows").append(html);
+            }
+        }).catch(error => {
+            showToast(error, true);
+        })
+    }
+
+    // Iterate from getList and returns row html
+    const iteratePaginationData = (page, row, i) => {
+        const num = page * 10;
+        const iteration = i + 1;
+        let html;
+        html += `
+            <tr>
+                <td scope="row">${ row.id }</td>
+                <td>${ row.created_at }</td>
+                <td>${ row.patient_name }</td>
+                <td><button class="btn btn-sm btn-outline-primary" onclick="window.showReceipt(${i})">Cart Content</button></td>
+                <td>${ row.total_amount }</td>
+                <td>${ row.payment_type }</td>
+            </tr>
+        `;
+
+        $("#trxRows").append(html);
+    }
+
+    // Show toast message
+    const showToast = (text, isError = false) => {
+        if (isError) {
+            $("#errorToastHeader").removeClass("d-none").addClass("d-block");
+            $("#successToastHeader").removeClass("d-block").addClass("d-none");
+        } else {
+            $("#errorToastHeader").removeClass("d-block").addClass("d-none");
+            $("#successToastHeader").removeClass("d-none").addClass("d-block");
+        }
+
+        $("#toastBody").html(text);
+        liveToast.show();
+    }
+
+    const showReceipt = (tableRowIndex) => {
+        const prescription = tableData[tableRowIndex].prescription[0].data;
+        let html = '';
+        prescription.map((item, idx) => {
+            const qtyNum = Number(item.qty);
+            html += `
+                <tr>
+                    <td scope="row">${ idx + 1 }</td>
+                    <td>${item.sku}</td>
+                    <td>${item.label}</td>
+                    <td>Rp ${item.price.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}</td>
+                    <td>${item.qty.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}</td>
+                    <td>${getDiscountHtml(item)}</td>
+                    <td>${getSubTotal(item)}</td>
+                </tr>
+            `;
+        });
+        $("#itemRows").html(html);
+        $("#totalDiscount").html(getTotalDiscountHtml(tableData[tableRowIndex]));
+        $("#totalAmount").html(tableData[tableRowIndex].total_amount);
+        $("#paidAmount").html(`Rp ${Number(tableData[tableRowIndex].payment_amount).toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`);
+        $("#changeAmount").html(`Rp ${Number(tableData[tableRowIndex].change).toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`);
+        receiptModal.toggle();
+    }
+
+    const getTotalDiscountHtml = (row) => {
+        let html = '';
+
+        if (row.discount_amount > 0) {
+            if (row.discount_type === "pctg") {
+                html = `${row.discount_amount}%`
+            } else if (row.discount_type === "amt") {
+                html = `Rp ${row.discount_amount.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`;
+            }
+        } else {
+            html = '-';
+        }
+
+        return html;
+    }
+
+    const getDiscountHtml = (item) => {
+        let html = '';
+
+        if (item.discount_value > 0) {
+            if (item.discount_type === "pctg") {
+                html = `${item.discount_value}%`;
+            } else if (item.discount_type === "amt") {
+                html = `Rp ${item.discount_value.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`;
+            }
+        } else {
+            html = '-'
+        }
+
+        return html;
+    }
+
+    const getSubTotal = (item) => {
+        let html = '';
+        let subTotal = 0;
+        let discountAmt = 0;
+        let itemPrice = item.price;
+        if (item.discount_value > 0) {
+            if (item.discount_type === "pctg") {
+                discountAmt = item.price * (item.discount_value / 100);
+            } else if (item.discount_type === "amt") {
+                discountAmt = item.discount_value;
+            }
+            itemPrice = itemPrice - discountAmt;
+        }
+
+        subTotal = itemPrice * item.qty;
+
+        html = `Rp ${subTotal.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`
+
+        return html;
+    }
+
+    window.getList = getList;
+    window.showReceipt = showReceipt;
+
+    $(document).ready(function() {
+        liveToast = new bootstrap.Toast(_liveToast);
+        fromDTPicker = new TempusDominus(document.getElementById("fromDate"), tDConfigsWithTime);
+        toDTPicker = new TempusDominus(document.getElementById("toDate"), tDConfigsWithTime);
+        toDTPicker.disable();
+        toDTPicker.updateOptions({
+            useCurrent: false
+        })
+        $("#fromDate").on("change.td", function(e) {
+            toDTPicker.enable();
+            toDTPicker.updateOptions({
+                restrictions: {
+                    minDate: e.detail.date
+                }
+            })
+        });
+
+        getList();
+
+        $("#tableForm").submit(function(e) {
+            e.preventDefault();
+            getList();
+        });
+        $("#resetFilterBtn").click(function(e) {
+            $("#tableForm").trigger("reset");
+            fromDTPicker.dates.setValue(null);
+            toDTPicker.dates.setValue(null);
+            toDTPicker.disable();
+            getList();
+        });
+    });
+</script>
