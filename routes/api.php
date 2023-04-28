@@ -83,5 +83,11 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
         $router->group(['prefix' => 'cashier'], function () use ($router) {
             $router->post('progress', '\App\Http\Controllers\Api\CashierApi@progress');
         });
+        // transactions
+        $router->group(['prefix' => 'transactions'], function () use ($router) {
+            $router->post('list', '\App\Http\Controllers\Api\TransactionsApi@list');
+            $router->post('save', '\App\Http\Controllers\Api\TransactionsApi@save');
+            $router->post('delete-restore', '\App\Http\Controllers\Api\TransactionsApi@deleteRestore');
+        });
     });
 });
