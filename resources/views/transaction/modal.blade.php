@@ -34,6 +34,10 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal"
                     id="receiptModalCloseBtn">Close</button>
+                @if (in_array('PATIENT_PRESCRIPTION_CHECKOUT', $privs))
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="receiptModalPrintBtn"><i
+                            class="bi bi-printer me-2"></i>Print</button>
+                @endif
             </div>
         </div>
     </div>

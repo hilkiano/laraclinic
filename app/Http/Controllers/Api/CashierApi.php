@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Appointments;
 use App\Models\AppointmentsDetail;
 use App\Events\AssignmentTaken;
+use App\Events\PrintReceipt;
 use App\Models\Transaction;
 use App\Models\Prescription;
 use Illuminate\Support\Facades\Log;
@@ -100,6 +101,9 @@ class CashierApi extends Controller
 
             $trx->save();
 
+            // Dispatch print event
+            PrintReceipt::dispatch($trx->toArray());
+
             if ($trx) {
                 $appointment->status = config('constants.status.completed');
                 $appointment->save();
@@ -112,13 +116,13 @@ class CashierApi extends Controller
                 $newDetail->save();
 
                 // Update or create prescription
-                $rx = Prescription::updateOrCreate(
-                    ['appointment_uuid' => $data['uuid']],
-                    [
-                        'patient_id' => $appointment->patient_id,
-                        'list' => json_decode($data['prescription'])
-                    ]
-                );
+                // $rx = Prescription::updateOrCreate(
+                //     ['appointment_uuid' => $data['uuid']],
+                //     [
+                //         'patient_id' => $appointment->patient_id,
+                //         'list' => json_decode($data['prescription'])
+                //     ]
+                // );
             }
 
             return true;

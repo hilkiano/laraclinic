@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1'], function () use ($router) {
     $router->post('/login', \App\Http\Controllers\Auth\LoginController::class)->name('login');
-    $router->get('/test-print', 'App\Http\Controllers\TestController@print');
+    $router->post('print', '\App\Http\Controllers\Api\PrintController@dispatchPrint');
 
     // guarded API. Must have JWT token.
     $router->group(['middleware' => 'auth.jwt'], function () use ($router) {
@@ -89,5 +89,7 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
             $router->post('save', '\App\Http\Controllers\Api\TransactionsApi@save');
             $router->post('delete-restore', '\App\Http\Controllers\Api\TransactionsApi@deleteRestore');
         });
+        // print
+        $router->post('dispatch-print', '\App\Http\Controllers\Api\PrintController@dispatchPrint');
     });
 });
