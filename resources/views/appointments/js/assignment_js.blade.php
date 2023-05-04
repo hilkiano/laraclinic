@@ -533,9 +533,9 @@
         })
     }
 
-    const editItem = (uuid, idx) => {
+    const editItem = (uuid, idx, event) => {
         $('#medSelectorModalSave').attr('data-uuid', uuid);
-        medModal.toggle();
+        medModal.toggle(event.target.id);
     }
 
     const deleteItem = (uuid, idx) => {
@@ -572,7 +572,7 @@
                                         ${d.notes ? d.notes : '-'}
                                         </div>
                                         <div class="mt-2 mb-2">
-                                        <button type="button" id="editBtn-${idx}" onclick="window.editItem('${uuid}', ${idx})" class="btn btn-sm btn-outline-primary rounded-circle"><i id="editIcon-${idx}" class="bi bi-pencil-square"></i></button>
+                                        <button type="button" id="editBtn-${idx}" onclick="window.editItem('${uuid}', ${idx}, event)" class="btn btn-sm btn-outline-primary rounded-circle"><i id="editIcon-${idx}" class="bi bi-pencil-square"></i></button>
                                         <button type="button" id="delBtn-${idx}" onclick="window.deleteItem('${uuid}', ${idx})" class="btn btn-sm btn-outline-danger rounded-circle ms-1"><i id="delIcon-${idx}" class="bi bi-trash3"></i></button>
                                         </div>
                                     </div>
@@ -751,7 +751,7 @@
             checkPrescription();
         });
         $("#addMedsBtn").click(function(e) {
-            medModal.toggle();
+            medModal.toggle(e.target.id);
             const uuid = $("#submitBtn").get(0).getAttribute("data-uuid");
             if (uuid) {
                 $('#medSelectorModalSubmit').attr('data-uuid', uuid);

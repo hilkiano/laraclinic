@@ -1,6 +1,7 @@
 <script type="module">
     const _liveToast = document.getElementById("liveToast");
     const _receiptModal = document.getElementById("receiptModal");
+    const printBtn  = document.getElementById("receiptModalPrintBtn");
     let receiptModal;
     if (_receiptModal) {
         receiptModal = new bootstrap.Modal("#receiptModal", {});
@@ -113,6 +114,12 @@
 
     const showReceipt = (tableRowIndex) => {
         const prescription = tableData[tableRowIndex].prescription[0].data;
+        // add data attribute of trx id to print btn
+        if (printBtn) {
+            const myElement = document.querySelector('#receiptModalPrintBtn');
+            myElement.dataset.trxId = tableData[tableRowIndex].id;
+        }
+
         let html = '';
         prescription.map((item, idx) => {
             const qtyNum = Number(item.qty);
@@ -189,6 +196,54 @@
         return html;
     }
 
+    const sendPrintRequest = async (e) => {
+        const trxId = e.target.getAttribute('data-trx-id');
+
+        if (!trxId) {
+            console.error("No Transaction ID");
+            return false;
+        }
+
+        const param = {
+            id: trxId
+        };
+        const formData = new FormData();
+        for (var key in param) {
+            if (typeof param[key] !== "undefined") {
+                formData.append(key, param[key]);
+            }
+        }
+
+        await fetch("/api/v1/dispatch-print", {
+            headers: {
+                Accept: "application/json, text-plain, */*",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            method: "post",
+            credentials: "same-origin",
+            body: formData
+        }).then(response => {
+            if (!response.ok) {
+                return response.json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({
+                        message
+                    }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+
+            return response.json();
+        }).then(response => {
+            // do nothing
+        }).catch(error => {
+            showToast(error, true);
+        })
+    }
+
     window.getList = getList;
     window.showReceipt = showReceipt;
 
@@ -222,5 +277,11 @@
             toDTPicker.disable();
             getList();
         });
+        if (printBtn) {
+            $("#receiptModalPrintBtn").click(function(e) {
+                sendPrintRequest(e);
+            });
+        }
+
     });
 </script>

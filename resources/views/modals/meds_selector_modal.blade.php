@@ -22,9 +22,12 @@
                         <div class="col-sm-12 col-md-4">
                             <label class="form-label" for="qty">Qty</label>
                             <div class="input-group">
-                                <button type="button" class="btn btn-primary" id="subtractBtn"><i class="bi bi-dash-lg"></i></button>
-                                <input type="text" class="form-control" name="qty" id="qty" value="1" readonly />
-                                <button type="button" class="btn btn-primary" id="addBtn"><i class="bi bi-plus-lg"></i></button>
+                                <button type="button" class="btn btn-primary" id="subtractBtn"><i
+                                        class="bi bi-dash-lg"></i></button>
+                                <input type="text" class="form-control" name="qty" id="qty" value="1"
+                                    readonly />
+                                <button type="button" class="btn btn-primary" id="addBtn"><i
+                                        class="bi bi-plus-lg"></i></button>
                             </div>
 
                         </div>
@@ -37,8 +40,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="medsSvcForm" class="btn btn-primary" id="medSelectorModalSubmit">Add To Prescription</button>
-                <button type="submit" form="medsSvcForm" class="btn btn-success" id="medSelectorModalSave">Save</button>
+                <button type="submit" form="medsSvcForm" class="btn btn-primary" id="medSelectorModalSubmit">Add To
+                    Prescription</button>
+                <button type="submit" form="medsSvcForm" class="btn btn-success"
+                    id="medSelectorModalSave">Save</button>
             </div>
         </div>
     </div>
@@ -55,9 +60,9 @@
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content");
 
-    const initiateForm = (e) => {
+    const initiateForm = (target) => {
         subtractBtnCheckState();
-        if (e.explicitOriginalTarget.id === "addMedsBtn") {
+        if (target === "addMedsBtn") {
             // hide save btn
             $("#medSelectorModalSave").addClass("d-none").removeClass("d-block");
             $("#medSelectorModalSubmit").addClass("d-block").removeClass("d-none");
@@ -96,7 +101,7 @@
             $("#medSelectorModalSubmit").addClass("d-none").removeClass("d-block");
             $("#medSelectorModalSave").removeClass("d-none").addClass("d-block");
             medSelectorForm.reset();
-            const id = e.explicitOriginalTarget.id;
+            const id = target;
             const idx = id.indexOf('-');
             const index = id.substring(idx + 1);
             const rx = localStorage.getItem('prescription');
@@ -190,7 +195,7 @@
                                         ${d.notes ? d.notes : '-'}
                                         </div>
                                         <div class="mt-2 mb-2">
-                                        <button type="button" id="editBtn-${idx}" onclick="window.editItem('${uuid}', ${idx})" class="btn btn-sm btn-outline-primary rounded-circle"><i id="editIcon-${idx}" class="bi bi-pencil-square"></i></button>
+                                        <button type="button" id="editBtn-${idx}" onclick="window.editItem('${uuid}', ${idx}, event)" class="btn btn-sm btn-outline-primary rounded-circle"><i id="editIcon-${idx}" class="bi bi-pencil-square"></i></button>
                                         <button type="button" id="delBtn-${idx}" onclick="window.deleteItem('${uuid}', ${idx})" class="btn btn-sm btn-outline-danger rounded-circle ms-1"><i id="delIcon-${idx}" class="bi bi-trash3"></i></button>
                                         </div>
                                     </div>
@@ -286,7 +291,9 @@
             handleItemSave(e);
         }
     });
-    modal.addEventListener("show.bs.modal", initiateForm);
+    modal.addEventListener("show.bs.modal", function(event) {
+        initiateForm(event.relatedTarget);
+    });
     modal.addEventListener("shown.bs.modal", function() {
         subtractBtnCheckState();
         checkFormState();
