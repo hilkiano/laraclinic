@@ -525,6 +525,7 @@
             document.getElementById("submitLoading").remove();
             _approvalModal.hide();
             localStorage.setItem('prescription', JSON.stringify([]));
+            btn.classList.remove('disabled');
         }).catch(error => {
             showToast(error, true);
             btn.classList.remove('disabled');
