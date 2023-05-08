@@ -48,7 +48,7 @@ class PatientListController extends Controller
 
     private function getViewData($request)
     {
-        $patientModel = Patients::query()->with(['patientPotrait', 'appointments']);
+        $patientModel = Patients::query()->with(['patientPotrait', 'appointments'])->orderBy('name', 'asc');
         $limit = $request->has("limit") ? $request->input("limit") : 20;
         $filterBy = $request->has("filter_by") ? $request->input("filter_by") : null;
         $filterField = $request->has("filter_field") ? $request->input("filter_field") : null;
