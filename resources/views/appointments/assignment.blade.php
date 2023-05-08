@@ -11,8 +11,23 @@
                 <div class="container-fluid mt-4 px-0">
                     <div class="row gy-2">
                         <div class="col-12 px-4">
-                            <p class="fs-4 mb-0">My Assignment</p>
-                            <p class="text-muted fs-5">{{ $today }}</p>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6">
+                                    <p class="fs-4 mb-0">My Assignment</p>
+                                    <p class="text-muted fs-5">{{ $today }}</p>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <form id="filterForm">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="filterName"
+                                                placeholder="Search by patient name">
+                                            <button class="btn btn-outline-secondary" type="submit" form="filterForm"
+                                                id="filterBtn"><i class="bi bi-search"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="container-fluid p-0">
                             <div id="loadingList" class="d-flex flex-row flex-nowrap overflow-scroll pb-4">

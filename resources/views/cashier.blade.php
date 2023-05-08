@@ -169,7 +169,7 @@
                                     <form id="filterForm">
                                         <div class="input-group mb-3 px-3">
                                             <input type="text" class="form-control" id="filterName"
-                                                placeholder="Search by customer name">
+                                                placeholder="Search by patient name">
                                             <button class="btn btn-outline-secondary" type="submit"
                                                 form="filterForm" id="filterBtn"><i
                                                     class="bi bi-search"></i></button>

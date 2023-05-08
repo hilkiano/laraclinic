@@ -21,7 +21,7 @@
     let liveToast;
     let assignedUuid;
 
-    const getMyAssignment = async () => {
+    const getMyAssignment = async (onlyCards = false) => {
         setLoading(true);
         const [listCards, assigned] = await Promise.all([getListCards(), getAssigned()]);
         if (listCards) {
@@ -43,7 +43,7 @@
                 $("#myList").html(emptyCard);
             }
         }
-        if (assigned.data) {
+        if (assigned.data && !onlyCards) {
             $(".take-assignment-btn").addClass("disabled");
             updateMainContent(assigned.data);
             $("#cancelBtn").attr("data-uuid", assigned.data.uuid);
@@ -56,7 +56,12 @@
     }
 
     const getListCards = async () => {
-        return await fetch(`/api/v1/appointment/mine`, {
+        const filterParam = $("#filterName").val() !== "" ? $("#filterName").val() : null;
+        let url = `/api/v1/appointment/mine`;
+        if (filterParam) {
+            url = url + `?name=${filterParam}`;
+        }
+        return await fetch(url, {
             headers: {
                 Accept: "application/json, text-plain, */*",
                 "X-Requested-With": "XMLHttpRequest",
@@ -731,6 +736,10 @@
             } else {
                 showToast('No UUID Found. Try to click the button again.', true);
             }
+        });
+        $("#filterForm").submit(function(e) {
+            e.preventDefault();
+            getMyAssignment(true);
         });
         $("#approvementModalSubmit").click(function(e) {
             handleSubmit(e);
