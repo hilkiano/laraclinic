@@ -13,7 +13,8 @@ class Prescription extends Model
     protected $fillable = [
         'appointment_uuid',
         'patient_id',
-        'list'
+        'list',
+        'source'
     ];
 
     protected $casts = [

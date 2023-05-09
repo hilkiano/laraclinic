@@ -59,6 +59,7 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
             $router->post('progress', '\App\Http\Controllers\Api\AppointmentApi@progress');
             $router->post('get-assignation', '\App\Http\Controllers\Api\AppointmentApi@getAssignation');
             $router->get('item-list/{query}', '\App\Http\Controllers\Api\AppointmentApi@getItems');
+            $router->post('send-to-doc', '\App\Http\Controllers\Api\AppointmentApi@sendToDoc');
         });
         $router->group(['prefix' => 'user'], function () use ($router) {
             $router->post('save-configs', '\App\Http\Controllers\Web\UsersController@saveConfigs');
