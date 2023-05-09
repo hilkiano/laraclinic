@@ -6,8 +6,10 @@
     const _approvalModal = new bootstrap.Modal("#approvementModal", {});
     const _medModal = document.getElementById("medSelectorModal");
     const _cancelModal = document.getElementById("cancelAssignmentModal");
+    const _sendToDocModal = document.getElementById("sendToDocModal");
     let medModal;
     let cancelModal;
+    let sendToDocModal;
     let prescription;
     if (_medModal) {
         medModal = new bootstrap.Modal('#medSelectorModal', {});
@@ -16,6 +18,12 @@
         cancelModal = new bootstrap.Modal('#cancelAssignmentModal', {});
         _cancelModal.addEventListener("hidden.bs.modal", function (e) {
             $("#cancelAssignmentForm")[0].reset();
+        });
+    }
+    if (_sendToDocModal) {
+        sendToDocModal = new bootstrap.Modal("#sendToDocModal", {});
+        _sendToDocModal.addEventListener("hidden.bs.modal", function (e) {
+            $("#sendToDocForm")[0].reset();
         });
     }
     let liveToast;
@@ -396,7 +404,13 @@
                 localStorage.setItem("prescription", JSON.stringify(parsedRx));
             }
         }
-        $("#medicalNotes").val(data.medical_record ? data.medical_record.additional_note : "");
+        const group = parseInt("{{ $group }}");
+        if (group === 3) {
+            $("#medicalNotes").val(data.medical_record ? data.medical_record.additional_note : "");
+        } else if (group === 4) {
+            $("#medicalNotes").html(data.medical_record ? data.medical_record.additional_note : "");
+        }
+
     }
 
     const createMedicalRows = (data) => {
@@ -649,6 +663,8 @@
                 return response.json();
             })
             .then(response => {
+                $("#cancelAssignmentSubmitBtn").removeClass("disabled");
+                $("#submitLoading").remove();
                 cancelModal.hide();
                 getMyAssignment();
                 if ($("#selectedAssignment").hasClass("d-block")) {
@@ -659,6 +675,7 @@
                     $("#loadingIndicator").removeClass("d-block");
                 }
                 $("#loadingIndicator").addClass("d-none");
+                localStorage.setItem('prescription', JSON.stringify([]));
                 $("#medicalNotes").val("");
                 showToast(response.message);
             })
@@ -667,6 +684,62 @@
                 $("#cancelAssignmentSubmitBtn").removeClass("disabled");
                 $("#submitLoading").remove();
                 cancelModal.hide();
+            });
+    }
+
+    const handleSendToDoc = async (e) => {
+        $("#sendToDocSubmitBtn").addClass("disabled");
+        $("#sendToDocSubmitBtn").prepend(
+            '<div id="submitLoading" class="spinner-grow spinner-grow-sm me-2"></div>'
+        );
+        const requestBody = new FormData($("#sendToDocForm")[0]);
+        await fetch("/api/v1/appointment/send-to-doc", {
+                headers: {
+                    Accept: "application/json, text-plain, */*",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": csrfToken,
+                },
+                method: "post",
+                credentials: "same-origin",
+                body: requestBody
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json()
+                        .catch(() => {
+                            throw new Error(response.status);
+                        })
+                        .then(({
+                            message
+                        }) => {
+                            throw new Error(message || response.status);
+                        });
+                }
+
+                return response.json();
+            })
+            .then(response => {
+                $("#sendToDocSubmitBtn").removeClass("disabled");
+                $("#submitLoading").remove();
+                sendToDocModal.hide();
+                getMyAssignment();
+                if ($("#selectedAssignment").hasClass("d-block")) {
+                    $("#selectedAssignment").removeClass("d-block");
+                }
+                $("#selectedAssignment").addClass("d-none");
+                if ($("#loadingIndicator").hasClass("d-block")) {
+                    $("#loadingIndicator").removeClass("d-block");
+                }
+                $("#loadingIndicator").addClass("d-none");
+                localStorage.setItem('prescription', JSON.stringify([]));
+                $("#medicalNotes").val("");
+                showToast(response.message);
+            })
+            .catch(error => {
+                showToast(error, true);
+                $("#sendToDocSubmitBtn").removeClass("disabled");
+                $("#submitLoading").remove();
+                sendToDocModal.hide();
             });
     }
 
@@ -772,10 +845,18 @@
         $("#cancelAssignmentSubmitBtn").click(function(e) {
             handleCancleAssignment(e);
         });
+        $("#sendToDocSubmitBtn").click(function(e) {
+            handleSendToDoc(e);
+        });
         $("#markAsCancelBtn").click(function(e) {
             $("#cancelUuid").val(assignedUuid);
             $("#cancelStatus").val("CANCELED");
             cancelModal.toggle();
+        });
+        $("#sendToDocBtn").click(function(e) {
+            $("#sendToDocUuid").val(assignedUuid);
+            $("#patientNameModal").html($("#patientName").html().trim());
+            sendToDocModal.toggle();
         });
     });
 </script>

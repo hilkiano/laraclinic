@@ -61,14 +61,21 @@
                                 <div class="row w-100 gx-0">
                                     <div class="col d-flex">
                                         <button id="markAsCancelBtn" type="button"
-                                            class="btn btn-light rounded-pill text-danger-emphasis"><i
+                                            class="btn btn-light rounded-pill text-danger-emphasis me-2"><i
                                                 class="bi bi-x-lg me-2"></i>Mark As Cancelled</button>
+                                        @if ($group === 4)
+                                            <button id="sendToDocBtn" type="button"
+                                                class="btn btn-light rounded-pill text-primary-emphasis"><i
+                                                    class="bi bi-clipboard2-pulse me-2"></i>Need Doctor
+                                                Consultation</button>
+                                        @endif
                                     </div>
-                                    <div class="col d-flex justify-content-end align-items-center gap-2">
-                                        <button id="cancelBtn" type="button" class="btn btn-danger rounded-pill"><i
+                                    <div class="col d-flex justify-content-end align-items-center gap-2 flex-grow-0">
+                                        <button id="cancelBtn" type="button"
+                                            class="btn btn-danger rounded-pill d-flex"><i
                                                 class="bi bi-x-lg me-2"></i>Cancel</button>
                                         <button id="submitBtn" type="button"
-                                            class="btn btn-success rounded-pill disabled"><i
+                                            class="btn btn-success rounded-pill disabled d-flex"><i
                                                 class="bi bi-check-lg me-2"></i>Submit</button>
                                     </div>
                                 </div>
@@ -168,7 +175,9 @@
                                             @if ($group === 3)
                                                 <textarea id="medicalNotes" class="form-control" rows="3" autocomplete="off"></textarea>
                                             @else
-                                                <textarea id="medicalNotes" class="form-control" rows="3" autocomplete="off" readonly></textarea>
+                                                <div id="medicalNotes"
+                                                    class="p-3 bg-body-secondary rounded text-break">
+                                                </div>
                                             @endif
                                         </div>
                                     </div>
@@ -223,8 +232,30 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal"
                     id="cancelAssignmentCloseBtn">Cancel</button>
-                <button type="submit" form="detailForm" class="btn btn-primary"
-                    id="cancelAssignmentSubmitBtn">Submit</button>
+                <button type="button" class="btn btn-primary" id="cancelAssignmentSubmitBtn">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="sendToDocModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sendToDocHead">Send To Doctor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="sendToDocBody">
+                <form id="sendToDocForm">
+                    <input type="hidden" name="uuid" id="sendToDocUuid" />
+                </form>
+                Are you sure you want to send this patient (<span class="fw-bold" id="patientNameModal"></span>) data
+                to doctor?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal"
+                    id="sendToDocCloseBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="sendToDocSubmitBtn">Submit</button>
             </div>
         </div>
     </div>

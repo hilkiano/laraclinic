@@ -416,13 +416,55 @@ class AppointmentApi extends Controller
         }
     }
 
-    private function getDailyCode(string $reason, $visitTime): string
+    public function sendToDoc(Request $request)
     {
-        $count = Appointments::whereDate('visit_time', $visitTime->toDateString())
-            ->where('visit_reason', $reason)
-            ->count();
+        try {
+            $validator = Validator::make($request->all(), [
+                'uuid'          => 'required'
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'    => false,
+                    'message'   => $validator->errors()
+                ], 422);
+            }
 
-        $initial = $reason === config('constants.reason.doctor') ? "A" : "B";
-        return $initial . str_pad($count + 1, 3, "0", STR_PAD_LEFT);
+            // Check if this patient already has consultation
+            $details = AppointmentsDetail::where('appointment_uuid', $request->input('uuid'))->get();
+            foreach ($details as $detail) {
+                if ($detail->status === config('constants.status.doctor_assigned')) {
+                    return response()->json([
+                        'status'    => false,
+                        'message'   => 'This patient already has consultation. Cannot re-assigned to doctor.'
+                    ], 400);
+                }
+            }
+
+            // Change status
+            $assignment = Appointments::where('uuid', $request->input('uuid'))->first();
+            $assignment->status = config('constants.status.doctor_waiting');
+            $assignment->save();
+
+            $request->merge(["status" => $assignment->status, "pic" => auth()->id()]);
+            $makeDetail = $this->makeDetail($request);
+
+            if ($makeDetail->getStatusCode() === 200) {
+                return response()->json([
+                    'status'    => false,
+                    'message'   => 'Assigned to doctor.'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status'    => false,
+                    'message'   => 'Re-assignment to doctor failed.'
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
     }
 }
