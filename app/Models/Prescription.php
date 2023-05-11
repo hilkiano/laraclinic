@@ -35,9 +35,11 @@ class Prescription extends Model
         );
     }
 
-    public function createdBy()
+    public function createdBy(): Attribute
     {
-        return $this->belongsTo(Users::class, 'created_by', 'id');
+        return Attribute::make(
+            get: fn ($value) => Users::select('name')->where('id', $value)->first()->name
+        );
     }
 
     public function updatedBy()

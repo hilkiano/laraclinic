@@ -12,8 +12,21 @@ class MedicalRecord extends Model
 
     protected $fillable = [
         'appointment_uuid',
-        'patient_id'
+        'record_no',
+        'patient_id',
+        'prescription_id',
+        'additional_note'
     ];
+
+    public function patient()
+    {
+        return $this->belongsTo(Patients::class, 'patient_id', 'id');
+    }
+
+    public function prescription()
+    {
+        return $this->belongsTo(Prescription::class, 'prescription_id', 'id');
+    }
 
     public function createdAt(): Attribute
     {
@@ -29,9 +42,11 @@ class MedicalRecord extends Model
         );
     }
 
-    public function createdBy()
+    public function createdBy(): Attribute
     {
-        return $this->belongsTo(Users::class, 'created_by', 'id');
+        return Attribute::make(
+            get: fn ($value) => Users::select('name')->where('id', $value)->first()->name
+        );
     }
 
     public function updatedBy()

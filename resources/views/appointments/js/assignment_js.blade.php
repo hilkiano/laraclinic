@@ -360,6 +360,10 @@
         $("#patientHeight").html(data.patient.height ? `${data.patient.height} cm` : '-');
         $("#patientAge").html(data.patient.age ? `${data.patient.age} tahun` : '-');
         $("#patientDetails").html(data.patient.additional_note ? data.patient.additional_note : '-');
+        if ($("#showMedicalRecordsBtn").length) {
+            $("#showMedicalRecordsBtn").attr("href", encodeURI(`/medical_records?name=${data.patient.name.trim()}`));
+        }
+
         // Medical records row
         let medRows = '';
         if (data.patient.medical_records) {

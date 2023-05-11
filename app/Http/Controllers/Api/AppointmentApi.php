@@ -336,7 +336,7 @@ class AppointmentApi extends Controller
                     }]);
                 })
                 ->when($request->status === config("constants.status.pharmacy_assigned"), function ($query) {
-                    $query->with(['prescription', 'medicalRecord', 'patient.prescriptions' => function ($query) {
+                    $query->with(['prescription', 'medicalRecord', 'patient.prescriptions', 'patient.medicalRecords' => function ($query) {
                         $query->take(5);
                     }]);
                 })
