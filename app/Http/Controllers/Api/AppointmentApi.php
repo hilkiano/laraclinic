@@ -276,14 +276,21 @@ class AppointmentApi extends Controller
                 $newDetail->save();
 
                 // Update or create prescription
-                $rx = Prescription::updateOrCreate(
-                    ['appointment_uuid' => $request->input('uuid')],
-                    [
-                        'patient_id' => $appointment->patient_id,
-                        'list' => $prescription ? $prescription[0]->data : null
-                    ]
-                );
+                $rx = Prescription::where('appointment_uuid', $request->input('uuid'))->first();
+                if ($rx) {
+                    $rx->list = $prescription ? $prescription[0]->data : null;
+                    $rx->save();
+                } else {
+                    $newRx = new Prescription();
+                    $newRx->appointment_uuid = $request->input('uuid');
+                    $newRx->patient_id = $appointment->patient_id;
+                    $newRx->list = $prescription ? $prescription[0]->data : null;
+                    $newRx->source = "SELF";
 
+                    $newRx->save();
+                }
+
+                // Create medical record if the assignment through doctor
                 if ($newStatus === config('constants.status.pharmacy_waiting')) {
                     // Add medical rec
                     $newMedRecord = new MedicalRecord();
@@ -331,12 +338,12 @@ class AppointmentApi extends Controller
             }
             $model = Appointments::with(['patient', 'detail', 'patient.patientPotrait'])
                 ->when($request->status === config("constants.status.doctor_assigned"), function ($query) {
-                    $query->with(['patient.medicalRecords' => function ($query) {
+                    $query->with(['patient.prescriptions.medicalRecord' => function ($query) {
                         $query->take(5);
                     }]);
                 })
                 ->when($request->status === config("constants.status.pharmacy_assigned"), function ($query) {
-                    $query->with(['prescription', 'medicalRecord', 'patient.prescriptions' => function ($query) {
+                    $query->with(['patient.prescriptions.medicalRecord' => function ($query) {
                         $query->take(5);
                     }]);
                 })

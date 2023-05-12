@@ -67,6 +67,7 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
         // medical records
         $router->group(['prefix' => 'records'], function () use ($router) {
             $router->get('prescription/{id}', '\App\Http\Controllers\Api\MedicalRecordApi@getPrescription');
+            $router->post('list', '\App\Http\Controllers\Api\MedicalRecordApi@list');
         });
         // medicines
         $router->group(['prefix' => 'medicines'], function () use ($router) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\MedicalRecord;
 use App\Models\Prescription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -30,6 +31,51 @@ class MedicalRecordApi extends Controller
                 'status'    => true,
                 'message'   => 'Prescription copied.',
                 'data'      => Prescription::select('list')->find($id)->list
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function list(Request $request)
+    {
+        try {
+            // Parse the pagination and filtering parameters from the request.
+            $dataPerPage = $request->input("limit");
+            $page = $request->input("page") + 1;
+            $filterVal = $request->has("filter_val") ? $request->input("filter_val") : null;
+            $filterCol = $request->has("filter_col") ? $request->input("filter_col") : null;
+            $offset = ($page === 1) ? 0 : ($page * $dataPerPage) - $dataPerPage;
+
+            $model = Prescription::with(['patient', 'medicalRecord'])
+                ->when($filterVal && $filterCol, function ($query) use ($filterVal, $filterCol) {
+                    if ($filterCol === "patient") {
+                        $query->whereHas('patient', function ($subquery) use ($filterVal) {
+                            $subquery->where('name', 'ILIKE', "%$filterVal%");
+                        });
+                    }
+                });
+            $count = $model->count();
+            $model = $model->orderBy('prescriptions.created_at', 'desc');
+            $model = $model->limit($dataPerPage)
+                ->offset($offset);
+            $data = $model->get();
+
+            // Return a JSON response with the list of Medicine objects and pagination data.
+            return response()->json([
+                'status'        => true,
+                'data'          => $data,
+                'count'         => $count,
+                'pagination'    => [
+                    'offset'    => $offset,
+                    'rowCount'  => $dataPerPage,
+                    'page'      => $page,
+                    'pageCount' => ceil($count / $dataPerPage)
+                ]
             ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());

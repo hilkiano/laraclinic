@@ -360,15 +360,19 @@
         $("#patientHeight").html(data.patient.height ? `${data.patient.height} cm` : '-');
         $("#patientAge").html(data.patient.age ? `${data.patient.age} tahun` : '-');
         $("#patientDetails").html(data.patient.additional_note ? data.patient.additional_note : '-');
+        if ($("#showMedicalRecordsBtn").length) {
+            $("#showMedicalRecordsBtn").attr("href", encodeURI(`/medical_records?name=${data.patient.name.trim()}`));
+        }
+
         // Medical records row
         let medRows = '';
-        if (data.patient.medical_records) {
-            if (data.patient.medical_records.length > 0) {
-                medRows = createMedicalRows(data.patient.medical_records);
+        if (data.patient.prescriptions) {
+            if (data.patient.prescriptions.length > 0) {
+                medRows = createMedicalRows(data.patient.prescriptions);
             } else {
                 medRows = `
                 <tr>
-                    <td colspan="4">No Data.</td>
+                    <td colspan="5">No Data.</td>
                 </tr>
             `;
             }
@@ -417,11 +421,12 @@
         let html = '';
         data.map((d, idx) => {
             html += `
-                <tr>
+                <tr class="${d.source === "DOCTOR" ? 'table-primary' : d.source === "SELF" ? 'table-danger' : d.source === "ONLINE" ? 'table-warning' : 'table-secondary'}">
                     <td>${idx + 1}</td>
-                    <td>${d.record_no}</td>
+                    <td>${d.medical_record.record_no ? d.medical_record.record_no : "No Medical Record"}</td>
                     <td>${d.created_at}</td>
-                    <td class="text-center"><button type="button" onclick="window.getPrescription(event, ${d.prescription_id})" class="btn btn-outline-primary btn-sm">Copy Prescription</button></td>
+                    <td>${d.created_by}</td>
+                    <td class="text-center"><button type="button" onclick="window.getPrescription(event, ${d.id})" class="btn btn-outline-primary btn-sm">Copy Prescription</button></td>
                 </tr>
             `;
         });

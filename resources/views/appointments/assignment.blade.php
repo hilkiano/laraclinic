@@ -111,44 +111,27 @@
                                                     <p id="patientDetails" class="mb-1 fw-bold"></p>
                                                 </div>
                                                 <hr class="mt-3 mb-3" />
-                                                @if ($group === 3)
-                                                    <div class="col-12">
-                                                        <p class="mb-1 fw-bold">Medical Records</p>
-                                                        <div class="table-responsive">
-                                                            <table
-                                                                class="table table-bordered table-striped table-hover caption-top"
-                                                                style="min-width: 500px;">
-                                                                <thead class="table-primary">
-                                                                    <tr>
-                                                                        <th scope="col">#</th>
-                                                                        <th scope="col">Record No.</th>
-                                                                        <th scope="col">Created At</th>
-                                                                        <th scope="col" style="width: 150px"></th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody id="medicalRecordsRow"></tbody>
-                                                            </table>
-                                                        </div>
+                                                <div class="col-12">
+                                                    <p class="mb-1 fw-bold">Medical Records</p>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-hover caption-top"
+                                                            style="min-width: 500px;">
+                                                            <thead class="table-dark">
+                                                                <tr>
+                                                                    <th scope="col">#</th>
+                                                                    <th scope="col">Record No.</th>
+                                                                    <th scope="col">Created At</th>
+                                                                    <th scope="col">Created By</th>
+                                                                    <th scope="col" style="width: 150px"></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="medicalRecordsRow"></tbody>
+                                                        </table>
                                                     </div>
-                                                @elseif ($group === 4)
-                                                    <div class="col-12">
-                                                        <p class="mb-1 fw-bold">Prescriptions</p>
-                                                        <div class="table-responsive">
-                                                            <table
-                                                                class="table table-bordered table-striped table-hover caption-top"
-                                                                style="min-width: 500px;">
-                                                                <thead class="table-primary">
-                                                                    <tr>
-                                                                        <th scope="col">#</th>
-                                                                        <th scope="col">Created At</th>
-                                                                        <th scope="col" style="width: 150px"></th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody id="prescriptionsRow"></tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                @endif
+                                                    <a href="/medical_records" target="_blank"
+                                                        id="showMedicalRecordsBtn" class="btn btn-primary">See
+                                                        Complete List</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

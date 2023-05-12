@@ -35,9 +35,11 @@ class Prescription extends Model
         );
     }
 
-    public function createdBy()
+    public function createdBy(): Attribute
     {
-        return $this->belongsTo(Users::class, 'created_by', 'id');
+        return Attribute::make(
+            get: fn ($value) => Users::select('name')->where('id', $value)->first()->name
+        );
     }
 
     public function updatedBy()
@@ -48,5 +50,15 @@ class Prescription extends Model
     public function deletedBy()
     {
         return $this->belongsTo(Users::class, 'deleted_by', 'id');
+    }
+
+    public function medicalRecord()
+    {
+        return $this->belongsTo(MedicalRecord::class, 'appointment_uuid', 'appointment_uuid');
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patients::class, 'patient_id', 'id');
     }
 }
