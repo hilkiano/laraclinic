@@ -51,7 +51,7 @@ class MedicalRecordApi extends Controller
             $filterCol = $request->has("filter_col") ? $request->input("filter_col") : null;
             $offset = ($page === 1) ? 0 : ($page * $dataPerPage) - $dataPerPage;
 
-            $model = MedicalRecord::with(['patient', 'prescription'])
+            $model = Prescription::with(['patient', 'medicalRecord'])
                 ->when($filterVal && $filterCol, function ($query) use ($filterVal, $filterCol) {
                     if ($filterCol === "patient") {
                         $query->whereHas('patient', function ($subquery) use ($filterVal) {
@@ -60,6 +60,7 @@ class MedicalRecordApi extends Controller
                     }
                 });
             $count = $model->count();
+            $model = $model->orderBy('prescriptions.created_at', 'desc');
             $model = $model->limit($dataPerPage)
                 ->offset($offset);
             $data = $model->get();

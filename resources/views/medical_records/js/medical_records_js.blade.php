@@ -75,12 +75,12 @@
         const iteration = i + 1;
         let html;
         html += `
-            <tr>
+            <tr class="${row.source === "DOCTOR" ? 'table-primary' : row.source === "SELF" ? 'table-danger' : row.source === "ONLINE" ? 'table-warning' : 'table-secondary'}">
                 <td scope="row">${ num + iteration }</td>
-                <td>${ row.record_no }</td>
+                <td>${ row.medical_record ? row.medical_record.record_no : '-' }</td>
                 <td>${ row.patient.name }</td>
                 <td style="text-align: center"><button class="btn btn-sm btn-outline-primary me-1" onclick="window.showPrescription(${i})">See Prescription</button></td>
-                <td>${ row.additional_note ? row.additional_note : '-' }</td>
+                <td>${ row.medical_record ? row.medical_record.additional_note : '-' }</td>
                 <td>${ row.created_by }</td>
                 <td>${ row.created_at }</td>
             </tr>
@@ -114,8 +114,8 @@
     }
 
     const showPrescription = (index) => {
-        const list = tableData[index].prescription.list;
-        const source = tableData[index].prescription.source;
+        const list = tableData[index].list;
+        const source = tableData[index].source;
         let html = '';
         $("#prescriptionModalRow").html(html);
         list.map(rx => {
@@ -125,7 +125,7 @@
                     <td>${rx.label}</td>
                     <td style="text-align: right">${rx.qty}</td>
                     <td>${rx.notes}</td>
-                    <td>${tableData[index].prescription.created_by}</td>
+                    <td>${tableData[index].created_by}</td>
                     <td><h5><span class="badge ${source === "DOCTOR" ? 'text-bg-primary' : source === "SELF" ? 'text-bg-danger' : source === "ONLINE" ? 'text-bg-warning' : 'text-bg-secondary'}">${source}</span></h5></td>
                 </tr>
             `;

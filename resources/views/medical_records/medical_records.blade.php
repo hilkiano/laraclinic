@@ -49,11 +49,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 mb-4">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped table-hover caption-top"
-                                    style="min-width: 1600px;">
-                                    <thead class="table-primary">
+                                <table class="table table-bordered table-hover caption-top" style="min-width: 1600px;">
+                                    <thead class="table-dark">
                                         <tr>
                                             <th scope="col">#</th>
                                             <th scope="col" style="width: 350px">Record No.</th>
@@ -69,7 +68,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="mt-2 mb-5 d-flex row">
+                            <div class="mt-2 mb-2 d-flex row">
                                 <div class="col">
                                     <p class="small text-muted">Total <span class="fw-semibold" id="allCount">0</span>
                                     </p>
@@ -78,6 +77,16 @@
                                     <div id="pagination"></div>
                                 </div>
                             </div>
+                            <p class="mb-0 fw-bold">Color Info:</p>
+                            <p class="mb-0"><span class="badge bg-primary">&nbsp;</span> Created with doctor
+                                consultation.
+                            </p>
+                            <p class="mb-0"><span class="badge bg-danger">&nbsp;</span> A patient directly buy
+                                medicine/service to
+                                pharmacist/cashier.</p>
+                            <p class="mb-6"><span class="badge bg-warning">&nbsp;</span> Created from online
+                                transaction.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -109,7 +118,9 @@
                         <tbody id="prescriptionModalRow">
                         </tbody>
                     </table>
-                    <p class="mb-0 fw-bold">Legend:</p>
+                </div>
+                <div class="my-3">
+                    <p class="mb-0 fw-bold">Color Info:</p>
                     <p class="mb-0"><span class="badge bg-primary">&nbsp;</span> Created with doctor consultation.
                     </p>
                     <p class="mb-0"><span class="badge bg-danger">&nbsp;</span> A patient directly buy
@@ -118,7 +129,6 @@
                     <p class="mb-6"><span class="badge bg-warning">&nbsp;</span> Created from online transaction.
                     </p>
                 </div>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal"

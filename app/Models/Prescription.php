@@ -51,4 +51,14 @@ class Prescription extends Model
     {
         return $this->belongsTo(Users::class, 'deleted_by', 'id');
     }
+
+    public function medicalRecord()
+    {
+        return $this->belongsTo(MedicalRecord::class, 'appointment_uuid', 'appointment_uuid');
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patients::class, 'patient_id', 'id');
+    }
 }

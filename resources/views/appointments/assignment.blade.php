@@ -114,14 +114,14 @@
                                                 <div class="col-12">
                                                     <p class="mb-1 fw-bold">Medical Records</p>
                                                     <div class="table-responsive">
-                                                        <table
-                                                            class="table table-bordered table-striped table-hover caption-top"
+                                                        <table class="table table-bordered table-hover caption-top"
                                                             style="min-width: 500px;">
-                                                            <thead class="table-primary">
+                                                            <thead class="table-dark">
                                                                 <tr>
                                                                     <th scope="col">#</th>
                                                                     <th scope="col">Record No.</th>
                                                                     <th scope="col">Created At</th>
+                                                                    <th scope="col">Created By</th>
                                                                     <th scope="col" style="width: 150px"></th>
                                                                 </tr>
                                                             </thead>
