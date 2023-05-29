@@ -4,14 +4,9 @@
         .getAttribute("content");
     const _liveToast = document.getElementById("liveToast");
     const _approvalModal = new bootstrap.Modal("#approvementModal", {});
-    const _medModal = document.getElementById("medSelectorModal");
     const _cancelModal = document.getElementById("cancelAssignmentModal");
-    let medModal;
     let cancelModal;
     let liveToast;
-    if (_medModal) {
-        medModal = new bootstrap.Modal('#medSelectorModal', {});
-    }
     if (_cancelModal) {
         cancelModal = new bootstrap.Modal('#cancelAssignmentModal', {});
         _cancelModal.addEventListener("hidden.bs.modal", function (e) {
@@ -769,6 +764,7 @@
         }
     );
 
+    window.calculateItemPrice = calculateItemPrice;
     window.takeAssignment = takeAssignment;
     window.subtractItem = subtractItem;
     window.addItem = addItem;

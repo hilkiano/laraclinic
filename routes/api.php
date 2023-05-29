@@ -46,6 +46,7 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
             $router->post('save-info', '\App\Http\Controllers\Web\PatientFormController@save');
             $router->post('add-potrait', '\App\Http\Controllers\Web\PatientFormController@addPotrait');
             $router->get('get-potraits/{patientId}', '\App\Http\Controllers\Web\PatientFormController@getPotraits');
+            $router->get('show/{id}', '\App\Http\Controllers\Web\PatientFormController@show');
         });
         // appointment
         $router->group(['prefix' => 'appointment'], function () use ($router) {
@@ -60,6 +61,7 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
             $router->post('get-assignation', '\App\Http\Controllers\Api\AppointmentApi@getAssignation');
             $router->get('item-list/{query}', '\App\Http\Controllers\Api\AppointmentApi@getItems');
             $router->post('send-to-doc', '\App\Http\Controllers\Api\AppointmentApi@sendToDoc');
+            $router->get('item-price/{query}', '\App\Http\Controllers\Api\AppointmentApi@getPrice');
         });
         $router->group(['prefix' => 'user'], function () use ($router) {
             $router->post('save-configs', '\App\Http\Controllers\Web\UsersController@saveConfigs');
