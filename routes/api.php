@@ -86,6 +86,7 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
         // cashier
         $router->group(['prefix' => 'cashier'], function () use ($router) {
             $router->post('progress', '\App\Http\Controllers\Api\CashierApi@progress');
+            $router->post('checkout', '\App\Http\Controllers\Api\CashierApi@checkout');
         });
         // transactions
         $router->group(['prefix' => 'transactions'], function () use ($router) {

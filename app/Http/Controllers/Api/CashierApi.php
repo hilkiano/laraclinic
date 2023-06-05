@@ -81,6 +81,59 @@ class CashierApi extends Controller
         }
     }
 
+    public function checkout(Request $request)
+    {
+        try {
+            // Parse JSON string
+            $data = $request->input("data");
+            $payment = $request->input("payment");
+            if (gettype($data) === "string") {
+                $data = json_decode($data);
+            }
+            if (gettype($payment) === "string") {
+                $payment = json_decode($payment);
+            }
+
+            // If there is patient, make prescription with SELF source
+            if ($request->has("patient")) {
+                $rx = new Prescription();
+                $rx->patient_id = (int) $request->input("patient");
+                $rx->list = $data;
+                $rx->source = "SELF";
+
+                $rx->save();
+            }
+
+            // Create new transaction
+            $trx = new Transaction();
+            $trx->patient_id = $request->has("patient") ? (int) $request->input("patient") : null;
+            $trx->prescription = $data;
+            $trx->payment_type = $payment->method;
+            $trx->total_amount = $payment->total;
+            $trx->payment_amount = $payment->amount;
+            $trx->change = $payment->change;
+            $trx->discount_type = $payment->discount_type;
+            $trx->discount_amount = $payment->discount_value;
+            $trx->source = "SELF";
+
+            $trx->save();
+
+            // Dispatch print event
+            PrintReceipt::dispatch($trx->toArray());
+
+            return response()->json([
+                'status'    => true,
+                'message'   => 'Transaction made successfully.'
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
+
     private function handleCheckout(array $data)
     {
         try {

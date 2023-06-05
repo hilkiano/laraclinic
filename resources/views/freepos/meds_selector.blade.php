@@ -99,14 +99,15 @@
                 }
             });
             itemSelector = $itemSelector[0].selectize;
-        } else if (target.id === "hahaha") {
+        } else if (target.id.indexOf("btnFreeEdit") || target.id.indexOf("iconFreeEdit")) {
             $("#medSelectorModalSubmit").addClass("d-none").removeClass("d-block");
             $("#medSelectorModalSave").removeClass("d-none").addClass("d-block");
             medSelectorForm.reset();
-            const id = target;
-            const idx = id.indexOf('-');
-            const index = id.substring(idx + 1);
-            const rx = localStorage.getItem('prescription');
+
+            // get index
+            const idx = target.id.indexOf('-');
+            const index = target.id.substring(idx + 1);
+            const rx = localStorage.getItem('freePrescription');
             if (rx) {
                 let parsedRx = JSON.parse(rx);
                 if (parsedRx[0].data.length > 0) {
@@ -269,6 +270,7 @@
                 const rx = localStorage.getItem("freePrescription");
                 if (rx) {
                     let parsedRx = JSON.parse(rx);
+                    // Check if there is an item with same SKU already inside data. If found, just delete and add quantity to said item.
                     parsedRx[0].data[$("#index").val()] = obj;
                     localStorage.setItem("freePrescription", JSON.stringify(parsedRx));
                     medSelectorModal.toggle();
@@ -282,8 +284,10 @@
         e.preventDefault();
         if (e.submitter.id === "medSelectorModalSubmit") {
             handleAddRx(e);
+            window.checkSubmitBtn();
         } else if (e.submitter.id === "medSelectorModalSave") {
             handleItemSave(e);
+            window.checkSubmitBtn();
         }
     });
     modal.addEventListener("show.bs.modal", function(event) {
