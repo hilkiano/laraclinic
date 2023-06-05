@@ -423,6 +423,27 @@ class AppointmentApi extends Controller
         }
     }
 
+    public function getPrice($query)
+    {
+        try {
+            $model = Medicine::select('sell_price')->where('sku', $query)->first();
+            if (!$model) {
+                $model = Services::select('sell_price')->where('sku', $query)->first();
+            }
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $model->sell_price
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function sendToDoc(Request $request)
     {
         try {

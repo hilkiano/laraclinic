@@ -423,7 +423,7 @@
             html += `
                 <tr class="${d.source === "DOCTOR" ? 'table-primary' : d.source === "SELF" ? 'table-danger' : d.source === "ONLINE" ? 'table-warning' : 'table-secondary'}">
                     <td>${idx + 1}</td>
-                    <td>${d.medical_record.record_no ? d.medical_record.record_no : "No Medical Record"}</td>
+                    <td>${d.medical_record ? d.medical_record.record_no : "-"}</td>
                     <td>${d.created_at}</td>
                     <td>${d.created_by}</td>
                     <td class="text-center"><button type="button" onclick="window.getPrescription(event, ${d.id})" class="btn btn-outline-primary btn-sm">Copy Prescription</button></td>

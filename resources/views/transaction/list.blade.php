@@ -85,9 +85,9 @@
                         <div class="col-12">
                             <div class="col-12">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered table-striped table-hover caption-top"
+                                    <table class="table table-bordered table-hover caption-top"
                                         style="min-width: 1100px;">
-                                        <thead class="table-primary">
+                                        <thead class="table-dark">
                                             <tr>
                                                 <th scope="col">ID</th>
                                                 <th scope="col">Created At</th>
@@ -111,6 +111,16 @@
                                         <div id="pagination"></div>
                                     </div>
                                 </div>
+                                <p class="mb-0 fw-bold">Color Info:</p>
+                                <p class="mb-0"><span class="badge bg-primary">&nbsp;</span> Created with doctor
+                                    consultation.
+                                </p>
+                                <p class="mb-0"><span class="badge bg-danger">&nbsp;</span> A patient directly buy
+                                    medicine/service to
+                                    pharmacist/cashier.</p>
+                                <p class="mb-6"><span class="badge bg-warning">&nbsp;</span> Created from online
+                                    transaction.
+                                </p>
                             </div>
                         </div>
                     </div>

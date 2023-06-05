@@ -128,7 +128,8 @@ hr {
     backdrop-filter: blur(15px) saturate(1.5);
 }
 
-#cashierAction {
+#cashierAction,
+#free-cashierAction {
     top: 55px;
     backdrop-filter: blur(20px) saturate(1.5);
     width: calc(100% + 48px);

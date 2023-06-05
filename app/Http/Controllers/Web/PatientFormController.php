@@ -10,9 +10,6 @@ use App\Http\Controllers\PrivilegeController;
 use App\Models\PatientPotraits;
 use App\Models\Patients;
 use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -182,7 +179,7 @@ class PatientFormController extends Controller
 
     /**
      * Add a portrait image to the patient potraits and save it to storage.
-     * 
+     *
      * @param Request $request The HTTP request object.
      * @return \Illuminate\Http\JsonResponse Returns a JSON response indicating whether the image was saved or not.
      */
@@ -255,6 +252,25 @@ class PatientFormController extends Controller
             return response()->json([
                 'status'    => true,
                 'data'      => $urls
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function show(int $patientId)
+    {
+        try {
+            $urls = [];
+            $patient = Patients::with('patientPotrait')->find($patientId);
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $patient
             ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());

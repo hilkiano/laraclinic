@@ -85,10 +85,10 @@
         const iteration = i + 1;
         let html;
         html += `
-            <tr>
+            <tr class="${row.source === "APPOINTMENT" ? 'table-primary' : row.source === "SELF" ? 'table-danger' : row.source === "ONLINE" ? 'table-warning' : 'table-secondary'}">
                 <td scope="row">${ row.id }</td>
                 <td>${ row.created_at }</td>
-                <td>${ row.patient_name }</td>
+                <td>${ row.patient_name ? row.patient_name : '<span class="fst-italic text-muted">Guest</span>' }</td>
                 <td><button class="btn btn-sm btn-outline-primary" onclick="window.showReceipt(${i})">Cart Content</button></td>
                 <td>${ row.total_amount }</td>
                 <td>${ row.payment_type }</td>
@@ -113,7 +113,14 @@
     }
 
     const showReceipt = (tableRowIndex) => {
-        const prescription = tableData[tableRowIndex].prescription[0].data;
+        const hasData = tableData[tableRowIndex].prescription[0].hasOwnProperty("data");
+        let prescription;
+        if (hasData) {
+            prescription = tableData[tableRowIndex].prescription[0].data;
+        } else {
+            prescription = tableData[tableRowIndex].prescription;
+        }
+
         // add data attribute of trx id to print btn
         if (printBtn) {
             const myElement = document.querySelector('#receiptModalPrintBtn');

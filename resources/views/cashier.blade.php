@@ -11,151 +11,182 @@
                 <div class="container-fluid mt-4">
                     <div class="row gy-4">
                         <div class="col-sm-12 col-md-8">
-                            <div id="loadingIndicator" class="mt-4 d-none">
-                                <div class="text-center">
-                                    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"
-                                        role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="selectedAssignment" class="p-0 m-0 d-none">
-                                <div id="cashierAction" style="z-index: 1"
-                                    class="col-12 px-4 py-4 d-flex justify-content-between sticky-top gap-3 align-items-center">
-                                    <div style="flex: 1">
-                                        <div class="p-2 bg-body-secondary rounded">
-                                            <div class="row">
-                                                <div class="col-sm-12 col-md-6">
-                                                    <label class="form-label mb-0">Total</label>
-                                                    <p class="fs-5 text-primary mb-0" id="totalPrice"></p>
-                                                </div>
-                                                <div class="col-sm-12 col-md-6">
-                                                    <small class="text-muted mb-0">Amount Paid</small>
-                                                    <p class="fs-6 mb-0 mt-0" id="amountPaid"></p>
-                                                    <small class="text-muted mb-0">Change</small>
-                                                    <p class="fs-6 mb-0" id="amountChange"></p>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="d-flex flex-column gap-2">
-                                            <div class="w-100">
-                                                <button id="cancelBtn" type="button"
-                                                    class="btn btn-danger rounded-pill me-2"><i
-                                                        class="bi bi-x-lg me-2"></i>Cancel</button>
-                                                <button id="submitBtn" type="button"
-                                                    class="btn btn-success rounded-pill disabled"><i
-                                                        class="bi bi-check-lg me-2"></i>Submit</button>
-                                            </div>
-                                            <div class="w-100 d-grid">
-                                                <button id="markAsCancelBtn" type="button"
-                                                    class="btn btn-light rounded-pill text-danger-emphasis"><i
-                                                        class="bi bi-x-lg me-2"></i>Mark As Cancelled</button>
+                            <ul class="nav nav-pills nav-fill" id="posTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="assignmentTab" data-bs-toggle="tab"
+                                        data-bs-target="#assignmentTabPane" type="button"
+                                        role="tab">Assignment</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="freeTab" data-bs-toggle="tab"
+                                        data-bs-target="#freeTabPane" type="button" role="tab">Free
+                                        Transaction</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="posTabContent">
+                                <div class="tab-pane fade show active" id="assignmentTabPane" role="tabpanel"
+                                    tabindex="0">
+                                    <div id="loadingIndicator" class="mt-4 d-none">
+                                        <div class="text-center">
+                                            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"
+                                                role="status">
+                                                <span class="visually-hidden">Loading...</span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="row gy-3">
-                                        <div class="col-sm-12 col-md-6 col-lg-5">
-                                            <div class="row">
-                                                <div class="col-sm-5 col-md-5">
-                                                    <img id="patientPotrait"
-                                                        src="{{ asset('images/potrait-placeholder.png') }}"
-                                                        class="img-thumbnail" />
-                                                </div>
-                                                <div class="col-sm-7 col-md-7">
-                                                    <p class="mb-0 text-muted">Name</p>
-                                                    <p id="patientName" class="mb-1 fw-bold"></p>
-                                                    <p class="mb-0 text-muted">Address</p>
-                                                    <p id="patientAddress" class="mb-1 fw-bold"></p>
-                                                    <p class="mb-0 text-muted">Email</p>
-                                                    <p id="patientEmail" class="mb-1 fw-bold"></p>
-                                                    <p class="mb-0 text-muted">Phone No.</p>
-                                                    <p id="patientPhone" class="mb-1 fw-bold"></p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6 col-lg-7">
-                                            <div class="row gy-3">
-                                                <div class="col-12 p-3 bg-body-secondary rounded mb-3">
-                                                    <label class="form-label mb-2">Item List</label>
-                                                    <ul class="list-group mb-3" id="rxBody">
-                                                    </ul>
-                                                </div>
-                                                <form id="cashierForm" class="px-0 mb-5">
-                                                    <div class="col-12 p-3 bg-body-secondary rounded">
-                                                        <div class="mb-3">
-                                                            <label for="payment" class="form-label">Payment
-                                                                with</label>
-                                                            <div class="input-group">
-                                                                <select class="form-select" id="payment"
-                                                                    name="payment" autocomplete="off">
-                                                                    <option value="CASH">Cash</option>
-                                                                    <option value="CREDIT_CARD">Credit Card</option>
-                                                                    <option value="DEBIT_CARD">Debit Card</option>
-                                                                    <option value="BANK_TRANSFER">Bank Transfer</option>
-                                                                </select>
-                                                                <button id="fullPriceBtn" class="btn btn-primary"
-                                                                    style="z-index: 0">Full Price</button>
-                                                            </div>
+                                    <div id="selectedAssignment" class="p-0 m-0 d-none">
+                                        <div id="cashierAction" style="z-index: 1"
+                                            class="col-12 px-4 py-4 d-flex justify-content-between sticky-top gap-3 align-items-center">
+                                            <div style="flex: 1">
+                                                <div class="p-2 bg-body-secondary rounded">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 col-md-6">
+                                                            <label class="form-label mb-0">Total</label>
+                                                            <p class="fs-5 text-primary mb-0" id="totalPrice"></p>
                                                         </div>
-                                                        <div class="row mb-2 gy-3">
-                                                            <div class="col-sm-12 col-lg-7">
-                                                                <label for="amount" class="form-label">Payment
-                                                                    amount</label>
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text">Rp</span>
-                                                                    <input type="text" id="amount"
-                                                                        name="amount" class="form-control"
-                                                                        autocomplete="off">
-                                                                </div>
-                                                            </div>
-                                                            <div id="totalDiscountPctgDiv" class="col-sm-12 col-lg-5">
-                                                                <label for="totalDiscountPctg"
-                                                                    class="form-label">Discount</label>
-                                                                <div class="input-group">
-                                                                    <input type="text" id="totalDiscountPctg"
-                                                                        class="form-control" autocomplete="off">
-                                                                    <span class="input-group-text">%</span>
-                                                                </div>
-                                                            </div>
-                                                            <div id="totalDiscountAmtDiv" class="col-sm-12 col-lg-5">
-                                                                <label for="totalDiscountAmt"
-                                                                    class="form-label">Discount</label>
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text">Rp</span>
-                                                                    <input type="text" id="totalDiscountAmt"
-                                                                        class="form-control" autocomplete="off">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-sm-12">
-                                                                <label class="form-label">Discount Type</label>
-                                                            </div>
-                                                            <div class="col-sm-12 mt-0">
-                                                                <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio"
-                                                                        name="totalDiscType" id="pctgRadio"
-                                                                        value="pctg">
-                                                                    <label class="form-check-label"
-                                                                        for="pctgRadio">Percentage</label>
-                                                                </div>
-                                                                <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio"
-                                                                        name="totalDiscType" id="amtRadio"
-                                                                        value="amt">
-                                                                    <label class="form-check-label"
-                                                                        for="amtRadio">Amount</label>
-                                                                </div>
-                                                            </div>
+                                                        <div class="col-sm-12 col-md-6">
+                                                            <small class="text-muted mb-0">Amount Paid</small>
+                                                            <p class="fs-6 mb-0 mt-0" id="amountPaid"></p>
+                                                            <small class="text-muted mb-0">Change</small>
+                                                            <p class="fs-6 mb-0" id="amountChange"></p>
                                                         </div>
                                                     </div>
-                                                </form>
+
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="d-flex flex-column gap-2">
+                                                    <div class="w-100">
+                                                        <button id="cancelBtn" type="button"
+                                                            class="btn btn-danger rounded-pill me-2"><i
+                                                                class="bi bi-x-lg me-2"></i>Cancel</button>
+                                                        <button id="submitBtn" type="button"
+                                                            class="btn btn-success rounded-pill disabled"><i
+                                                                class="bi bi-check-lg me-2"></i>Submit</button>
+                                                    </div>
+                                                    <div class="w-100 d-grid">
+                                                        <button id="markAsCancelBtn" type="button"
+                                                            class="btn btn-light rounded-pill text-danger-emphasis"><i
+                                                                class="bi bi-x-lg me-2"></i>Mark As Cancelled</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row gy-3">
+                                                <div class="col-sm-12 col-md-6 col-lg-5">
+                                                    <div class="row">
+                                                        <div class="col-sm-5 col-md-5">
+                                                            <img id="patientPotrait"
+                                                                src="{{ asset('images/potrait-placeholder.png') }}"
+                                                                class="img-thumbnail" />
+                                                        </div>
+                                                        <div class="col-sm-7 col-md-7">
+                                                            <p class="mb-0 text-muted">Name</p>
+                                                            <p id="patientName" class="mb-1 fw-bold"></p>
+                                                            <p class="mb-0 text-muted">Address</p>
+                                                            <p id="patientAddress" class="mb-1 fw-bold"></p>
+                                                            <p class="mb-0 text-muted">Email</p>
+                                                            <p id="patientEmail" class="mb-1 fw-bold"></p>
+                                                            <p class="mb-0 text-muted">Phone No.</p>
+                                                            <p id="patientPhone" class="mb-1 fw-bold"></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 col-md-6 col-lg-7">
+                                                    <div class="row gy-3">
+                                                        <div class="col-12 p-3 bg-body-secondary rounded mb-3">
+                                                            <label class="form-label mb-2">Item List</label>
+                                                            <ul class="list-group mb-3" id="rxBody">
+                                                            </ul>
+                                                        </div>
+                                                        <form id="cashierForm" class="px-0 mb-5">
+                                                            <div class="col-12 p-3 bg-body-secondary rounded">
+                                                                <div class="mb-3">
+                                                                    <label for="payment" class="form-label">Payment
+                                                                        with</label>
+                                                                    <div class="input-group">
+                                                                        <select class="form-select" id="payment"
+                                                                            name="payment" autocomplete="off">
+                                                                            <option value="CASH">Cash</option>
+                                                                            <option value="CREDIT_CARD">Credit Card
+                                                                            </option>
+                                                                            <option value="DEBIT_CARD">Debit Card
+                                                                            </option>
+                                                                            <option value="BANK_TRANSFER">Bank Transfer
+                                                                            </option>
+                                                                        </select>
+                                                                        <button id="fullPriceBtn"
+                                                                            class="btn btn-primary"
+                                                                            style="z-index: 0">Full Price</button>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mb-2 gy-3">
+                                                                    <div class="col-sm-12 col-lg-7">
+                                                                        <label for="amount"
+                                                                            class="form-label">Payment
+                                                                            amount</label>
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-text">Rp</span>
+                                                                            <input type="text" id="amount"
+                                                                                name="amount" class="form-control"
+                                                                                autocomplete="off">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="totalDiscountPctgDiv"
+                                                                        class="col-sm-12 col-lg-5">
+                                                                        <label for="totalDiscountPctg"
+                                                                            class="form-label">Discount</label>
+                                                                        <div class="input-group">
+                                                                            <input type="text"
+                                                                                id="totalDiscountPctg"
+                                                                                class="form-control"
+                                                                                autocomplete="off">
+                                                                            <span class="input-group-text">%</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="totalDiscountAmtDiv"
+                                                                        class="col-sm-12 col-lg-5">
+                                                                        <label for="totalDiscountAmt"
+                                                                            class="form-label">Discount</label>
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-text">Rp</span>
+                                                                            <input type="text"
+                                                                                id="totalDiscountAmt"
+                                                                                class="form-control"
+                                                                                autocomplete="off">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm-12">
+                                                                        <label class="form-label">Discount Type</label>
+                                                                    </div>
+                                                                    <div class="col-sm-12 mt-0">
+                                                                        <div class="form-check form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                type="radio" name="totalDiscType"
+                                                                                id="pctgRadio" value="pctg">
+                                                                            <label class="form-check-label"
+                                                                                for="pctgRadio">Percentage</label>
+                                                                        </div>
+                                                                        <div class="form-check form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                type="radio" name="totalDiscType"
+                                                                                id="amtRadio" value="amt">
+                                                                            <label class="form-check-label"
+                                                                                for="amtRadio">Amount</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="tab-pane fade" id="freeTabPane" role="tabpanel" tabindex="0">
+                                    @include('freepos.freepos')
                                 </div>
                             </div>
                         </div>
@@ -255,7 +286,6 @@
 </div>
 
 </html>
-@include('modals.meds_selector_modal')
 @include('toasts.live_toast')
 @include('cashier_js')
 @include('template.footer')
