@@ -96,5 +96,10 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
         });
         // print
         $router->post('dispatch-print', '\App\Http\Controllers\Api\PrintController@dispatchPrint');
+        // online trx
+        $router->group(['prefix' => 'online-trx'], function () use ($router) {
+            $router->post('find-patient', '\App\Http\Controllers\Api\OnlineTransactionsApi@findPatient');
+            $router->post('make-trx', '\App\Http\Controllers\Api\OnlineTransactionsApi@makeTransaction');
+        });
     });
 });

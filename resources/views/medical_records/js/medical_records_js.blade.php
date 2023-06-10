@@ -145,8 +145,14 @@
         const url = new URL(window.location.href);
         const searchParams = url.searchParams;
         const name = searchParams.get("name");
+        const id = searchParams.get("id");
         if (name) {
+            $("#filterCol").val("name");
             $("#filterVal").val(name);
+        }
+        if (id) {
+            $("#filterCol").val("id");
+            $("#filterVal").val(id);
         }
 
         getList();

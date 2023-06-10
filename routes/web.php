@@ -61,4 +61,8 @@ Route::group(['middleware' => 'web.auth.jwt'], function () use ($router) {
     $router->group(['prefix' => 'medical_records'], function () use ($router) {
         $router->get('/', '\App\Http\Controllers\Web\MedicalRecordsController@index');
     });
+
+    $router->group(['prefix' => 'online-trx'], function () use ($router) {
+        $router->get('/', '\App\Http\Controllers\Web\OnlineTransactionsController@index');
+    });
 });
