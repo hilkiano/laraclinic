@@ -14,6 +14,7 @@ class Prescription extends Model
         'appointment_uuid',
         'patient_id',
         'list',
+        'additional_info',
         'source'
     ];
 

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Api\OnlineTransaction\FindPatientRequest;
 use App\Http\Requests\Api\OnlineTransaction\MakeTransactionRequest;
 use App\Models\Patients;
+use App\Models\Prescription;
+use App\Models\Transaction;
 
 class OnlineTransactionsApi extends Controller
 {
@@ -68,6 +70,27 @@ class OnlineTransactionsApi extends Controller
     public function makeTransaction(MakeTransactionRequest $request)
     {
         try {
+            // New Transaction
+            $trx = new Transaction();
+            $trx->patient_id = $request->patient_id;
+            $trx->prescription = json_decode($request->prescription);
+            $trx->additional_info = $request->notes;
+            $trx->total_amount = 0;
+            $trx->payment_type = "BANK_TRANSFER";
+            $trx->payment_amount = 0;
+            $trx->change = 0;
+            $trx->discount_type = "pctg";
+            $trx->discount_amount = 0;
+            $trx->source = 'ONLINE';
+            $trx->save();
+
+            // New Prescription
+            $rx = new Prescription();
+            $rx->patient_id = $request->patient_id;
+            $rx->list = json_decode($request->prescription);
+            $rx->additional_info = $request->notes;
+            $rx->source = 'ONLINE';
+            $rx->save();
 
             return response()->json([
                 'status'    => true,

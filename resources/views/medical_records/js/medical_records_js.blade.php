@@ -80,7 +80,7 @@
                 <td>${ row.medical_record ? row.medical_record.record_no : '-' }</td>
                 <td>${ row.patient.name }</td>
                 <td style="text-align: center"><button class="btn btn-sm btn-outline-primary me-1" onclick="window.showPrescription(${i})">See Prescription</button></td>
-                <td>${ row.medical_record ? row.medical_record.additional_note : '-' }</td>
+                <td>${ row.medical_record ? row.medical_record.additional_note : row.additional_info }</td>
                 <td>${ row.created_by }</td>
                 <td>${ row.created_at }</td>
             </tr>
@@ -118,6 +118,7 @@
         const source = tableData[index].source;
         let html = '';
         $("#prescriptionModalRow").html(html);
+        console.log(list);
         list.map(rx => {
             html += `
                 <tr class="${source === "DOCTOR" ? 'table-primary' : source === "SELF" ? 'table-danger' : source === "ONLINE" ? 'table-warning' : 'table-secondary'}">

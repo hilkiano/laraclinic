@@ -409,6 +409,7 @@
             // Reset everything
             $("#cancelBtn").click();
             $("#clearFilterBtn").click();
+            $("#additionalNotes").val("");
 
             _approvalModal.hide();
         }).catch(error => {
