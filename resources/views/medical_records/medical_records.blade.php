@@ -27,7 +27,8 @@
                                                         <div class="input-group">
                                                             <select style="max-width: 200px" class="form-select"
                                                                 id="filterCol" autocomplete="off">
-                                                                <option value="patient">Patient</option>
+                                                                <option value="name">Patient Name</option>
+                                                                <option value="id">Patient ID</option>
                                                             </select>
                                                             <input autocomplete="off" type="text"
                                                                 class="form-control" id="filterVal"

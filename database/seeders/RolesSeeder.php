@@ -187,7 +187,7 @@ class RolesSeeder extends Seeder
     {
         $menuIds = [];
 
-        $model = \App\Models\Menus::select('id')->find([1, 8, 9, 10]);
+        $model = \App\Models\Menus::select('id')->find([1, 12, 13, 16]);
         foreach ($model as $menu) {
             array_push($menuIds, $menu->id);
         }
@@ -199,7 +199,7 @@ class RolesSeeder extends Seeder
     {
         $privIds = [];
 
-        $model = \App\Models\Privileges::select('id')->get();
+        $model = \App\Models\Privileges::select('id')->get(1, 24, 25, 26, 27, 28);
         foreach ($model as $privilege) {
             array_push($privIds, $privilege->id);
         }

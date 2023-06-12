@@ -157,6 +157,15 @@ class MenusSeeder extends Seeder
                 'parent'    => null,
                 'order'     => 7
             ],
+            [
+                'name'      => 'online-trx',
+                'label'     => 'Online Transaction',
+                'icon'      => 'bi-globe2',
+                'route'     => '/online-trx',
+                'is_parent' => false,
+                'parent'    => null,
+                'order'     => 8
+            ],
         ];
 
         foreach ($data as $data) {

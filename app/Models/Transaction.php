@@ -22,7 +22,8 @@ class Transaction extends Model
         'change',
         'discount_type',
         'discount_amount',
-        'additional_info'
+        'additional_info',
+        'source'
     ];
 
     protected $casts = [

@@ -125,6 +125,10 @@ class PrivilegesSeeder extends Seeder
                 'name'  => 'MEDICINE_SERVICE_DELETE',
                 'description'   => 'Ability to delete medicine'
             ],
+            [
+                'name'  => 'ONLINE_TRX_CREATE',
+                'description'   => 'Ability to record online transaction'
+            ],
         ];
 
         foreach ($data as $data) {

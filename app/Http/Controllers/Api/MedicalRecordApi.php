@@ -53,9 +53,14 @@ class MedicalRecordApi extends Controller
 
             $model = Prescription::with(['patient', 'medicalRecord'])
                 ->when($filterVal && $filterCol, function ($query) use ($filterVal, $filterCol) {
-                    if ($filterCol === "patient") {
+                    if ($filterCol === "name") {
                         $query->whereHas('patient', function ($subquery) use ($filterVal) {
                             $subquery->where('name', 'ILIKE', "%$filterVal%");
+                        });
+                    }
+                    if ($filterCol === "id") {
+                        $query->whereHas('patient', function ($subquery) use ($filterVal) {
+                            $subquery->where('id', $filterVal);
                         });
                     }
                 });

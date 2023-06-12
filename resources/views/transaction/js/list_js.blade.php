@@ -125,6 +125,17 @@
         if (printBtn) {
             const myElement = document.querySelector('#receiptModalPrintBtn');
             myElement.dataset.trxId = tableData[tableRowIndex].id;
+
+            // Hide print
+            if (tableData[tableRowIndex].source === "ONLINE") {
+                if (!myElement.classList.contains('d-none')) {
+                    myElement.classList.add('d-none');
+                }
+            } else {
+                if (myElement.classList.contains('d-none')) {
+                    myElement.classList.remove('d-none');
+                }
+            }
         }
 
         let html = '';
@@ -135,7 +146,7 @@
                     <td scope="row">${ idx + 1 }</td>
                     <td>${item.sku}</td>
                     <td>${item.label}</td>
-                    <td>Rp ${item.price.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}</td>
+                    <td>Rp ${item.price ? item.price.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0}) : '0'}</td>
                     <td>${item.qty.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}</td>
                     <td>${getDiscountHtml(item)}</td>
                     <td>${getSubTotal(item)}</td>
@@ -186,7 +197,7 @@
         let html = '';
         let subTotal = 0;
         let discountAmt = 0;
-        let itemPrice = item.price;
+        let itemPrice = item.price ? item.price : 0;
         if (item.discount_value > 0) {
             if (item.discount_type === "pctg") {
                 discountAmt = item.price * (item.discount_value / 100);
