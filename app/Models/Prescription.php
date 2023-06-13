@@ -15,7 +15,8 @@ class Prescription extends Model
         'patient_id',
         'list',
         'additional_info',
-        'source'
+        'source',
+        'transaction_id'
     ];
 
     protected $casts = [
@@ -61,5 +62,10 @@ class Prescription extends Model
     public function patient()
     {
         return $this->belongsTo(Patients::class, 'patient_id', 'id');
+    }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class, 'transaction_id', 'id');
     }
 }

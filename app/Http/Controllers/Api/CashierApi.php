@@ -94,16 +94,6 @@ class CashierApi extends Controller
                 $payment = json_decode($payment);
             }
 
-            // If there is patient, make prescription with SELF source
-            if ($request->has("patient")) {
-                $rx = new Prescription();
-                $rx->patient_id = (int) $request->input("patient");
-                $rx->list = $data;
-                $rx->source = "SELF";
-
-                $rx->save();
-            }
-
             // Create new transaction
             $trx = new Transaction();
             $trx->patient_id = $request->has("patient") ? (int) $request->input("patient") : null;
@@ -117,6 +107,17 @@ class CashierApi extends Controller
             $trx->source = "SELF";
 
             $trx->save();
+
+            // If there is patient, make prescription with SELF source
+            if ($request->has("patient")) {
+                $rx = new Prescription();
+                $rx->patient_id = (int) $request->input("patient");
+                $rx->list = $data;
+                $rx->source = "SELF";
+                $rx->transaction_id = $trx->id;
+
+                $rx->save();
+            }
 
             // Dispatch print event
             PrintReceipt::dispatch($trx->toArray());
@@ -170,13 +171,12 @@ class CashierApi extends Controller
                 $newDetail->save();
 
                 // Update or create prescription
-                // $rx = Prescription::updateOrCreate(
-                //     ['appointment_uuid' => $data['uuid']],
-                //     [
-                //         'patient_id' => $appointment->patient_id,
-                //         'list' => json_decode($data['prescription'])
-                //     ]
-                // );
+                $rx = Prescription::where('appointment_uuid', $data["uuid"])->first();
+
+                if ($rx) {
+                    $rx->transaction_id = $trx->id;
+                    $rx->save();
+                }
             }
 
             return true;

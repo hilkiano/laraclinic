@@ -90,6 +90,7 @@ class OnlineTransactionsApi extends Controller
             $rx->list = json_decode($request->prescription);
             $rx->additional_info = $request->notes;
             $rx->source = 'ONLINE';
+            $rx->transaction_id = $trx->id;
             $rx->save();
 
             return response()->json([
