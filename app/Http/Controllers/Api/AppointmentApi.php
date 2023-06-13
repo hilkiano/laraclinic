@@ -281,13 +281,13 @@ class AppointmentApi extends Controller
                     $rx->list = $prescription ? $prescription[0]->data : null;
                     $rx->save();
                 } else {
-                    $newRx = new Prescription();
-                    $newRx->appointment_uuid = $request->input('uuid');
-                    $newRx->patient_id = $appointment->patient_id;
-                    $newRx->list = $prescription ? $prescription[0]->data : null;
-                    $newRx->source = "SELF";
+                    $rx = new Prescription();
+                    $rx->appointment_uuid = $request->input('uuid');
+                    $rx->patient_id = $appointment->patient_id;
+                    $rx->list = $prescription ? $prescription[0]->data : null;
+                    $rx->source = "DOCTOR";
 
-                    $newRx->save();
+                    $rx->save();
                 }
 
                 // Create medical record if the assignment through doctor
@@ -316,6 +316,7 @@ class AppointmentApi extends Controller
             ], 400);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
+            Log::error($e->getTrace());
             return response()->json([
                 'status'    => false,
                 'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
@@ -343,7 +344,7 @@ class AppointmentApi extends Controller
                     }]);
                 })
                 ->when($request->status === config("constants.status.pharmacy_assigned"), function ($query) {
-                    $query->with(['patient.prescriptions.medicalRecord' => function ($query) {
+                    $query->with(['patient.prescriptions.medicalRecord', 'medicalRecord' => function ($query) {
                         $query->take(5);
                     }]);
                 })

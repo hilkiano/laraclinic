@@ -52,7 +52,12 @@
             $("#medicalRecordsRow").empty();
             if (response.data.length > 0) {
                 tableData = response.data;
-                response.data.map((row, i) => iteratePaginationData(page, row, i));
+                response.data.map((row, i) => {
+                    if (row.patient) {
+                        iteratePaginationData(page, row, i)
+                    }
+
+                });
                 $("#allCount").html(`${response.count}`);
                 $("#pagination").html(makePagination(response));
             } else {
@@ -80,21 +85,20 @@
                 <td>${ row.medical_record ? row.medical_record.record_no : '-' }</td>
                 <td>${ row.patient.name }</td>
                 <td style="text-align: center"><button class="btn btn-sm btn-outline-primary me-1" onclick="window.showPrescription(${i})">See Prescription</button></td>
-                <td>${ row.medical_record ? row.medical_record.additional_note : row.additional_info }</td>
+                <td>${ getNotes(row) }</td>
                 <td>${ row.created_by }</td>
                 <td>${ row.created_at }</td>
             </tr>
         `;
 
-        function getDelResButton(row) {
-            let html = '';
-            if (row.deleted_at) {
-                html = `<button class="btn btn-sm btn-outline-success" onclick="window.showConfirmModal(${row.id}, '${row.label}', false)">Restore</button>`;
-            } else {
-                html = `<button class="btn btn-sm btn-outline-danger" onclick="window.showConfirmModal(${row.id}, '${row.label}', true)">Delete</button>`;
-            }
 
-            return html;
+
+        function getNotes(row) {
+            if (row.medical_record) {
+                return row.medical_record.additional_note ? row.medical_record.additional_note : '-'
+            } else {
+                return row.additional_info ? row.additional_info : '-'
+            }
         }
 
         $("#medicalRecordsRow").append(html);
@@ -118,7 +122,6 @@
         const source = tableData[index].source;
         let html = '';
         $("#prescriptionModalRow").html(html);
-        console.log(list);
         list.map(rx => {
             html += `
                 <tr class="${source === "DOCTOR" ? 'table-primary' : source === "SELF" ? 'table-danger' : source === "ONLINE" ? 'table-warning' : 'table-secondary'}">

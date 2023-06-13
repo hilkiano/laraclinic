@@ -361,7 +361,7 @@
         $("#patientAge").html(data.patient.age ? `${data.patient.age} tahun` : '-');
         $("#patientDetails").html(data.patient.additional_note ? data.patient.additional_note : '-');
         if ($("#showMedicalRecordsBtn").length) {
-            $("#showMedicalRecordsBtn").attr("href", encodeURI(`/medical_records?name=${data.patient.name.trim()}`));
+            $("#showMedicalRecordsBtn").attr("href", encodeURI(`/medical_records?id=${data.patient.id}`));
         }
 
         // Medical records row
@@ -412,7 +412,7 @@
         if (group === 3) {
             $("#medicalNotes").val(data.medical_record ? data.medical_record.additional_note : "");
         } else if (group === 4) {
-            $("#medicalNotes").html(data.medical_record ? data.medical_record.additional_note : "");
+            $("#medicalNotes").html(data.medical_record ? `<p>${data.medical_record.additional_note ? data.medical_record.additional_note : '-'}</p>` : "");
         }
 
     }
