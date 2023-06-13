@@ -165,7 +165,7 @@
                                                     class="bi bi-eraser me-2"></i> Clear</button>
                                             <button id="addMedsBtn" type="button"
                                                 class="btn btn-primary rounded-pill"><i
-                                                    class="bi bi-plus-lg me-2"></i> Add Medicine/Service</button>
+                                                    class="bi bi-plus-lg me-2"></i> Add Medicine</button>
                                         </div>
                                     </div>
                                     <div class="col-12">

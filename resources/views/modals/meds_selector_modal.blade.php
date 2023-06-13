@@ -16,7 +16,7 @@
                     <input type="hidden" name="index" id="index" />
                     <div class="row gy-2">
                         <div class="col-sm-12 col-md-8">
-                            <label for="itemId" class="form-label">Medicines or Services</label>
+                            <label for="itemId" class="form-label" id="itemIdLabel">Medicines or Services</label>
                             <select placeholder="Search..." id="itemId" name="item_id" style="flex-grow: 1"></select>
                         </div>
                         <div class="col-sm-12 col-md-4">

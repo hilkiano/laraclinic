@@ -9,6 +9,7 @@ import "@selectize/selectize/dist/css/selectize.bootstrap5.css";
 import {
     TempusDominus,
     Namespace as tdNamespace,
+    DateTime,
 } from "@eonasdan/tempus-dominus";
 import "@eonasdan/tempus-dominus/dist/css/tempus-dominus.min.css";
 import moment from "moment/moment";
@@ -18,6 +19,7 @@ window.IMask = IMask;
 window.selectize = selectize;
 window.TempusDominus = TempusDominus;
 window.tdNamespace = tdNamespace;
+window.DateTime = DateTime;
 window.moment = moment;
 
 const tDConfigs = {
@@ -51,6 +53,39 @@ const tDConfigs = {
         },
     },
     allowInputToggle: true,
+};
+
+const tDConfigsNoClear = {
+    display: {
+        icons: {
+            type: "icons",
+            time: "bi bi-alarm-fill",
+            date: "bi bi-calendar",
+            up: "bi bi-arrow-up",
+            down: "bi bi-arrow-down",
+            previous: "bi bi-chevron-left",
+            next: "bi bi-chevron-right",
+            today: "bi bi-calendar-fill",
+            clear: "bi bi-trash",
+            close: "bi bi-x-lg",
+        },
+        theme: "light",
+        components: {
+            calendar: true,
+            date: true,
+            month: true,
+            year: true,
+            decades: true,
+            clock: false,
+            hours: false,
+            minutes: false,
+            seconds: false,
+        },
+        buttons: {
+            clear: false,
+        },
+    },
+    allowInputToggle: false,
 };
 
 const tDConfigsWithTime = {
@@ -127,6 +162,7 @@ const tDConfigsTime = {
 };
 
 window.tDConfigs = tDConfigs;
+window.tDConfigsNoClear = tDConfigsNoClear;
 window.tDConfigsWithTime = tDConfigsWithTime;
 window.tDConfigsTime = tDConfigsTime;
 

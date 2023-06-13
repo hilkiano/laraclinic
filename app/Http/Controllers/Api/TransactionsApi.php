@@ -41,6 +41,7 @@ class TransactionsApi extends Controller
             $count = $model->count();
             $model = $model->limit($dataPerPage)
                 ->offset($offset);
+            $model = $model->orderBy('created_at', 'desc');
             $data = $model->get();
 
             foreach ($data as $k => $v) {
@@ -54,6 +55,7 @@ class TransactionsApi extends Controller
             return response()->json([
                 'status'        => true,
                 'data'          => $data,
+                'summary'       => $this->getSummary($startDate, $endDate),
                 'count'         => $count,
                 'pagination'    => [
                     'offset'    => $offset,
@@ -69,5 +71,41 @@ class TransactionsApi extends Controller
                 'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
             ], 500);
         }
+    }
+
+    private function getSummary($startDate, $endDate): array
+    {
+        $summary = [
+            "cash"      => (int) 0,
+            "transfer"  => (int) 0,
+            "debit"     => (int) 0,
+            "cc"        => (int) 0
+        ];
+
+        $model = Transaction::select("created_at", "payment_type", "total_amount")
+            ->where('created_at', '>=', $startDate)
+            ->where('created_at', '<=', $endDate)
+            ->where('source', '!=', 'ONLINE')
+            ->get();
+
+        foreach ($model as $trx) {
+            if ($trx->payment_type === "Cash") {
+                $summary["cash"] = $summary["cash"] + $this->convertRawInt($trx->total_amount);
+            } else if ($trx->payment_type === "Debit Card") {
+                $summary["debit"] = $summary["debit"] + $this->convertRawInt($trx->total_amount);
+            } else if ($trx->payment_type === "Credit Card") {
+                $summary["cc"] = $summary["cc"] + $this->convertRawInt($trx->total_amount);
+            } else if ($trx->payment_type === "Transfer Bank") {
+                $summary["transfer"] = $summary["transfer"] + $this->convertRawInt($trx->total_amount);
+            }
+        }
+
+        return $summary;
+    }
+
+    private function convertRawInt($value): int
+    {
+        $numericString = preg_replace('/[^0-9]/', '', $value);
+        return intval($numericString);
     }
 }

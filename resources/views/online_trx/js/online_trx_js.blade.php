@@ -499,5 +499,8 @@
                 showToast('No UUID Found. Try to click the button again.', true);
             }
         });
+
+        $("#medSelectorModalHeader").html("Select Medicine");
+        $("#itemIdLabel").html("Medicine");
     })
 </script>
