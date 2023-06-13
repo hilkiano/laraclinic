@@ -17,7 +17,7 @@
 
     // Get transaction list
     const getList = async (p) => {
-        showTableLoading(6, "#trxRows");
+        showTableLoading(7, "#trxRows");
         const page = p ? p : 0;
         const param = {
             limit: 10,
@@ -25,8 +25,8 @@
             patient_name: $("#patientName").val() !== "" ? $("#patientName").val() : undefined
         };
         if (fromDTPicker.dates.lastPicked && toDTPicker.dates.lastPicked) {
-            param['startDate'] = moment.parseZone(fromDTPicker.dates.lastPicked).utc().format();
-            param['endDate'] = moment.parseZone(toDTPicker.dates.lastPicked).utc().format();
+            param['startDate'] = moment.parseZone(fromDTPicker.dates.lastPicked).startOf('day').utc().format();
+            param['endDate'] = moment.parseZone(toDTPicker.dates.lastPicked).startOf('day').utc().format();
         }
         const formData = new FormData();
         for (var key in param) {
@@ -68,12 +68,18 @@
             } else {
                 let html = `
                     <tr>
-                        <td colspan="6">No Data.</td>
+                        <td colspan="7">No Data.</td>
                     </tr>
                 `;
 
                 $("#trxRows").append(html);
             }
+
+            // Update summary
+            $("#cashTotal").html(`Rp ${response.summary.cash.toLocaleString('id-ID')}`);
+            $("#transferTotal").html(`Rp ${response.summary.transfer.toLocaleString('id-ID')}`);
+            $("#debitTotal").html(`Rp ${response.summary.debit.toLocaleString('id-ID')}`);
+            $("#ccTotal").html(`Rp ${response.summary.cc.toLocaleString('id-ID')}`);
         }).catch(error => {
             showToast(error, true);
         })
@@ -92,6 +98,7 @@
                 <td><button class="btn btn-sm btn-outline-primary" onclick="window.showReceipt(${i})">Cart Content</button></td>
                 <td>${ row.total_amount }</td>
                 <td>${ row.payment_type }</td>
+                <td>${ row.additional_info ? row.additional_info : '-' }</td>
             </tr>
         `;
 
@@ -267,8 +274,8 @@
 
     $(document).ready(function() {
         liveToast = new bootstrap.Toast(_liveToast);
-        fromDTPicker = new TempusDominus(document.getElementById("fromDate"), tDConfigsWithTime);
-        toDTPicker = new TempusDominus(document.getElementById("toDate"), tDConfigsWithTime);
+        fromDTPicker = new TempusDominus(document.getElementById("fromDate"), tDConfigsNoClear);
+        toDTPicker = new TempusDominus(document.getElementById("toDate"), tDConfigsNoClear);
         toDTPicker.disable();
         toDTPicker.updateOptions({
             useCurrent: false
@@ -281,6 +288,10 @@
                 }
             })
         });
+
+        // set initial date
+        fromDTPicker.dates.setValue(new DateTime());
+        toDTPicker.dates.setValue(new DateTime().manipulate(24, 'hours'));
 
         getList();
 

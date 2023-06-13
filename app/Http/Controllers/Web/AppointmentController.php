@@ -74,7 +74,8 @@ class AppointmentController extends Controller
                 $query->whereHas('patient', function ($query) use ($filter) {
                     return $query->where('name', 'ILIKE', "%$filter%");
                 });
-            });
+            })
+            ->orderBy('visit_time', 'desc');
         $paginated = $appointmentModel->paginate($limit);
         foreach ($paginated->items() as $row) {
             $row->visit_time = Carbon::make($row->visit_time)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss');
@@ -219,6 +220,10 @@ class AppointmentController extends Controller
             $model = $model->limit($dataPerPage)
                 ->offset($offset);
             $data = $model->get();
+
+            foreach ($data as $row) {
+                $row->visit_time = Carbon::make($row->visit_time)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss');
+            }
 
             return response()->json([
                 'status'        => true,
