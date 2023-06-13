@@ -119,6 +119,7 @@
                                                             <thead class="table-dark">
                                                                 <tr>
                                                                     <th scope="col">#</th>
+                                                                    <th scope="col">Trx?</th>
                                                                     <th scope="col">Record No.</th>
                                                                     <th scope="col">Created At</th>
                                                                     <th scope="col">Created By</th>

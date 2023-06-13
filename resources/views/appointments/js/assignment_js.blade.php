@@ -423,6 +423,7 @@
             html += `
                 <tr class="${d.source === "DOCTOR" ? 'table-primary' : d.source === "SELF" ? 'table-danger' : d.source === "ONLINE" ? 'table-warning' : 'table-secondary'}">
                     <td>${idx + 1}</td>
+                    <td align="center">${d.transaction_id ? '<i class="bi bi-check2-circle text-success"></i>' : '<i class="bi bi-x-circle text-danger"></i>'}</td>
                     <td>${d.medical_record ? d.medical_record.record_no : "-"}</td>
                     <td>${d.created_at}</td>
                     <td>${d.created_by}</td>

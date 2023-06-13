@@ -20,7 +20,7 @@
                                     <div id="collapseTableSettings" class="accordion-collapse collapse show"
                                         data-bs-parent="#settingsAccordion">
                                         <div class="accordion-body" style="overflow-x: auto;">
-                                            <form id="tableForm" style="min-width: 700px">
+                                            <form id="tableForm">
                                                 <div class="row gy-4">
                                                     <div class="col-sm-12">
                                                         <label for="filter" class="form-label">Filter</label>
@@ -56,6 +56,7 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th scope="col">#</th>
+                                            <th scope="col">Transaction</th>
                                             <th scope="col" style="width: 350px">Record No.</th>
                                             <th scope="col" style="width: 180px">Patient</th>
                                             <th scope="col" style="width: 150px; text-align: center">Prescription
