@@ -151,6 +151,7 @@ class CashierApi extends Controller
             $trx->change = $data['change'];
             $trx->discount_type = $data['total_discount_type'];
             $trx->discount_amount = $data['total_discount'];
+            $trx->source = "APPOINTMENT";
 
             $trx->save();
 
