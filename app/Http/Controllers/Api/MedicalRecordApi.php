@@ -55,7 +55,8 @@ class MedicalRecordApi extends Controller
                 ->when($filterVal && $filterCol, function ($query) use ($filterVal, $filterCol) {
                     if ($filterCol === "name") {
                         $query->whereHas('patient', function ($subquery) use ($filterVal) {
-                            $subquery->where('name', 'ILIKE', "%$filterVal%");
+                            $subquery->where('name', 'ILIKE', "%$filterVal%")
+                                ->whereNull('deleted_at');
                         });
                     }
                     if ($filterCol === "id") {

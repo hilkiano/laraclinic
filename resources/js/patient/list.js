@@ -28,6 +28,99 @@ if (patientListAppointmentModal) {
     );
 }
 
+const removePatient = async (evt) => {
+    const patientId = evt.target.getAttribute("data-id");
+    const param = {
+        patient_id: patientId,
+        method: "remove",
+    };
+    const formData = new FormData();
+    for (var key in param) {
+        if (typeof param[key] !== "undefined") {
+            formData.append(key, param[key]);
+        }
+    }
+
+    await fetch("/api/v1/patient/change-status", {
+        headers: {
+            Accept: "application/json, text-plain, */*",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": csrfToken,
+        },
+        method: "post",
+        credentials: "same-origin",
+        body: formData,
+    })
+        .then((response) => {
+            if (!response.ok) {
+                return response
+                    .json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({ message }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+
+            return response.json();
+        })
+        .then((response) => {
+            window.location.reload();
+        })
+        .catch((error) => {
+            showResponse(false, error);
+        });
+};
+
+const restorePatient = async (evt) => {
+    const patientId = evt.target.getAttribute("data-id");
+    const param = {
+        patient_id: patientId,
+        method: "restore",
+    };
+    const formData = new FormData();
+    for (var key in param) {
+        if (typeof param[key] !== "undefined") {
+            formData.append(key, param[key]);
+        }
+    }
+
+    await fetch("/api/v1/patient/change-status", {
+        headers: {
+            Accept: "application/json, text-plain, */*",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": csrfToken,
+        },
+        method: "post",
+        credentials: "same-origin",
+        body: formData,
+    })
+        .then((response) => {
+            if (!response.ok) {
+                return response
+                    .json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({ message }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+
+            return response.json();
+        })
+        .then((response) => {
+            window.location.reload();
+        })
+        .catch((error) => {
+            showResponse(false, error);
+        });
+};
+
+window.removePatient = removePatient;
+window.restorePatient = restorePatient;
+
 const clearFilter = (evt) => {
     evt.preventDefault();
     if (
