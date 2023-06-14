@@ -253,7 +253,9 @@ class UsersController extends Controller
                 'name'          => 'required',
                 'email'         => 'nullable|email:rfc,dns',
                 'phone_number'  => 'nullable|digits_between:8,15',
-                'schedule'      => 'nullable|array'
+                'schedule'      => 'nullable|array',
+                'new_password'      => 'nullable|min:6|required_with:password_confirmation',
+                'confirm_password'  => 'same:new_password'
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -270,6 +272,7 @@ class UsersController extends Controller
             $user->configs = [
                 "schedule" => $request->schedule
             ];
+            $user->password = Hash::make($request->new_password);
 
             $user->save();
 

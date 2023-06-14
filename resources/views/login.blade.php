@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     @if (App::environment())
-    <title>{{ config('app.name', 'Apotek') }}</title>
+        <title>{{ config('app.name', 'Apotek') }}</title>
     @else
-    <title>{{ $title }} ~ DEVELOPMENT ~</title>
+        <title>{{ $title }} ~ DEVELOPMENT ~</title>
     @endif
     <link rel="icon" href="{{ asset('favicon.ico') }}">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
@@ -26,7 +26,9 @@
                                     <p class="mb-0 fs-4">Login</p>
                                 </div>
                                 <div class="col d-flex justify-content-end align-items-center">
-                                    <button data-bs-toggle="modal" href="#helpModal" type="button" class="btn btn-sm btn-outline-secondary border border-3 rounded-circle"><i class="bi bi-question-lg"></i></button>
+                                    <button data-bs-toggle="modal" href="#helpModal" type="button"
+                                        class="btn d-none btn-sm btn-outline-secondary border border-3 rounded-circle"><i
+                                            class="bi bi-question-lg"></i></button>
                                 </div>
                             </div>
 

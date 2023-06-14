@@ -2,10 +2,19 @@
     const nameField = document.getElementById("name");
     const emailField = document.getElementById("email");
     const phoneField = document.getElementById("phone_number");
+    const newPassword = document.getElementById("new_password");
+    const confirmPassword = document.getElementById("confirm_password");
     const liveToast = document.getElementById("liveToast");
     let userData;
 
     const handleSave = async () => {
+        // Remove invalid class
+        nameField.classList.remove("is-invalid");
+        emailField.classList.remove("is-invalid");
+        phoneField.classList.remove("is-invalid");
+        newPassword.classList.remove("is-invalid");
+        confirmPassword.classList.remove("is-invalid");
+
         const submitBtn = document.getElementById("save-btn");
         submitBtn.classList.add("disabled");
         submitBtn.insertAdjacentHTML(
@@ -19,6 +28,8 @@
             name: nameField.value,
             email: emailField.value,
             phone_number: phoneField.value,
+            new_password: newPassword.value,
+            confirm_password: confirmPassword.value,
             schedule: localStorage.getItem('schedule') ? JSON.parse(localStorage.getItem('schedule')) : null
         };
 
@@ -55,6 +66,9 @@
                 document.getElementById("toastBody").innerHTML =
                     response.message;
                 toast.show();
+
+                $("#newPassword").val("");
+                $("#confirmPassword").val("");
             } else {
                 document
                     .getElementById("errorToastHeader")
@@ -73,7 +87,7 @@
                         response.message;
                     toast.show();
                 } else if (response.message instanceof Object) {
-                    handleError(response.message);
+                    handleError(response.message, true);
                 }
             }
         }
@@ -85,6 +99,7 @@
     const handleError = (errors, validation = false) => {
         if (validation) {
             for (let error in errors) {
+                $(`#${error}_feedback`).html(errors[error][0]);
                 document.getElementById(error).classList.add("is-invalid");
             }
         }
