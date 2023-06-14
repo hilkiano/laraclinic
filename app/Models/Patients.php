@@ -17,7 +17,9 @@ class Patients extends Model
         'email',
         'weight',
         'height',
-        'additional_note'
+        'additional_note',
+        'deleted_at',
+        'deleted_by'
     ];
 
     public function patientPotrait()

@@ -280,4 +280,35 @@ class PatientFormController extends Controller
             ], 500);
         }
     }
+
+    public function changeStatus(Request $request)
+    {
+        try {
+            $patient = Patients::find($request->patient_id);
+            $status = "";
+            if ($request->method === "remove") {
+                $patient->deleted_at = Carbon::now();
+                $patient->deleted_by = auth()->id();
+                $status = "removed";
+            } else {
+                $patient->deleted_at = null;
+                $patient->deleted_by = null;
+                $status = "restored";
+            }
+
+            $patient->save();
+
+            return response()->json([
+                'status'    => true,
+                'message'   => "Patient $status."
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getTrace());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
 }
