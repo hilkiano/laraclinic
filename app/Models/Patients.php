@@ -19,7 +19,8 @@ class Patients extends Model
         'height',
         'additional_note',
         'deleted_at',
-        'deleted_by'
+        'deleted_by',
+        'code'
     ];
 
     public function patientPotrait()
