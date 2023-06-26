@@ -20,10 +20,11 @@
                             <div class="col-sm-12 col-md-8 col-lg-9">
                                 <form id="filterForm">
                                     <div class="input-group">
-                                        <select class="form-select" name="filter_by" style="max-width: 130px;"
-                                            id="filterPatientSelect">
+                                        <select class="form-select" name="filter_by" style="max-width: 175px;"
+                                            autocomplete="off" id="filterPatientSelect">
                                             <option value="">Filter by...</option>
                                             <option selected value="name">Name</option>
+                                            <option selected value="code">Patient Code</option>
                                         </select>
                                         <input id="filterPatientField" placeholder="Search patient..." type="text"
                                             class="form-control" name="filter_field">
@@ -78,9 +79,13 @@
                                             @endif
                                             <div class="card-body">
                                                 <div class="d-flex justify-content-between align-items-center gap-2">
-                                                    <a class="card-title stretched-link text-reset text-decoration-none mb-0 fs-5"
-                                                        data-bs-toggle="modal" href="#patientListModal"
-                                                        data-row="{{ $row }}">{{ $row->name }}</a>
+                                                    <div class="d-flex flex-column">
+                                                        <a class="card-title stretched-link text-reset text-decoration-none mb-0 fs-5"
+                                                            data-bs-toggle="modal" href="#patientListModal"
+                                                            data-row="{{ $row }}">{{ $row->name }}</a>
+                                                        <p class="fs-sm mb-0 text-muted">
+                                                            {{ $row->code ? $row->code : '-' }}</p>
+                                                    </div>
 
                                                     @if ($row->deleted_at)
                                                         <button data-id="{{ $row->id }}"

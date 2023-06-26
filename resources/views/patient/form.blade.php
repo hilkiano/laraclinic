@@ -25,6 +25,23 @@
                                     value="{{ array_key_exists('patient', $data) ? $data['patient']->id : '' }}"
                                     id="patient_id" />
                                 <div class="mb-3">
+                                    <label for="name" class="form-label">Patient Code</label>
+                                    <div class="input-group">
+                                        @if (request()->path() === 'patient/register')
+                                            <span class="input-group-text">MI_</span>
+                                        @endif
+                                        <input type="text" class="form-control form-control-lg" id="code"
+                                            placeholder="Patient code" name="code"
+                                            value="{{ array_key_exists('patient', $data) ? $data['patient']->code : '' }}"
+                                            readonly>
+                                        @if (request()->path() === 'patient/register')
+                                            <button type="button" id="btnGenerateCode" class="btn btn-primary"><i
+                                                    class="bi bi-dice-5-fill px-1"></i></button>
+                                        @endif
+                                        <div class="invalid-feedback">Please fill this field.</div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
                                     <label for="name" class="form-label">Name</label>
                                     <input type="text" class="form-control" id="name" placeholder="Patient name"
                                         name="name"

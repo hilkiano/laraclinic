@@ -48,6 +48,7 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
             $router->get('get-potraits/{patientId}', '\App\Http\Controllers\Web\PatientFormController@getPotraits');
             $router->get('show/{id}', '\App\Http\Controllers\Web\PatientFormController@show');
             $router->post('change-status', '\App\Http\Controllers\Web\PatientFormController@changeStatus');
+            $router->get('get-code', '\App\Http\Controllers\Web\PatientFormController@getCode');
         });
         // appointment
         $router->group(['prefix' => 'appointment'], function () use ($router) {
