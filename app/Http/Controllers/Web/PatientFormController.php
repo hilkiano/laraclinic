@@ -115,7 +115,8 @@ class PatientFormController extends Controller
                 }
             } else {
                 $validator = Validator::make($request->all(), [
-                    'name'          => 'required|unique:patients',
+                    'name'          => 'required',
+                    'code'          => 'required|unique:patients',
                     'birth_date'    => 'required',
                     'weight'        => 'nullable|numeric',
                     'height'        => 'nullable|numeric',
@@ -131,7 +132,8 @@ class PatientFormController extends Controller
                     'height'        => $request->heigth,
                     'address'       => $request->address,
                     'phone_number'  => $request->phone_number,
-                    'additional_note' => $request->additional_note
+                    'additional_note' => $request->additional_note,
+                    'code'          => "MI_" . $request->code
                 ]);
                 if ($newPatient) {
                     return response()->json([
@@ -141,6 +143,34 @@ class PatientFormController extends Controller
                     ], 200);
                 }
             }
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Unexpected error.'
+            ], 500);
+        }
+    }
+
+    public function getCode()
+    {
+        try {
+            $code = "";
+
+            $set = 2;
+            for ($i = 0; $i < $set; $i++) {
+                $randomizer = (string) mt_rand(0000, 9999);
+                $code = $code . $randomizer;
+            }
+
+            if (Patients::where('code', $code)->exists()) {
+                return $this->getCode();
+            }
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $code
+            ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([

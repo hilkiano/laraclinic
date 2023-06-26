@@ -24,6 +24,7 @@ let cropperPotraitModal;
 if (_cropperPotraitModal) {
     cropperPotraitModal = new bootstrap.Modal(_cropperPotraitModal, {});
 }
+const btnGenerateCode = document.getElementById("btnGenerateCode");
 const capturedImg = document.getElementById("capturedImg");
 const video = document.getElementById("video");
 const url = new URL(window.location.href);
@@ -72,11 +73,14 @@ const handleSubmit = async (evt) => {
         const toast = new bootstrap.Toast(liveToast);
         submitBtn.classList.remove("disabled");
         document.getElementById("submitLoading").remove();
+        const errorToastHeader = document.getElementById("errorToastHeader");
+        const successToastHeader =
+            document.getElementById("successToastHeader");
         if (response.status) {
-            document.getElementById("errorToastHeader").classList.add("d-none");
-            document
-                .getElementById("successToastHeader")
-                .classList.add("d-block");
+            errorToastHeader.classList.remove("d-block");
+            errorToastHeader.classList.add("d-none");
+            successToastHeader.classList.remove("d-none");
+            successToastHeader.classList.add("d-block");
             let dataUrl = new URL("/patient/list", url.origin);
             dataUrl.searchParams.set("filter_by", "name");
             dataUrl.searchParams.set("filter_field", response.data.name);
@@ -84,12 +88,10 @@ const handleSubmit = async (evt) => {
             document.getElementById("toastBody").innerHTML = bodyHtml;
             toast.show();
         } else {
-            document
-                .getElementById("errorToastHeader")
-                .classList.add("d-block");
-            document
-                .getElementById("successToastHeader")
-                .classList.add("d-none");
+            errorToastHeader.classList.remove("d-none");
+            errorToastHeader.classList.add("d-block");
+            successToastHeader.classList.remove("d-block");
+            successToastHeader.classList.add("d-none");
             if (typeof response.message === "string") {
                 document.getElementById("toastBody").innerHTML =
                     response.message;
@@ -106,9 +108,14 @@ const handleSubmit = async (evt) => {
  */
 const handleError = (errors) => {
     if (typeof errors == "string") {
+        const errorToastHeader = document.getElementById("errorToastHeader");
+        const successToastHeader =
+            document.getElementById("successToastHeader");
         const toast = new bootstrap.Toast(liveToast);
-        document.getElementById("errorToastHeader").classList.add("d-block");
-        document.getElementById("successToastHeader").classList.add("d-none");
+        errorToastHeader.classList.remove("d-none");
+        errorToastHeader.classList.add("d-block");
+        successToastHeader.classList.remove("d-block");
+        successToastHeader.classList.add("d-none");
         document.getElementById("toastBody").innerHTML = errors;
         toast.show();
     } else {
@@ -224,6 +231,56 @@ const getPatientPotraits = async (patientId) => {
         });
 };
 
+const handleGenerateCode = async () => {
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
+    const req = await fetch("/api/v1/patient/get-code", {
+        headers: {
+            Accept: "application/json, text-plain, */*",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": csrfToken,
+        },
+        method: "get",
+        credentials: "same-origin",
+    });
+    const toast = new bootstrap.Toast(liveToast);
+    const errorToastHeader = document.getElementById("errorToastHeader");
+    const successToastHeader = document.getElementById("successToastHeader");
+    try {
+        const response = await req.json();
+        if (response) {
+            if (response.status) {
+                $("#code").val(response.data);
+
+                errorToastHeader.classList.remove("d-block");
+                errorToastHeader.classList.add("d-none");
+                successToastHeader.classList.remove("d-none");
+                successToastHeader.classList.add("d-block");
+                document.getElementById("toastBody").innerHTML =
+                    "Code generated";
+                toast.show();
+            } else {
+                errorToastHeader.classList.remove("d-none");
+                errorToastHeader.classList.add("d-block");
+                successToastHeader.classList.remove("d-block");
+                successToastHeader.classList.add("d-none");
+                document.getElementById("toastBody").innerHTML =
+                    "Failed generating code.";
+                toast.show();
+            }
+        }
+    } catch (error) {
+        errorToastHeader.classList.remove("d-none");
+        errorToastHeader.classList.add("d-block");
+        successToastHeader.classList.remove("d-block");
+        successToastHeader.classList.add("d-none");
+        document.getElementById("toastBody").innerHTML =
+            "Internal server error.";
+        toast.show();
+    }
+};
+
 const showResponse = (status, message) => {
     const toast = new bootstrap.Toast(liveToast);
     const errorToastClasses =
@@ -255,6 +312,9 @@ const handleRetakePotrait = (e) => {
 };
 
 // Elements events
+if (btnGenerateCode) {
+    btnGenerateCode.addEventListener("click", handleGenerateCode);
+}
 if (patientForm) {
     patientForm.addEventListener("submit", handleSubmit);
 }
