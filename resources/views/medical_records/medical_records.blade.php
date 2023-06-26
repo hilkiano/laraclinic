@@ -29,6 +29,7 @@
                                                                 id="filterCol" autocomplete="off">
                                                                 <option value="name">Patient Name</option>
                                                                 <option value="id">Patient ID</option>
+                                                                <option value="code">Patient Code</option>
                                                             </select>
                                                             <input autocomplete="off" type="text"
                                                                 class="form-control" id="filterVal"

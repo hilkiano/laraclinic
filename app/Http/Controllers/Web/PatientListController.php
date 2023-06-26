@@ -9,6 +9,7 @@ use App\Http\Controllers\PrivilegeController;
 use App\Models\Patients;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PatientListController extends Controller
@@ -88,12 +89,22 @@ class PatientListController extends Controller
     public function selectList($query)
     {
         try {
+            $data = Patients::select('id', 'name', 'code')
+                ->where(function ($q) use ($query) {
+                    $q->where('name', 'ILIKE', "%$query%")
+                        ->orWhere('code', 'ILIKE', "%$query%");
+                })
+                ->orderBy('name', 'asc')
+                ->get();
+
+            if ($data) {
+                foreach ($data as $d) {
+                    $d->name = $d->name . " (" . $d->code . ")";
+                }
+            }
             return response()->json([
                 'status'    => true,
-                'data'      => Patients::select('id', 'name')
-                    ->where('name', 'ILIKE', "%$query%")
-                    ->orderBy('name', 'asc')
-                    ->get()
+                'data'      => $data
             ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());

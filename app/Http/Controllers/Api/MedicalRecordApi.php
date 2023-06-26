@@ -64,6 +64,11 @@ class MedicalRecordApi extends Controller
                             $subquery->where('id', $filterVal);
                         });
                     }
+                    if ($filterCol === "code") {
+                        $query->whereHas('patient', function ($subquery) use ($filterVal) {
+                            $subquery->where('code', 'ILIKE', "%$filterVal%");
+                        });
+                    }
                 });
             $count = $model->count();
             $model = $model->orderBy('prescriptions.created_at', 'desc');

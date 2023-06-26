@@ -46,6 +46,7 @@
                                             id="filterPatientSelect">
                                             <option value="">Filter by...</option>
                                             <option selected value="name">Name</option>
+                                            <option value="code">Patient Code</option>
                                         </select>
                                         <input id="filterPatientField" placeholder="Search patient..." type="text"
                                             class="form-control" name="filter_field">
