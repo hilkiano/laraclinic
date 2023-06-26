@@ -107,8 +107,8 @@
                                                 <li
                                                     class="list-group-item d-flex justify-content-between align-items-start p-1">
                                                     <div class="ms-2 me-auto">
-                                                        <div class="fw-bold">Date of birth</div>
-                                                        {{ $row->birth_date_formatted ? $row->birth_date_formatted : '-' }}
+                                                        <div class="fw-bold">Address</div>
+                                                        {{ $row->address ? $row->address : '-' }}
                                                     </div>
                                                 </li>
                                                 <li
