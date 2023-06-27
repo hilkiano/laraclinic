@@ -191,23 +191,45 @@
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-4">
-                            <div class="row sticky-md-top" id="cardsRow">
+                            <div class="row sticky-top gy-2" id="cardsRow">
                                 <div class="col-12 px-4">
                                     <p class="fs-4 mb-0">Ready for Payment</p>
-                                    <p class="text-muted fs-5">{{ $today }}</p>
                                 </div>
-                                <div class="col-12">
-                                    <form id="filterForm">
-                                        <div class="input-group mb-3 px-3">
-                                            <input type="text" class="form-control" id="filterName"
-                                                placeholder="Search by patient name">
-                                            <button class="btn btn-outline-secondary" type="submit"
-                                                form="filterForm" id="filterBtn"><i
-                                                    class="bi bi-search"></i></button>
+                                <form id="filterForm">
+                                    <div class="col-12 mb-2">
+                                        <div class="input-group px-3" id="fromDate_group"
+                                            data-td-target-input="nearest" data-td-target-toggle="nearest" required>
+                                            <span class="input-group-text bg-dark-subtle" style="min-width: 70px"
+                                                data-td-target="#fromDate" data-td-toggle="datetimepicker" required>
+                                                From
+                                            </span>
+                                            <input autocomplete="off" id="fromDate" name="fromDate" type="text"
+                                                class="form-control" data-td-target="#fromDate"
+                                                placeholder="Transaction from..." required readonly>
                                         </div>
-                                    </form>
-                                </div>
-                                <div style="height: calc(100vh - 220px); overflow: scroll;">
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="input-group px-3 mb-3" id="toDate_group"
+                                            data-td-target-input="nearest" data-td-target-toggle="nearest" required>
+                                            <span class="input-group-text bg-dark-subtle" style="min-width: 70px"
+                                                data-td-target="#toDate" data-td-toggle="datetimepicker" required>
+                                                To
+                                            </span>
+                                            <input autocomplete="off" id="toDate" name="toDate" type="text"
+                                                class="form-control" data-td-target="#toDate" placeholder="to..."
+                                                required readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="input-group mb-3 px-3">
+                                            <input type="text" autocomplete="off" class="form-control"
+                                                id="filterName" placeholder="Search by patient name">
+                                            <button class="btn btn-outline-secondary" type="submit"
+                                                form="filterForm" id="filterBtn">Search</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div style="height: calc(100vh - 290px); overflow: scroll;">
                                     <div class="col-12">
                                         <div id="loadingList" class="d-flex flex-column flex-nowrap overflow-scroll">
                                             @foreach ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as $idx => $card)

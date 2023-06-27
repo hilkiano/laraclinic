@@ -26,7 +26,7 @@
         };
         if (fromDTPicker.dates.lastPicked && toDTPicker.dates.lastPicked) {
             param['startDate'] = moment.parseZone(fromDTPicker.dates.lastPicked).startOf('day').utc().format();
-            param['endDate'] = moment.parseZone(toDTPicker.dates.lastPicked).startOf('day').utc().format();
+            param['endDate'] = moment.parseZone(toDTPicker.dates.lastPicked).endOf('day').utc().format();
         }
         const formData = new FormData();
         for (var key in param) {
@@ -276,6 +276,11 @@
         liveToast = new bootstrap.Toast(_liveToast);
         fromDTPicker = new TempusDominus(document.getElementById("fromDate"), tDConfigsNoClear);
         toDTPicker = new TempusDominus(document.getElementById("toDate"), tDConfigsNoClear);
+        fromDTPicker.updateOptions({
+            restrictions: {
+                maxDate: new DateTime().endOf('hours')
+            }
+        });
         toDTPicker.disable();
         toDTPicker.updateOptions({
             useCurrent: false
@@ -284,14 +289,15 @@
             toDTPicker.enable();
             toDTPicker.updateOptions({
                 restrictions: {
-                    minDate: e.detail.date
+                    minDate: e.detail.date,
+                    maxDate: new DateTime().endOf('hours')
                 }
             })
         });
 
         // set initial date
         fromDTPicker.dates.setValue(new DateTime());
-        toDTPicker.dates.setValue(new DateTime().manipulate(24, 'hours'));
+        toDTPicker.dates.setValue(new DateTime());
 
         getList();
 

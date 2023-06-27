@@ -175,7 +175,10 @@
                 if (response.data.length > 0) {
                     let html = '';
                     response.data.map(d => {
+                        html += `<div class="position-relative" style="width: 150px;">`;
                         html += `<img id="patientPotrait" class="img-thumbnail me-2" src="${d}" alt="potrait placeholder" style="width: 150px;">`;
+                        html += `<button class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="window.removeImg('${d}')">Delete</button>`;
+                        html += `</div>`;
                     })
                     $("#potraits").html(html);
                 } else {
@@ -187,6 +190,48 @@
                 return null;
             });
     }
+
+    const removeImg = async (src) => {
+        const requestBody = new FormData();
+        requestBody.append("url", src);
+        requestBody.append("patient_id", "{{ $data['patient']->id }}");
+
+        await fetch(`/api/v1/patient/remove-potrait`, {
+                headers: {
+                    Accept: "application/json, text-plain, */*",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": csrfToken,
+                },
+                method: "post",
+                credentials: "same-origin",
+                body: requestBody
+            })
+            .then((response) => {
+                if (!response.ok) {
+                    return response
+                        .json()
+                        .catch(() => {
+                            throw new Error(response.status);
+                        })
+                        .then(({
+                            message
+                        }) => {
+                            throw new Error(message || response.status);
+                        });
+                }
+
+                return response.json();
+            })
+            .then((response) => {
+                showResponse(true, response.message);
+                getPatientPotraits();
+            })
+            .catch((error) => {
+                showResponse(false, error);
+            });
+    };
+
+    window.removeImg = removeImg;
 
     const showResponse = (status, message) => {
         const toast = new bootstrap.Toast(liveToast);
