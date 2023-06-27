@@ -351,7 +351,7 @@
     const updateMainContent = (data) => {
         // Patient info
         $("#patientPotrait").attr("src", data.patient.patient_potrait ? data.patient.patient_potrait.url[data.patient.patient_potrait.url.length - 1] : `{{ asset('images/potrait-placeholder.png') }}`);
-        $("#patientName").html(data.patient.name);
+        $("#patientName").html(`${data.patient.name} (${data.patient.code ? data.patient.code : '-'})`);
         $("#patientAddress").html(data.patient.address ? data.patient.address : '-');
         $("#patientEmail").html(data.patient.email ? data.patient.email : '-');
         $("#patientPhone").html(data.patient.phone_number ? `+62 ${data.patient.phone_number}` : '-');
@@ -372,7 +372,7 @@
             } else {
                 medRows = `
                 <tr>
-                    <td colspan="5">No Data.</td>
+                    <td colspan="6">No Data.</td>
                 </tr>
             `;
             }

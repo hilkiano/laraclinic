@@ -22,6 +22,8 @@
     let amountChange;
     let itemLength = 0;
     let itemImask;
+    let fromDTPicker;
+    let toDTPicker;
 
     const getMyAssignment = async (onlyCards = false) => {
         setLoading(true);
@@ -33,7 +35,7 @@
             } else {
                 const emptyCard = `
                     <div class="card w-100 bg-body-secondary border-0">
-                        <div class="card-body p-0" style="height: calc(100vh - 245px)">
+                        <div class="card-body p-0" style="height: calc(100vh - 320px)">
                             <div class="row h-100">
                                 <div class="col-12 d-flex justify-content-center align-items-center">
                                     <p class="fs-3 text-muted">No cards yet.</p>
@@ -59,11 +61,20 @@
     }
 
     const getListCards = async () => {
-        const filterParam = $("#filterName").val() !== "" ? $("#filterName").val() : null;
         let url = `/api/v1/appointment/mine`;
-        if (filterParam) {
-            url = url + `?name=${filterParam}`;
+        const params = new URLSearchParams();
+        const name = $("#filterName").val() !== "" ? $("#filterName").val() : null;
+        const fromDate = moment.parseZone(fromDTPicker.dates.lastPicked).startOf('day').utc().format();
+        const toDate = moment.parseZone(toDTPicker.dates.lastPicked).endOf('day').utc().format();
+
+        if (name) {
+            params.append("name", name);
         }
+        params.append("from", fromDate);
+        params.append("to", toDate);
+
+        url += '?' + params.toString();
+
         return await fetch(url, {
             headers: {
                 Accept: "application/json, text-plain, */*",
@@ -777,6 +788,31 @@
 
     $(document).ready(function() {
         liveToast = new bootstrap.Toast(_liveToast);
+        fromDTPicker = new TempusDominus(document.getElementById("fromDate"), tDConfigsNoClear);
+        toDTPicker = new TempusDominus(document.getElementById("toDate"), tDConfigsNoClear);
+        fromDTPicker.updateOptions({
+            restrictions: {
+                maxDate: new DateTime().endOf('hours')
+            }
+        });
+        toDTPicker.disable();
+        toDTPicker.updateOptions({
+            useCurrent: false
+        })
+        $("#fromDate").on("change.td", function(e) {
+            toDTPicker.enable();
+            toDTPicker.updateOptions({
+                restrictions: {
+                    minDate: e.detail.date,
+                    maxDate: new DateTime().endOf('hours')
+                }
+            })
+        });
+
+        // set initial date
+        fromDTPicker.dates.setValue(new DateTime());
+        toDTPicker.dates.setValue(new DateTime());
+
         prescription = localStorage.getItem('prescription');
         if (!prescription) {
             localStorage.setItem('prescription', JSON.stringify([]));
@@ -876,6 +912,9 @@
         $("#filterForm").submit(function(e) {
             e.preventDefault();
             getMyAssignment(true);
+        });
+        $("#filterForm").change(function(e) {
+            console.log("change", e);
         });
         // Show/hide the discount divs based on the selected radio button
         $('input[name="totalDiscType"]').change(function() {

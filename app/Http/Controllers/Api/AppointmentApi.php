@@ -115,13 +115,13 @@ class AppointmentApi extends Controller
         try {
             // Get the name filter from the request or set it to null.
             $nameFilter = $request->has("name") ? $request->input("name") : null;
+            $fromFilter = $request->has("from") ? $request->input("from") : null;
+            $toFilter = $request->has("to") ? $request->input("to") : null;
 
             // Get the user's group ID.
             $group = $this->userData->group_id;
-
             // Query the appointments table and eager-load the patient and patientPotrait relationships.
             $model = Appointments::with(['patient', 'patient.patientPotrait'])
-                ->whereDate('visit_time', Carbon::now()->toDateString())
                 ->when($group === config('constants.group.doctor'), function ($query) {
                     $query->where('status', config('constants.status.doctor_waiting'));
                 })
@@ -136,6 +136,13 @@ class AppointmentApi extends Controller
                     $query->whereHas('patient', function ($subquery) use ($nameFilter) {
                         $subquery->where('name', 'ILIKE', "%$nameFilter%");
                     });
+                })
+                ->when($fromFilter && $toFilter, function ($query) use ($fromFilter, $toFilter) {
+                    $query->where('visit_time', '>=', Carbon::parse($fromFilter)->subDay()->toIso8601String())
+                        ->where('visit_time', '<=', $toFilter);
+                })
+                ->when(!$fromFilter && !$toFilter, function ($query) {
+                    $query->whereDate('visit_time', Carbon::now()->toDateString());
                 })
                 ->orderBy('visit_time', 'asc')
                 ->limit(10);

@@ -10,6 +10,7 @@ use App\Http\Controllers\PrivilegeController;
 use App\Models\PatientPotraits;
 use App\Models\Patients;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -251,6 +252,49 @@ class PatientFormController extends Controller
                 'status'    => true,
                 'message'   => 'Image saved.',
             ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function removePotrait(Request $request)
+    {
+        try {
+            // Check if it exists
+            $url = $request->url;
+            $path = parse_url($url, PHP_URL_PATH);
+            $exists = Storage::disk(env('FILESYSTEM_DISK', 's3'))->exists($path);
+            if ($exists) {
+                // Delete from S3
+                Storage::disk(env("FILESYSTEM_DISK", "s3"))->delete($path);
+
+                // Delete the entry in database
+                $patientPotraits = PatientPotraits::where('patient_id', $request->patient_id)->first();
+                $filtered = Arr::where($patientPotraits->url, function ($value, $key) use ($url) {
+                    return $value === $url;
+                });
+                $value = Arr::first($filtered);
+                $removed = array_values(array_filter($patientPotraits->url, function ($item) use ($value) {
+                    return $item !== $value;
+                }));
+
+                $patientPotraits->url = $removed;
+                $patientPotraits->save();
+
+                return response()->json([
+                    'status'    => true,
+                    'message'   => 'Photo deleted.'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status'    => false,
+                    'message'   => 'Photo URL cannot be found.'
+                ], 400);
+            }
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([

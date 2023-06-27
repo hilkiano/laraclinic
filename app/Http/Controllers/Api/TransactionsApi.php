@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\PrivilegeController;
 use App\Models\Patients;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class TransactionsApi extends Controller
@@ -35,7 +36,7 @@ class TransactionsApi extends Controller
                     });
                 })
                 ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
-                    $query->where('created_at', '>=', $startDate)
+                    $query->where('created_at', '>=', Carbon::parse($startDate)->subDay()->toIso8601String())
                         ->where('created_at', '<=', $endDate);
                 });
             $count = $model->count();
