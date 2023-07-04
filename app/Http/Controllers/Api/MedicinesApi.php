@@ -42,7 +42,8 @@ class MedicinesApi extends Controller
                 });
             $count = $model->count();
             $model = $model->limit($dataPerPage)
-                ->offset($offset);
+                ->offset($offset)
+                ->orderBy("label", "asc");
             $data = $model->get();
 
             // Return a JSON response with the list of Medicine objects and pagination data.
@@ -124,7 +125,7 @@ class MedicinesApi extends Controller
 
     /**
      * Change active status of a medicine record from the database.
-     * 
+     *
      * @param \Illuminate\Http\Request $request the HTTP request object.
      * @return \Illuminate\Http\JsonResponse the JSON response containing the status, data, and message of the operation.
      */
