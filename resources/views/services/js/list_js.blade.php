@@ -4,6 +4,8 @@
     const _confirmModal = document.getElementById("confirmModal");
     const serviceModalSubmitBtn = document.getElementById("serviceModalSubmitBtn");
     const confirmModalSubmitBtn = document.getElementById("confirmModalSubmitBtn");
+    const canEdit = "{{ $canEdit }}" !== "" ? true : false;
+    const canDelete = "{{ $canDelete }}" !== "" ? true : false;
     let serviceModal;
     let confirmModal;
     let liveToast;
@@ -15,10 +17,10 @@
         .getAttribute("content");
 
     const getList = async (p) => {
-        showTableLoading(5, "#serviceRows");
+        showTableLoading( canEdit || canDelete ? 5 : 4, "#serviceRows");
         const page = p ? p : 0;
         const param = {
-            limit: 10,
+            limit: $("#itemPerPage").val(),
             page: page ? page : 0,
             filter_val: $("#filterVal").val() !== "" ? $("#filterVal").val() : undefined,
             filter_col: $("#filterCol").val()
@@ -62,7 +64,7 @@
             } else {
                 let html = `
                     <tr>
-                        <td colspan="5">No Data.</td>
+                        <td colspan="${ canEdit || canDelete ? 5 : 4 }">No Data.</td>
                     </tr>
                 `;
 
@@ -76,7 +78,7 @@
     window.getList = getList;
 
     const iteratePaginationData = (page, row, i) => {
-        const num = page * 10;
+        const num = page * $("#itemPerPage").val();
         const iteration = i + 1;
         let html;
         html += `
@@ -84,11 +86,11 @@
                 <td scope="row">${ num + iteration }</td>
                 <td>${ row.sku }</td>
                 <td>${ row.label }</td>
-                <td>${ row.package ? row.package : '-' }</td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-outline-primary me-1" data-row='${ JSON.stringify(row) }' onclick="window.handleEdit(event)">Edit</button>
-                    ${ getDelResButton(row) }
-                </td>
+                <td>${ row.sell_price ? formatIdr(row.sell_price) : '-' }</td>
+                ${ canEdit && canDelete ? `<td class="text-center">
+                    ${ canEdit ? `<button class="btn btn-sm btn-outline-primary me-1" data-row='${ JSON.stringify(row) }' onclick="window.handleEdit(event)">Edit</button>` : '' }
+                    ${ canDelete ? getDelResButton(row) : '' }
+                </td>` : '' }
             </tr>
         `;
 
@@ -104,6 +106,14 @@
         }
 
         $("#serviceRows").append(html);
+    }
+
+    const formatIdr = (num) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            maximumFractionDigits: 0
+            }).format(num);
     }
 
     const showModalAdd = (e) => {
@@ -132,7 +142,7 @@
             "afterbegin",
             '<div id="spinner" class="spinner-grow spinner-grow-sm me-2"></div>'
         );
-        // Update value for buy price and sell price to use 
+        // Update value for buy price and sell price to use
         formData.set('buy_price', buyPriceImask.unmaskedValue);
         formData.set('sell_price', sellPriceImask.unmaskedValue);
 

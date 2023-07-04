@@ -33,7 +33,8 @@ class ServicesApi extends Controller
                 });
             $count = $model->count();
             $model = $model->limit($dataPerPage)
-                ->offset($offset);
+                ->offset($offset)
+                ->orderBy("label", "asc");
             $data = $model->get();
 
             return response()->json([
@@ -113,7 +114,7 @@ class ServicesApi extends Controller
 
     /**
      * Delete a service record from the database.
-     * 
+     *
      * @param \Illuminate\Http\Request $request the HTTP request object.
      * @return \Illuminate\Http\JsonResponse the JSON response containing the status, data, and message of the operation.
      */
