@@ -22,7 +22,7 @@
             name: $("#filterName").val() !== "" ? $("#filterName").val() : undefined,
             phone_number: $("#filterPhone").val() !== "" ? $("#filterPhone").val() : undefined,
             address: $("#filterAddress").val() !== "" ? $("#filterAddress").val() : undefined,
-            record_no: $("#filterRecordNo").val() !== "" ? $("#filterRecordNo").val() : undefined,
+            code: $("#filterCode").val() !== "" ? $("#filterCode").val() : undefined,
         };
         const formData = new FormData();
         for (var key in param) {

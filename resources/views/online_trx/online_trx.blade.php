@@ -43,10 +43,9 @@
                                                             id="filterAddress" />
                                                     </div>
                                                     <div class="col-sm-12 col-md-12 col-lg-4">
-                                                        <label for="filter" class="form-label">Medical Record
-                                                            Number</label>
+                                                        <label for="filter" class="form-label">Patient Code</label>
                                                         <input autocomplete="off" type="text" class="form-control"
-                                                            id="filterRecordNo" />
+                                                            id="filterCode" placeholder="MI_xxxxxxxx" />
                                                     </div>
                                                     <div class="col-12 d-flex justify-content-end">
                                                         <button id="clearFilterBtn" class="btn btn-light"

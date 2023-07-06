@@ -156,16 +156,20 @@ class PatientFormController extends Controller
     public function getCode()
     {
         try {
-            $code = "";
+            // Get latest code
+            $model = Patients::select("code")
+                ->whereNotNull("code")
+                ->where("code", "LIKE", "MI\_1%")
+                ->orderBy("code", "desc")
+                ->first();
 
-            $set = 2;
-            for ($i = 0; $i < $set; $i++) {
-                $randomizer = (string) mt_rand(0000, 9999);
-                $code = $code . $randomizer;
-            }
-
-            if (Patients::where('code', $code)->exists()) {
-                return $this->getCode();
+            if ($model) {
+                $numericPart = substr($model->code, 3);
+                $incrementedPart = intval($numericPart) + 1;
+                $formattedPart = str_pad($incrementedPart, strlen($numericPart), '0', STR_PAD_LEFT);
+                $code = $formattedPart;
+            } else {
+                $code = "20000000";
             }
 
             return response()->json([
