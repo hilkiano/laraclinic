@@ -194,7 +194,7 @@
     const removeImg = async (src) => {
         const requestBody = new FormData();
         requestBody.append("url", src);
-        requestBody.append("patient_id", "{{ $data['patient']->id }}");
+        requestBody.append("patient_id", "{{ array_key_exists('patient', $data) ? $data['patient']->id : '' }}");
 
         await fetch(`/api/v1/patient/remove-potrait`, {
                 headers: {

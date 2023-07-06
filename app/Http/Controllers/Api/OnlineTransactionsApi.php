@@ -46,10 +46,8 @@ class OnlineTransactionsApi extends Controller
                 ->when($request->has("address"), function ($query) use ($request) {
                     $query->where("address", "ILIKE", "%" . $request->input("address") . "%");
                 })
-                ->when($request->has("record_no"), function ($query) use ($request) {
-                    $query->whereHas('medicalRecords', function ($subquery) use ($request) {
-                        $subquery->where("record_no", $request->input("record_no"));
-                    });
+                ->when($request->has("code"), function ($query) use ($request) {
+                    $query->where("code", "ILIKE", "%" . $request->input("code") . "%");
                 })
                 ->limit(50) // limit results
                 ->get();
