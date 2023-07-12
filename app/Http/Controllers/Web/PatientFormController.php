@@ -99,7 +99,7 @@ class PatientFormController extends Controller
                 $modelPatient = Patients::find($request->input('id'));
                 if ($modelPatient) {
                     $modelPatient->name = $request->name;
-                    $modelPatient->birth_date = Carbon::parse($request->birth_date);
+                    $modelPatient->birth_date = Carbon::createFromFormat('d/m/Y', $request->birth_date);
                     $modelPatient->weight = $request->weight;
                     $modelPatient->height = $request->height;
                     $modelPatient->address = $request->address;
