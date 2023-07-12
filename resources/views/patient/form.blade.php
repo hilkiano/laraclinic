@@ -15,8 +15,10 @@
                                     class="bi bi-chevron-double-left me-2"></i> Back to Patient List</a>
                         </div>
                         <div class="col-sm-12 col-md-8 col-lg-9 d-grid d-md-flex justify-content-md-end">
-                            <button class="btn btn-primary" data-bs-toggle="modal" href="#patientPotraitModal"><i
-                                    class="bi bi-camera-fill me-2"></i>Upload Potrait</button>
+                            @if (array_key_exists('patient', $data))
+                                <button class="btn btn-primary" data-bs-toggle="modal" href="#patientPotraitModal"><i
+                                        class="bi bi-camera-fill me-2"></i>Upload Potrait</button>
+                            @endif
                         </div>
                         <hr />
                         <div class="col-sm-12 col-md-12 col-lg-6 d-grid">
