@@ -231,9 +231,15 @@ class PatientFormController extends Controller
             $timestamp = Carbon::now()->timestamp;
             $imageName = "photo$timestamp.jpg";
 
-            $upload = Storage::disk(env('FILESYSTEM_DISK', 's3'))->put('patients/' . $imageName, $image);
+            if (env('APP_ENV') === 'production') {
+                $dir = 'patients/' . $imageName;
+            } else {
+                $dir = 'development/patients/' . $imageName;
+            }
+
+            $upload = Storage::disk(env('FILESYSTEM_DISK', 's3'))->put($dir, $image);
             if ($upload) {
-                $url = Storage::disk(env('FILESYSTEM_DISK', 's3'))->url('patients/' . $imageName);
+                $url = Storage::disk(env('FILESYSTEM_DISK', 's3'))->url($dir);
             }
 
             // Save to patient potraits

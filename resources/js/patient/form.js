@@ -208,20 +208,14 @@ const getPatientPotraits = async (patientId) => {
         })
         .then((response) => {
             if (response.data.length > 0) {
-                if (response.data.length > 0) {
-                    let html = "";
-                    response.data.map((d) => {
-                        html += `<div class="position-relative" style="width: 150px;">`;
-                        html += `<img id="patientPotrait" class="img-thumbnail me-2" src="${d}" alt="potrait placeholder" style="width: 150px;">`;
-                        html += `<button class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="window.removeImg('${d}')">Delete</button>`;
-                        html += `</div>`;
-                    });
-                    $("#potraits").html(html);
-                } else {
-                    $("#potraits").html(
-                        '<p class="text-muted">No potrait saved.</p>'
-                    );
-                }
+                let html = "";
+                response.data.map((d) => {
+                    html += `<div class="position-relative" style="width: 150px;">`;
+                    html += `<img id="patientPotrait" class="img-thumbnail me-2" src="${d}" alt="potrait placeholder" style="width: 150px;">`;
+                    html += `<button class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="window.removeImg('${d}')">Delete</button>`;
+                    html += `</div>`;
+                });
+                $("#potraits").html(html);
             } else {
                 $("#potraits").html(
                     '<p class="text-muted">No potrait saved.</p>'
