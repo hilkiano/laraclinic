@@ -36,8 +36,8 @@ class TransactionsApi extends Controller
                     });
                 })
                 ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
-                    $query->where('created_at', '>=', Carbon::parse($startDate)->subDay()->toIso8601String())
-                        ->where('created_at', '<=', $endDate);
+                    $query->where('created_at', '>=', Carbon::parse($startDate)->toIso8601String())
+                        ->where('created_at', '<=', Carbon::parse($endDate)->toIso8601String());
                 });
             $count = $model->count();
             $model = $model->limit($dataPerPage)

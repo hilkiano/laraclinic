@@ -138,8 +138,8 @@ class AppointmentApi extends Controller
                     });
                 })
                 ->when($fromFilter && $toFilter, function ($query) use ($fromFilter, $toFilter) {
-                    $query->where('visit_time', '>=', Carbon::parse($fromFilter)->subDay()->toIso8601String())
-                        ->where('visit_time', '<=', $toFilter);
+                    $query->where('visit_time', '>=', Carbon::parse($fromFilter)->toIso8601String())
+                        ->where('visit_time', '<=', Carbon::parse($toFilter)->toIso8601String());
                 })
                 ->when(!$fromFilter && !$toFilter, function ($query) {
                     $query->whereDate('visit_time', Carbon::now()->toDateString());
