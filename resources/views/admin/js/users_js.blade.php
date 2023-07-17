@@ -9,6 +9,7 @@
     const phoneNumberField = document.getElementById("phone_number");
     const usersModal = document.getElementById("usersModal");
     const usersForm = document.getElementById("usersForm");
+    const usersResetPassword = document.getElementById("usersResetPassword");
 
     const url = new URL(window.location.href);
 
@@ -144,6 +145,56 @@
             }
         }
     };
+    const resetPassword = async () => {
+        const submitBtn = document.getElementById("usersResetPassword");
+        submitBtn.classList.add("disabled");
+        submitBtn.insertAdjacentHTML(
+            "afterbegin",
+            '<div id="submitLoading" class="spinner-grow spinner-grow-sm me-2"></div>'
+        );
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            .getAttribute("content");
+        const requestBody = new FormData(usersForm);
+        const req = await fetch("/api/v1/master/users/reset-password", {
+            headers: {
+                Accept: "application/json, text-plain, */*",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            method: "post",
+            credentials: "same-origin",
+            body: requestBody,
+        });
+        const response = await req.json();
+        if (response) {
+            const toast = new bootstrap.Toast(liveToast);
+            submitBtn.classList.remove("disabled");
+            document.getElementById("submitLoading").remove();
+            if (response.status) {
+                const url = new URL(window.location.href);
+                if (url.searchParams.has("page")) {
+                    url.searchParams.delete("page");
+                }
+                url.searchParams.set("filter", response.data.username);
+                window.location = url.href;
+            } else {
+                document
+                    .getElementById("errorToastHeader")
+                    .classList.add("d-block");
+                document
+                    .getElementById("successToastHeader")
+                    .classList.add("d-none");
+                if (typeof response.message === "string") {
+                    document.getElementById("toastBody").innerHTML =
+                        response.message;
+                    toast.show();
+                } else if (response.message instanceof Object) {
+                    handleError(response.message);
+                }
+            }
+        }
+    }
     /**
      * Iterate errors and add invalid class to matching form fields
      */
@@ -187,6 +238,9 @@
     }
     if (usersForm) {
         usersForm.addEventListener("submit", submitHandler);
+    }
+    if (usersResetPassword) {
+        usersResetPassword.addEventListener("click", resetPassword);
     }
 
     // DOM Events

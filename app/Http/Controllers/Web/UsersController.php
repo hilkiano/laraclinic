@@ -289,4 +289,36 @@ class UsersController extends Controller
             ], 500);
         }
     }
+
+    public function resetPassword(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id'      => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'    => false,
+                    'message'   => $validator->errors()
+                ], 422);
+            }
+
+            $user = Users::find($request->input("id"));
+            $user->password = Hash::make("12345");
+
+            $user->save();
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $user,
+                'message'   => 'Reset was successfull.'
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Unexpected error happened.'
+            ], 500);
+        }
+    }
 }
