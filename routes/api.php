@@ -26,6 +26,7 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
         $router->group(['prefix' => 'master'], function () use ($router) {
             $router->group(['prefix' => 'users'], function () use ($router) {
                 $router->post('/change-state', '\App\Http\Controllers\Web\UsersController@changeState');
+                $router->post('/reset-password', '\App\Http\Controllers\Web\UsersController@resetPassword');
                 $router->post('/save', '\App\Http\Controllers\Web\UsersController@save');
             });
             $router->group(['prefix' => 'menus'], function () use ($router) {

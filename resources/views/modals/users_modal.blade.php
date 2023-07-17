@@ -11,12 +11,14 @@
                     <div class=" row mb-2">
                         <div class="col-sm-6">
                             <label for="username" class="form-label">Username</label>
-                            <input placeholder="john.doe" type="text" class="form-control" id="username" name="username" required>
+                            <input placeholder="john.doe" type="text" class="form-control" id="username"
+                                name="username" required>
                             <div class="invalid-feedback">This username already taken.</div>
                         </div>
                         <div class="col-sm-6">
                             <label for="name" class="form-label">Full Name</label>
-                            <input placeholder="John Doe" type="text" class="form-control" id="name" name="name">
+                            <input placeholder="John Doe" type="text" class="form-control" id="name"
+                                name="name">
                             <div class="invalid-feedback">Please fill this field.</div>
                         </div>
                     </div>
@@ -25,7 +27,8 @@
                             <label for="email" class="form-label">Email</label>
                             <div class="input-group">
                                 <span class="input-group-text" id="basic-addon1"><i class="bi bi-envelope"></i></span>
-                                <input placeholder="john_doe@mail.com" type="text" class="form-control" id="email" name="email">
+                                <input placeholder="john_doe@mail.com" type="text" class="form-control"
+                                    id="email" name="email">
                                 <div class="invalid-feedback">Email you entered is not valid.</div>
                             </div>
                         </div>
@@ -33,7 +36,8 @@
                             <label for="phone_number" class="form-label">Phone Number</label>
                             <div class="input-group">
                                 <span class="input-group-text" id="basic-addon1">+62</span>
-                                <input placeholder="81212121212" type="text" class="form-control" id="phone_number" name="phone_number" maxlength="15">
+                                <input placeholder="81212121212" type="text" class="form-control" id="phone_number"
+                                    name="phone_number" maxlength="15">
                                 <div class="invalid-feedback">Phone number you entered is not valid.</div>
                             </div>
                         </div>
@@ -44,7 +48,7 @@
                             <select class="form-select" name="group" id="group" required>
                                 <option value="">Please select group...</option>
                                 @foreach ($data['groups'] as $group)
-                                <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                    <option value="{{ $group->id }}">{{ $group->name }}</option>
                                 @endforeach
                             </select>
                             <div class="invalid-feedback">Please fill this field.</div>
@@ -53,7 +57,10 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal" id="usersModalCloseBtn">Cancel</button>
+                <button type="button" class="btn btn-warning" id="usersResetPassword"><i
+                        class="bi bi-exclamation-octagon-fill me-2"></i>Reset Password</button>
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal"
+                    id="usersModalCloseBtn">Cancel</button>
                 <button type="submit" form="usersForm" class="btn btn-primary" id="usersModalSubmitBtn">Submit</button>
             </div>
         </div>
