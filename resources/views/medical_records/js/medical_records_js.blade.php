@@ -13,7 +13,7 @@
         showTableLoading(10, "#medicalRecordsRow");
         const page = p ? p : 0;
         const param = {
-            limit: 10,
+            limit: 50,
             page: page ? page : 0,
             filter_val: $("#filterVal").val() !== "" ? $("#filterVal").val() : undefined,
             filter_col: $("#filterCol").val()
