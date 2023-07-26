@@ -53,7 +53,7 @@
                         </div>
                         <div class="col-12 mb-4">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-hover caption-top" style="min-width: 1600px;">
+                                <table class="table table-bordered table-hover caption-top" style="min-width: 1960px;">
                                     <thead class="table-dark">
                                         <tr>
                                             <th scope="col">#</th>
@@ -65,6 +65,8 @@
                                             <th scope="col">Notes</th>
                                             <th scope="col" style="width: 180px">Created By</th>
                                             <th scope="col" style="width: 180px">Created At</th>
+                                            <th scope="col" style="width: 180px">Last Updated By</th>
+                                            <th scope="col" style="width: 180px">Last Updated At</th>
                                         </tr>
                                     </thead>
                                     <tbody id="medicalRecordsRow">
@@ -115,6 +117,7 @@
                                 <th scope="col" style="width: 50px; text-align: right">Qty</th>
                                 <th scope="col" style="width: 300px">Notes</th>
                                 <th scope="col" style="width: 150px">Created By</th>
+                                <th scope="col" style="width: 150px">Last Updated By</th>
                                 <th scope="col" style="width: 100px">Type</th>
                             </tr>
                         </thead>

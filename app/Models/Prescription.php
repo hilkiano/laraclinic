@@ -44,9 +44,11 @@ class Prescription extends Model
         );
     }
 
-    public function updatedBy()
+    public function updatedBy(): Attribute
     {
-        return $this->belongsTo(Users::class, 'updated_by', 'id');
+        return Attribute::make(
+            get: fn ($value) => $value ? Users::select('name')->where('id', $value)->first()->name : "-"
+        );
     }
 
     public function deletedBy()

@@ -175,6 +175,10 @@ class CashierApi extends Controller
 
                 if ($rx) {
                     $rx->transaction_id = $trx->id;
+                    if ($data["prescription"]) {
+                        $rx->list = json_decode($data["prescription"])[0]->data;
+                    }
+
                     $rx->save();
                 }
             }

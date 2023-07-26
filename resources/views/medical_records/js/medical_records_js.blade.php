@@ -10,7 +10,7 @@
         .getAttribute("content");
 
     const getList = async (p) => {
-        showTableLoading(8, "#medicalRecordsRow");
+        showTableLoading(10, "#medicalRecordsRow");
         const page = p ? p : 0;
         const param = {
             limit: 10,
@@ -64,7 +64,7 @@
                 tableData = [];
                 let html = `
                     <tr>
-                        <td colspan="8">No Data.</td>
+                        <td colspan="10">No Data.</td>
                     </tr>
                 `;
 
@@ -89,6 +89,8 @@
                 <td>${ getNotes(row) }</td>
                 <td>${ row.created_by }</td>
                 <td>${ row.created_at }</td>
+                <td>${ row.updated_by }</td>
+                <td>${ row.updated_at }</td>
             </tr>
         `;
 
@@ -131,6 +133,7 @@
                     <td style="text-align: right">${rx.qty}</td>
                     <td>${rx.notes}</td>
                     <td>${tableData[index].created_by}</td>
+                    <td>${tableData[index].updated_by}</td>
                     <td><h5><span class="badge ${source === "DOCTOR" ? 'text-bg-primary' : source === "SELF" ? 'text-bg-danger' : source === "ONLINE" ? 'text-bg-warning' : 'text-bg-secondary'}">${source}</span></h5></td>
                 </tr>
             `;
