@@ -20,7 +20,7 @@
         showTableLoading(7, "#trxRows");
         const page = p ? p : 0;
         const param = {
-            limit: 10,
+            limit: 50,
             page: page ? page : 0,
             patient_name: $("#patientName").val() !== "" ? $("#patientName").val() : undefined
         };
