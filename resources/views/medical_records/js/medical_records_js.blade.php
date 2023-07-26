@@ -76,7 +76,7 @@
     }
 
     const iteratePaginationData = (page, row, i) => {
-        const num = page * 10;
+        const num = page * 50;
         const iteration = i + 1;
         let html;
         html += `
