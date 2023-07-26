@@ -297,7 +297,8 @@
                                         <p class="mb-1 text-muted">${item.sku}</p>
                                         <small>Notes: ${item.notes ? item.notes : '-'}</small>
                                     </div>
-                                    <div style="min-width: 75px; max-width: 100px">
+                                    <div class="d-flex align-items-start gap-1" style="min-width: 75px; max-width: 140px">
+                                        <button class="btn btn-sm rounded-pill btn-danger" onclick="window.deleteItem(${idx})"><i class="bi bi-trash"></i></button>
                                         <div class="input-group input-group-sm">
                                             <button style="z-index: 0" onclick="window.subtractItem(${idx})" class="btn btn-dark rounded-start-pill" type="button"><i class="bi bi-dash-lg"></i></button>
                                             <input style="z-index: 0" id="qty-${idx}" class="form-control" type="text" value="${item.qty}" readonly>
@@ -427,6 +428,18 @@
         }
 
         return price;
+    }
+
+    const deleteItem = (idx) => {
+        const storage = localStorage.getItem("prescription");
+        if (storage) {
+            let parsedRx = JSON.parse(storage);
+            if (parsedRx[0].data.length > 0) {
+                parsedRx[0].data.splice(idx, 1);
+            }
+            localStorage.setItem('prescription', JSON.stringify(parsedRx));
+            updateRxBody(assignedUuid, false);
+        }
     }
 
     const setTakeLoading = (status) => {
@@ -778,6 +791,7 @@
     window.calculateItemPrice = calculateItemPrice;
     window.takeAssignment = takeAssignment;
     window.subtractItem = subtractItem;
+    window.deleteItem = deleteItem;
     window.addItem = addItem;
     window.cancelAssignment = (e) => {
         const uuid = e.target.getAttribute("data-uuid");
