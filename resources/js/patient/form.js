@@ -325,6 +325,13 @@ if (_patientPotraitModal) {
         startCameraSwitch.checked = false;
         startCameraSwitch.dispatchEvent(new Event("change"));
     });
+    _patientPotraitModal.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+            if (!$("#takePotraitBtn").hasClass("disabled")) {
+                takePotraitBtn.click();
+            }
+        }
+    });
 }
 if (_cropperPotraitModal) {
     _cropperPotraitModal.addEventListener("hide.bs.modal", function (e) {
