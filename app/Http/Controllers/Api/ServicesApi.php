@@ -69,7 +69,7 @@ class ServicesApi extends Controller
         try {
             $privileges = $this->privilegeController->__invoke($request)->original["data"];
             // Business logic to create or update a Medicine object based on the request payload.
-            if ($request->has("id")) {
+            if ($request->filled("id")) {
                 if (!in_array("MEDICINE_SERVICE_UPDATE", $privileges)) {
                     return response()->json([
                         'status'    => false,
@@ -104,7 +104,7 @@ class ServicesApi extends Controller
             ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
-
+            Log::error($e->getTraceAsString());
             return response()->json([
                 'status'    => false,
                 'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
