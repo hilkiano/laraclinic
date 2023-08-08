@@ -16,13 +16,13 @@
     }
     if (_cancelModal) {
         cancelModal = new bootstrap.Modal('#cancelAssignmentModal', {});
-        _cancelModal.addEventListener("hidden.bs.modal", function (e) {
+        _cancelModal.addEventListener("hidden.bs.modal", function(e) {
             $("#cancelAssignmentForm")[0].reset();
         });
     }
     if (_sendToDocModal) {
         sendToDocModal = new bootstrap.Modal("#sendToDocModal", {});
-        _sendToDocModal.addEventListener("hidden.bs.modal", function (e) {
+        _sendToDocModal.addEventListener("hidden.bs.modal", function(e) {
             $("#sendToDocForm")[0].reset();
         });
     }
@@ -350,7 +350,8 @@
 
     const updateMainContent = (data) => {
         // Patient info
-        $("#patientPotrait").attr("src", data.patient.patient_potrait ? data.patient.patient_potrait.url[data.patient.patient_potrait.url.length - 1] : `{{ asset('images/potrait-placeholder.png') }}`);
+        $("#patientPotrait").attr("src", data.patient.patient_potrait ? data.patient.patient_potrait.url[data
+            .patient.patient_potrait.url.length - 1] : `{{ asset('images/potrait-placeholder.png') }}`);
         $("#patientName").html(`${data.patient.name} (${data.patient.code ? data.patient.code : '-'})`);
         $("#patientAddress").html(data.patient.address ? data.patient.address : '-');
         $("#patientEmail").html(data.patient.email ? data.patient.email : '-');
@@ -411,8 +412,14 @@
         const group = parseInt("{{ $group }}");
         if (group === 3) {
             $("#medicalNotes").val(data.medical_record ? data.medical_record.additional_note : "");
+            $("#pharmacyNotes").html(data.medical_record ?
+                `<p>${data.medical_record.additional_note ? data.medical_record.additional_note : '-'}</p>` :
+                "-");
         } else if (group === 4) {
-            $("#medicalNotes").html(data.medical_record ? `<p>${data.medical_record.additional_note ? data.medical_record.additional_note : '-'}</p>` : "");
+            $("#pharmacyNotes").val(data.medical_record ? data.medical_record.pharmacy_note : "");
+            $("#medicalNotes").html(data.medical_record ?
+                `<p>${data.medical_record.additional_note ? data.medical_record.additional_note : '-'}</p>` :
+                "-");
         }
 
     }
@@ -507,6 +514,7 @@
             uuid: uuid,
             method: method,
             medical_note: $("#medicalNotes").val(),
+            pharmacy_note: $("#pharmacyNotes").val(),
             prescription: localStorage.getItem(`prescription`) ? localStorage.getItem(`prescription`) : null
         };
         for (var key in param) {
@@ -547,6 +555,7 @@
             }
             $("#loadingIndicator").addClass("d-none");
             $("#medicalNotes").val("");
+            $("#pharmacyNotes").val("");
             document.getElementById("submitLoading").remove();
             _approvalModal.hide();
             localStorage.setItem('prescription', JSON.stringify([]));
@@ -683,6 +692,7 @@
                 $("#loadingIndicator").addClass("d-none");
                 localStorage.setItem('prescription', JSON.stringify([]));
                 $("#medicalNotes").val("");
+                $("#pharmacyNotes").val("");
                 showToast(response.message);
             })
             .catch(error => {
@@ -739,6 +749,7 @@
                 $("#loadingIndicator").addClass("d-none");
                 localStorage.setItem('prescription', JSON.stringify([]));
                 $("#medicalNotes").val("");
+                $("#pharmacyNotes").val("");
                 showToast(response.message);
             })
             .catch(error => {

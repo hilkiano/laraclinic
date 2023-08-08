@@ -155,11 +155,23 @@
                                             </div>
                                         </div>
                                         <div class="col-12">
-                                            <p class="fs-5"><i class="bi bi-sticky me-2 text-primary"></i> Notes</p>
+                                            <p class="fs-5"><i class="bi bi-sticky me-2 text-primary"></i>Doctor
+                                                Notes</p>
                                             @if ($group === 3)
                                                 <textarea id="medicalNotes" class="form-control" rows="3" autocomplete="off"></textarea>
                                             @else
                                                 <div id="medicalNotes"
+                                                    class="p-3 bg-body-secondary rounded text-break">
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                            <p class="fs-5"><i class="bi bi-sticky me-2 text-primary"></i>Pharmacy
+                                                Notes</p>
+                                            @if ($group === 4)
+                                                <textarea id="pharmacyNotes" class="form-control" rows="3" autocomplete="off"></textarea>
+                                            @else
+                                                <div id="pharmacyNotes"
                                                     class="p-3 bg-body-secondary rounded text-break">
                                                 </div>
                                             @endif

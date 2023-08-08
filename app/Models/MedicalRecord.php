@@ -15,7 +15,7 @@ class MedicalRecord extends Model
         'record_no',
         'patient_id',
         'prescription_id',
-        'additional_note'
+        'additional_note',
     ];
 
     public function patient()

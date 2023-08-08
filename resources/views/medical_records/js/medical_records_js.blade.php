@@ -10,7 +10,7 @@
         .getAttribute("content");
 
     const getList = async (p) => {
-        showTableLoading(10, "#medicalRecordsRow");
+        showTableLoading(11, "#medicalRecordsRow");
         const page = p ? p : 0;
         const param = {
             limit: 50,
@@ -64,7 +64,7 @@
                 tableData = [];
                 let html = `
                     <tr>
-                        <td colspan="10">No Data.</td>
+                        <td colspan="11">No Data.</td>
                     </tr>
                 `;
 
@@ -87,6 +87,7 @@
                 <td>${ row.patient.name }</td>
                 <td style="text-align: center"><button class="btn btn-sm btn-outline-primary me-1" onclick="window.showPrescription(${i})">See Prescription</button></td>
                 <td>${ getNotes(row) }</td>
+                <td>${ getPharmacyNotes(row) }</td>
                 <td>${ row.created_by }</td>
                 <td>${ row.created_at }</td>
                 <td>${ row.updated_by }</td>
@@ -102,6 +103,10 @@
             } else {
                 return row.additional_info ? row.additional_info : '-'
             }
+        }
+
+        function getPharmacyNotes(row) {
+            return row.additional_info ? row.additional_info : '-';
         }
 
         $("#medicalRecordsRow").append(html);
