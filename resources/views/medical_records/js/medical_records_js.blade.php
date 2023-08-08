@@ -10,7 +10,7 @@
         .getAttribute("content");
 
     const getList = async (p) => {
-        showTableLoading(10, "#medicalRecordsRow");
+        showTableLoading(11, "#medicalRecordsRow");
         const page = p ? p : 0;
         const param = {
             limit: 50,
@@ -64,7 +64,7 @@
                 tableData = [];
                 let html = `
                     <tr>
-                        <td colspan="10">No Data.</td>
+                        <td colspan="11">No Data.</td>
                     </tr>
                 `;
 
@@ -87,6 +87,7 @@
                 <td>${ row.patient.name }</td>
                 <td style="text-align: center"><button class="btn btn-sm btn-outline-primary me-1" onclick="window.showPrescription(${i})">See Prescription</button></td>
                 <td>${ getNotes(row) }</td>
+                <td>${ getPharmacyNotes(row) }</td>
                 <td>${ row.created_by }</td>
                 <td>${ row.created_at }</td>
                 <td>${ row.updated_by }</td>
@@ -100,8 +101,12 @@
             if (row.medical_record) {
                 return row.medical_record.additional_note ? row.medical_record.additional_note : '-'
             } else {
-                return row.additional_info ? row.additional_info : '-'
+                return '-';
             }
+        }
+
+        function getPharmacyNotes(row) {
+            return row.additional_info ? row.additional_info : '-';
         }
 
         $("#medicalRecordsRow").append(html);
@@ -131,7 +136,7 @@
                     <td>${rx.sku}</td>
                     <td>${rx.label}</td>
                     <td style="text-align: right">${rx.qty}</td>
-                    <td>${rx.notes}</td>
+                    <td>${rx.notes ? rx.notes : '-'}</td>
                     <td>${tableData[index].created_by}</td>
                     <td>${tableData[index].updated_by}</td>
                     <td><h5><span class="badge ${source === "DOCTOR" ? 'text-bg-primary' : source === "SELF" ? 'text-bg-danger' : source === "ONLINE" ? 'text-bg-warning' : 'text-bg-secondary'}">${source}</span></h5></td>

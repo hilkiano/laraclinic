@@ -286,12 +286,14 @@ class AppointmentApi extends Controller
                 $rx = Prescription::where('appointment_uuid', $request->input('uuid'))->first();
                 if ($rx) {
                     $rx->list = $prescription ? $prescription[0]->data : null;
+                    $rx->additional_info = $request->has('pharmacy_note') ? $request->input('pharmacy_note') : null;
                     $rx->save();
                 } else {
                     $rx = new Prescription();
                     $rx->appointment_uuid = $request->input('uuid');
                     $rx->patient_id = $appointment->patient_id;
                     $rx->list = $prescription ? $prescription[0]->data : null;
+                    $rx->additional_info = $request->has('pharmacy_note') ? $request->input('pharmacy_note') : null;
                     $rx->source = "DOCTOR";
 
                     $rx->save();
