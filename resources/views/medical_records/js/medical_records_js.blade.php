@@ -101,7 +101,7 @@
             if (row.medical_record) {
                 return row.medical_record.additional_note ? row.medical_record.additional_note : '-'
             } else {
-                return row.additional_info ? row.additional_info : '-'
+                return '-';
             }
         }
 
@@ -136,7 +136,7 @@
                     <td>${rx.sku}</td>
                     <td>${rx.label}</td>
                     <td style="text-align: right">${rx.qty}</td>
-                    <td>${rx.notes}</td>
+                    <td>${rx.notes ? rx.notes : '-'}</td>
                     <td>${tableData[index].created_by}</td>
                     <td>${tableData[index].updated_by}</td>
                     <td><h5><span class="badge ${source === "DOCTOR" ? 'text-bg-primary' : source === "SELF" ? 'text-bg-danger' : source === "ONLINE" ? 'text-bg-warning' : 'text-bg-secondary'}">${source}</span></h5></td>

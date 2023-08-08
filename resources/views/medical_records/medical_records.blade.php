@@ -62,7 +62,7 @@
                                             <th scope="col" style="width: 180px">Patient</th>
                                             <th scope="col" style="width: 150px; text-align: center">Prescription
                                             </th>
-                                            <th scope="col">Notes</th>
+                                            <th scope="col">Doctor Notes</th>
                                             <th scope="col">Pharmacy Notes</th>
                                             <th scope="col" style="width: 180px">Created By</th>
                                             <th scope="col" style="width: 180px">Created At</th>
