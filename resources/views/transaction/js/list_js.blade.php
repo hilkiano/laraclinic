@@ -1,7 +1,7 @@
 <script type="module">
     const _liveToast = document.getElementById("liveToast");
     const _receiptModal = document.getElementById("receiptModal");
-    const printBtn  = document.getElementById("receiptModalPrintBtn");
+    const printBtn = document.getElementById("receiptModalPrintBtn");
     let receiptModal;
     if (_receiptModal) {
         receiptModal = new bootstrap.Modal("#receiptModal", {});
@@ -163,8 +163,12 @@
         $("#itemRows").html(html);
         $("#totalDiscount").html(getTotalDiscountHtml(tableData[tableRowIndex]));
         $("#totalAmount").html(tableData[tableRowIndex].total_amount);
-        $("#paidAmount").html(`Rp ${Number(tableData[tableRowIndex].payment_amount).toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`);
-        $("#changeAmount").html(`Rp ${Number(tableData[tableRowIndex].change).toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`);
+        $("#paidAmount").html(
+            `Rp ${Number(tableData[tableRowIndex].payment_amount).toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`
+            );
+        $("#changeAmount").html(
+            `Rp ${Number(tableData[tableRowIndex].change).toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`
+            );
         receiptModal.toggle();
     }
 
@@ -175,7 +179,8 @@
             if (row.discount_type === "pctg") {
                 html = `${row.discount_amount}%`
             } else if (row.discount_type === "amt") {
-                html = `Rp ${row.discount_amount.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`;
+                html =
+                    `Rp ${row.discount_amount.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`;
             }
         } else {
             html = '-';
@@ -191,7 +196,8 @@
             if (item.discount_type === "pctg") {
                 html = `${item.discount_value}%`;
             } else if (item.discount_type === "amt") {
-                html = `Rp ${item.discount_value.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`;
+                html =
+                    `Rp ${item.discount_value.toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`;
             }
         } else {
             html = '-'
@@ -307,8 +313,8 @@
         });
         $("#resetFilterBtn").click(function(e) {
             $("#tableForm").trigger("reset");
-            fromDTPicker.dates.setValue(null);
-            toDTPicker.dates.setValue(null);
+            fromDTPicker.dates.setValue(new DateTime());
+            toDTPicker.dates.setValue(new DateTime());
             toDTPicker.disable();
             getList();
         });
