@@ -183,6 +183,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @include('payment')
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="freeTabPane" role="tabpanel" tabindex="0">
