@@ -83,21 +83,36 @@ class TransactionsApi extends Controller
             "cc"        => (int) 0
         ];
 
-        $model = Transaction::select("created_at", "payment_type", "total_amount")
+        $model = Transaction::select("created_at", "payment_type", "total_amount", "payment_details")
             ->where('created_at', '>=', $startDate)
             ->where('created_at', '<=', $endDate)
             ->where('source', '!=', 'ONLINE')
             ->get();
 
         foreach ($model as $trx) {
-            if ($trx->payment_type === "Cash") {
-                $summary["cash"] = $summary["cash"] + $this->convertRawInt($trx->total_amount);
-            } else if ($trx->payment_type === "Debit Card") {
-                $summary["debit"] = $summary["debit"] + $this->convertRawInt($trx->total_amount);
-            } else if ($trx->payment_type === "Credit Card") {
-                $summary["cc"] = $summary["cc"] + $this->convertRawInt($trx->total_amount);
-            } else if ($trx->payment_type === "Transfer Bank") {
-                $summary["transfer"] = $summary["transfer"] + $this->convertRawInt($trx->total_amount);
+            if ($trx->payment_details) {
+                Log::info(print_r($trx->payment_details, true));
+                foreach ($trx->payment_details as $key => $value) {
+                    if ($value["payment-with"] === "CASH") {
+                        $summary["cash"] = $summary["cash"] + $this->convertRawInt($value["payment-amount"]);
+                    } else if ($value["payment-with"] === "DEBIT_CARD") {
+                        $summary["debit"] = $summary["debit"] + $this->convertRawInt($value["payment-amount"]);
+                    } else if ($value["payment-with"] === "CREDIT_CARD") {
+                        $summary["cc"] = $summary["cc"] + $this->convertRawInt($value["payment-amount"]);
+                    } else if ($value["payment-with"] === "BANK_TRANSFER") {
+                        $summary["transfer"] = $summary["transfer"] + $this->convertRawInt($value["payment-amount"]);
+                    }
+                }
+            } else {
+                if ($trx->payment_type === "Cash") {
+                    $summary["cash"] = $summary["cash"] + $this->convertRawInt($trx->total_amount);
+                } else if ($trx->payment_type === "Debit Card") {
+                    $summary["debit"] = $summary["debit"] + $this->convertRawInt($trx->total_amount);
+                } else if ($trx->payment_type === "Credit Card") {
+                    $summary["cc"] = $summary["cc"] + $this->convertRawInt($trx->total_amount);
+                } else if ($trx->payment_type === "Transfer Bank") {
+                    $summary["transfer"] = $summary["transfer"] + $this->convertRawInt($trx->total_amount);
+                }
             }
         }
 
