@@ -49,58 +49,46 @@
             maximumFractionDigits: 0
         }));
 
-        $("#free-amountPaid").html(amountPaid.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }));
-
-        $("#free-amountChange").html(amountChange.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }));
+        freeCalculateChange()
     }
 
     const initPatientSelector = () => {
         const $patientSelector = $('#patient').selectize({
-                valueField: 'id',
-                labelField: 'name',
-                searchField: 'name',
-                options: [],
-                onChange: function() {
-                    $("#patient").removeClass("is-invalid");
-                    updateLocalStorage();
+            valueField: 'id',
+            labelField: 'name',
+            searchField: 'name',
+            options: [],
+            onChange: function() {
+                $("#patient").removeClass("is-invalid");
+                updateLocalStorage();
 
-                    if ($("#patient").val() !== "") {
-                        getPatientDetails($("#patient").val());
-                    } else {
-                        updatePatientDetails();
+                if ($("#patient").val() !== "") {
+                    getPatientDetails($("#patient").val());
+                } else {
+                    updatePatientDetails();
+                }
+            },
+            load: function(query, callback) {
+                if (!query.length) return callback([]);
+                $.ajax({
+                    type: 'get',
+                    url: `/api/v1/appointment/patient-list/${query}`,
+                    headers: {
+                        Accept: "application/json, text-plain, */*",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRF-TOKEN": csrfToken,
+                    },
+                    dataType: 'json',
+                    error: function() {
+                        callback([]);
+                    },
+                    success: function(res) {
+                        callback(res.data);
                     }
-                },
-                load: function(query, callback) {
-                    if (!query.length) return callback([]);
-                    $.ajax({
-                        type: 'get',
-                        url: `/api/v1/appointment/patient-list/${query}`,
-                        headers: {
-                            Accept: "application/json, text-plain, */*",
-                            "X-Requested-With": "XMLHttpRequest",
-                            "X-CSRF-TOKEN": csrfToken,
-                        },
-                        dataType: 'json',
-                        error: function() {
-                            callback([]);
-                        },
-                        success: function(res) {
-                            callback(res.data);
-                        }
-                    })
-                },
-                plugins: ["clear_button"],
-            });
+                })
+            },
+            plugins: ["clear_button"],
+        });
         patientSelector = $patientSelector[0].selectize;
     }
 
@@ -160,7 +148,8 @@
             $(this).select();
         });
         $("#free-totalDiscountPctg").keyup(function(e) {
-            calculateTotalPrice(true, parseInt(e.target.value !== "" ? Number(e.target.value.replace(/\D/g, "")) : 0));
+            calculateTotalPrice(true, parseInt(e.target.value !== "" ? Number(e.target.value.replace(/\D/g,
+                "")) : 0));
         });
         $("#free-totalDiscountPctg").click(function(e) {
             $(this).select();
@@ -169,7 +158,8 @@
             updateLocalStorage();
         });
         $("#free-totalDiscountAmt").keyup(function(e) {
-            calculateTotalPrice(false, parseInt(e.target.value !== "" ? Number(e.target.value.replace(/\D/g, "")) : 0));
+            calculateTotalPrice(false, parseInt(e.target.value !== "" ? Number(e.target.value.replace(/\D/g,
+                "")) : 0));
         });
         $("#free-totalDiscountAmt").click(function(e) {
             $(this).select();
@@ -240,8 +230,7 @@
             maximumFractionDigits: 0
         }));
 
-        calculateChange();
-        checkSubmitBtn();
+        freeCalculateChange();
     }
 
     const checkAmountPaid = () => {
@@ -257,27 +246,6 @@
                 $("#submitBtn").addClass("disabled");
             }
         }
-    }
-
-    const calculateChange = () => {
-        let amountPaid = parseInt(freeAmountImask.unmaskedValue !== "" ? freeAmountImask.unmaskedValue : 0);
-        $("#free-amountPaid").html(amountPaid.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }));
-        const totalPrice = $("#free-totalPrice")[0].innerText;
-        let changeAmt = amountPaid - Number(totalPrice.replace(/\D/g, ""));
-        if (changeAmt < 0) {
-            changeAmt = 0;
-        }
-        $("#free-amountChange").html(changeAmt.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }));
     }
 
     const updateLocalStorage = () => {
@@ -302,14 +270,16 @@
             const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
             const amountChg = $("#free-amountChange")[0].innerText;
             const amountChgNum = Number(amountChg.replace(/\D/g, ""));
-            const discountVal = document.querySelector('input[name="free-totalDiscType"]:checked').value === "pctg" ? freeDiscountPctgImask.typedValue : freeDiscountAmtImask.typedValue;
+            const discountVal = document.querySelector('input[name="free-totalDiscType"]:checked').value ===
+                "pctg" ? freeDiscountPctgImask.typedValue : freeDiscountAmtImask.typedValue;
 
             if (parsedRx.length > 0) {
                 // Update existing
                 parsedRx[0].patient_id = patientId ? patientId : "";
                 parsedRx[0].payment.method = $("#free-payment").val();
                 parsedRx[0].payment.discount_value = discountVal;
-                parsedRx[0].payment.discount_type = document.querySelector('input[name="free-totalDiscType"]:checked').value;
+                parsedRx[0].payment.discount_type = document.querySelector(
+                    'input[name="free-totalDiscType"]:checked').value;
                 parsedRx[0].payment.total = totalPriceNum;
                 parsedRx[0].payment.amount = freeAmountImask.typedValue;
                 parsedRx[0].payment.change = amountChgNum;
@@ -368,8 +338,9 @@
 
     const updatePatientDetails = (response) => {
         if (response) {
-            $("#free-patientPotrait").attr("src", response.patient_potrait ? response.patient_potrait.url[response.patient_potrait.url.length - 1] : `{{ asset('images/potrait-placeholder.png') }}`);
-            $("#free-patientName").html(response.name ? response.name : '-' );
+            $("#free-patientPotrait").attr("src", response.patient_potrait ? response.patient_potrait.url[response
+                .patient_potrait.url.length - 1] : `{{ asset('images/potrait-placeholder.png') }}`);
+            $("#free-patientName").html(response.name ? response.name : '-');
             $("#free-patientAddress").html(response.address ? response.address : '-');
             $("#free-patientEmail").html(response.email ? response.email : '-');
             $("#free-patientPhone").html(response.phone_number ? `+62 ${response.phone_number}` : '-');
@@ -400,7 +371,8 @@
                     freeFullPrice = 0;
                     if (itemList.length > 0) {
                         itemList.map((item, idx) => {
-                            const itemPrice = window.calculateItemPrice(item.price, item.discount_type, item.discount_value);
+                            const itemPrice = window.calculateItemPrice(item.price, item.discount_type, item
+                                .discount_value);
                             const subTotalPrice = itemPrice * item.qty;
 
                             freeFullPrice += subTotalPrice;
@@ -437,7 +409,7 @@
         } else if ($('#free-amtRadio').is(':checked')) {
             $("#free-totalDiscountAmt").trigger("keyup");
         }
-        calculateChange();
+        freeCalculateChange();
     }
 
     const iterateRxBody = (list) => {
@@ -457,7 +429,7 @@
                         </div>
                         <div class="d-flex align-items-start gap-1" style="min-width: 75px; max-width: 170px">
                             <button class="btn btn-sm rounded-pill btn-outline-primary" id="btnFreeEdit-${idx}" onclick="window.editItem(event)"><i id="iconFreeEdit-${idx}" class="bi bi-pencil-square"></i></button>
-                            <button class="btn btn-sm rounded-pill btn-danger" onclick="window.deleteItem(${idx})"><i class="bi bi-trash"></i></button>
+                            <button class="btn btn-sm rounded-pill btn-danger" onclick="window.freeDeleteItem(${idx})"><i class="bi bi-trash"></i></button>
                             <div class="input-group input-group-sm">
                                 <button style="z-index: 0" onclick="window.freeSubtractItem(${idx})" class="btn btn-dark rounded-start-pill" type="button"><i class="bi bi-dash-lg"></i></button>
                                 <input style="z-index: 0" id="free-qty-${idx}" class="form-control" type="text" value="${item.qty}" readonly>
@@ -543,7 +515,8 @@
         if (rx) {
             const parsedRx = JSON.parse(rx);
             parsedRx[0].data[idx].discount_type = $(`#free-itemDiscountType-${idx}`).val();
-            parsedRx[0].data[idx].discount_value = parseInt(freeItemImask[idx].unmaskedValue !== "" ? freeItemImask[idx].unmaskedValue : 0);
+            parsedRx[0].data[idx].discount_value = parseInt(freeItemImask[idx].unmaskedValue !== "" ? freeItemImask[
+                idx].unmaskedValue : 0);
             localStorage.setItem("freePrescription", JSON.stringify(parsedRx));
             updateRxBody(true);
         }
@@ -559,6 +532,7 @@
                 updateRxBody(true);
             }
         }
+        freeCheckAmountPaid();
     }
 
     const freeAddItem = (idx) => {
@@ -569,9 +543,10 @@
             localStorage.setItem("freePrescription", JSON.stringify(parsedRx));
             updateRxBody(true);
         }
+        freeCheckAmountPaid();
     }
 
-    const deleteItem = (idx) => {
+    const freeDeleteItem = (idx) => {
         const storage = localStorage.getItem("freePrescription");
         if (storage) {
             let parsedRx = JSON.parse(storage);
@@ -584,7 +559,9 @@
     }
 
     const editItem = (event) => {
-        medSelectorModal.toggle(event.target);
+        if (event.target) {
+            medSelectorModal.toggle(event.target);
+        }
     }
 
     const checkSubmitBtn = () => {
@@ -630,7 +607,10 @@
         const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
         const amountChg = $("#free-amountChange")[0].innerText;
         const amountChgNum = Number(amountChg.replace(/\D/g, ""));
-        const discountVal = document.querySelector('input[name="free-totalDiscType"]:checked').value === "pctg" ? freeDiscountPctgImask.typedValue : freeDiscountAmtImask.typedValue;
+        const amountPaid = $("#free-amountPaid")[0].innerText;
+        const amountPaidNum = Number(amountPaid.replace(/\D/g, ""));
+        const discountVal = document.querySelector('input[name="free-totalDiscType"]:checked').value ===
+            "pctg" ? freeDiscountPctgImask.typedValue : freeDiscountAmtImask.typedValue;
         const storage = localStorage.getItem("freePrescription");
         if (storage) {
             const parsed = JSON.parse(storage);
@@ -638,13 +618,14 @@
                 data: parsed[0].data,
                 patient: parsed[0].patient_id,
                 payment: {
-                    method: $("#free-payment").val(),
+                    method: "CASH",
                     discount_value: discountVal,
                     discount_type: document.querySelector('input[name="free-totalDiscType"]:checked').value,
                     total: totalPriceNum,
-                    amount: freeAmountImask.typedValue,
+                    amount: amountPaidNum,
                     change: amountChgNum
-                }
+                },
+                payment_details: localStorage.getItem("freePayments")
             }
             const formData = new FormData();
             for (var key in obj) {
@@ -716,7 +697,8 @@
             const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
             const amountChg = $("#free-amountChange")[0].innerText;
             const amountChgNum = Number(amountChg.replace(/\D/g, ""));
-            const discountVal = document.querySelector('input[name="free-totalDiscType"]:checked').value === "pctg" ? freeDiscountPctgImask.typedValue : freeDiscountAmtImask.typedValue;
+            const discountVal = document.querySelector('input[name="free-totalDiscType"]:checked').value ===
+                "pctg" ? freeDiscountPctgImask.typedValue : freeDiscountAmtImask.typedValue;
 
             localStorage.setItem("freePrescription", JSON.stringify(parsedRx));
         }
@@ -746,6 +728,8 @@
 
         $("#free-pctgRadio").prop("checked", true);
 
+        freeResetPayment()
+
         updateRxBody();
     }
 
@@ -766,7 +750,7 @@
     window.updateRxBody = updateRxBody;
     window.freeAddItem = freeAddItem;
     window.freeSubtractItem = freeSubtractItem;
-    window.deleteItem = deleteItem;
+    window.freeDeleteItem = freeDeleteItem;
     window.editItem = editItem;
     window.checkSubmitBtn = checkSubmitBtn;
 

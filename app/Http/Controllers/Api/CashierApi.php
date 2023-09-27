@@ -105,6 +105,7 @@ class CashierApi extends Controller
             $trx->discount_type = $payment->discount_type;
             $trx->discount_amount = $payment->discount_value;
             $trx->source = "SELF";
+            $trx->payment_details = json_decode($request->payment_details);
 
             $trx->save();
 

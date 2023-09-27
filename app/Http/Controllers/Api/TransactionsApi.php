@@ -80,18 +80,19 @@ class TransactionsApi extends Controller
             "cash"      => (int) 0,
             "transfer"  => (int) 0,
             "debit"     => (int) 0,
-            "cc"        => (int) 0
+            "cc"        => (int) 0,
+            "change"    => (int) 0
         ];
 
-        $model = Transaction::select("created_at", "payment_type", "total_amount", "payment_details")
+        $model = Transaction::select("created_at", "payment_type", "total_amount", "payment_details", "change")
             ->where('created_at', '>=', $startDate)
             ->where('created_at', '<=', $endDate)
             ->where('source', '!=', 'ONLINE')
             ->get();
 
         foreach ($model as $trx) {
+            $summary["change"] = $summary["change"] + $trx->change;
             if ($trx->payment_details) {
-                Log::info(print_r($trx->payment_details, true));
                 foreach ($trx->payment_details as $key => $value) {
                     if ($value["payment-with"] === "CASH") {
                         $summary["cash"] = $summary["cash"] + $this->convertRawInt($value["payment-amount"]);

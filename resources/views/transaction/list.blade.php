@@ -131,6 +131,17 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-sm-12 col-md-12 col-lg-3">
+                                                    <div class="card bg-danger bg-gradient">
+                                                        <div class="card-header">
+                                                            <p class="mb-0 text-light">Change
+                                                            </p>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <h3 class="mb-0 text-light" id="changeTotal">-Rp 0</h3>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

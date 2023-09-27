@@ -80,6 +80,7 @@
             $("#transferTotal").html(`Rp ${response.summary.transfer.toLocaleString('id-ID')}`);
             $("#debitTotal").html(`Rp ${response.summary.debit.toLocaleString('id-ID')}`);
             $("#ccTotal").html(`Rp ${response.summary.cc.toLocaleString('id-ID')}`);
+            $("#changeTotal").html(`-Rp ${response.summary.change.toLocaleString('id-ID')}`)
         }).catch(error => {
             showToast(error, true);
         })

@@ -284,10 +284,15 @@
         e.preventDefault();
         if (e.submitter.id === "medSelectorModalSubmit") {
             handleAddRx(e);
-            window.checkSubmitBtn();
+            setTimeout(() => {
+                window.freeCheckAmountPaid();
+            }, 100);
+
         } else if (e.submitter.id === "medSelectorModalSave") {
             handleItemSave(e);
-            window.checkSubmitBtn();
+            setTimeout(() => {
+                window.freeCheckAmountPaid();
+            }, 100);
         }
     });
     modal.addEventListener("show.bs.modal", function(event) {

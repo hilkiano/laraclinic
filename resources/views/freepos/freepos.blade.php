@@ -80,24 +80,8 @@
     </div>
     <div class="col-12 mb-4">
         <div class="col-sm-12 offset-md-6 col-md-6 p-3 bg-body-secondary rounded">
-            <div class="mb-3">
-                <label for="free-payment" class="form-label">Payment
-                    with</label>
-                <div class="input-group">
-                    <select class="form-select" id="free-payment" name="payment" autocomplete="off">
-                        <option value="CASH">Cash</option>
-                        <option value="CREDIT_CARD">Credit Card
-                        </option>
-                        <option value="DEBIT_CARD">Debit Card
-                        </option>
-                        <option value="BANK_TRANSFER">Bank Transfer
-                        </option>
-                    </select>
-                    <button id="free-fullPriceBtn" class="btn btn-primary" style="z-index: 0">Full Price</button>
-                </div>
-            </div>
             <div class="row mb-2 gy-3">
-                <div class="col-sm-12 col-lg-7">
+                <div class="col-sm-12 col-lg-7 d-none">
                     <label for="free-amount" class="form-label">Payment
                         amount</label>
                     <div class="input-group">
@@ -105,40 +89,46 @@
                         <input type="text" id="free-amount" name="amount" class="form-control" autocomplete="off">
                     </div>
                 </div>
-                <div id="free-totalDiscountPctgDiv" class="col-sm-12 col-lg-5">
-                    <label for="free-totalDiscountPctg" class="form-label">Discount</label>
-                    <div class="input-group">
-                        <input type="text" id="free-totalDiscountPctg" class="form-control" autocomplete="off">
-                        <span class="input-group-text">%</span>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div id="free-totalDiscountPctgDiv">
+                        <label for="free-totalDiscountPctg" class="form-label">Total Discount</label>
+                        <div class="input-group">
+                            <input type="text" id="free-totalDiscountPctg" class="form-control" autocomplete="off">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div id="free-totalDiscountAmtDiv">
+                        <label for="free-totalDiscountAmt" class="form-label">Total Discount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="text" id="free-totalDiscountAmt" class="form-control" autocomplete="off">
+                        </div>
                     </div>
                 </div>
-                <div id="free-totalDiscountAmtDiv" class="col-sm-12 col-lg-5">
-                    <label for="free-totalDiscountAmt" class="form-label">Discount</label>
-                    <div class="input-group">
-                        <span class="input-group-text">Rp</span>
-                        <input type="text" id="free-totalDiscountAmt" class="form-control" autocomplete="off">
+                <div class="col">
+                    <div class="col-sm-12">
+                        <label class="form-label">Discount Type</label>
                     </div>
-                </div>
-                <div class="col-sm-12">
-                    <label class="form-label">Discount Type</label>
-                </div>
-                <div class="col-sm-12 mt-0">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="free-totalDiscType" id="free-pctgRadio"
-                            value="pctg">
-                        <label class="form-check-label" for="free-pctgRadio">Percentage</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="free-totalDiscType" id="free-amtRadio"
-                            value="amt">
-                        <label class="form-check-label" for="free-amtRadio">Amount</label>
+                    <div class="col-sm-12 mt-0">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="free-totalDiscType"
+                                id="free-pctgRadio" value="pctg">
+                            <label class="form-check-label" for="free-pctgRadio">Percentage</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="free-totalDiscType"
+                                id="free-amtRadio" value="amt">
+                            <label class="form-check-label" for="free-amtRadio">Amount</label>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
+@include('freepos.payment')
 <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
