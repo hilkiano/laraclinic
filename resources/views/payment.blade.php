@@ -23,10 +23,9 @@
                         <option value="BANK_TRANSFER">Bank Transfer
                         </option>
                     </select>
-
                 </div>
             </div>
-            <div class="col-auto">
+            <div class="col-auto d-none">
                 <label for="totalDiscountPctg" class="form-label">Discount</label>
                 <div class="input-group input-group-sm">
                     <select id="payment-discount-type-0" name="payment-discount-type-0" autocomplete="off"
@@ -43,7 +42,7 @@
         </div>
     </form>
     <div class="mt-2 pt-2" id="paymentController">
-        <button id="add-payment-btn" class="btn btn-sm btn-success">Add Other Payment</button>
+        <button id="add-payment-btn" class="btn btn-sm btn-success">Add Other Payment (MAX. 3)</button>
         <button id="remove-payment-btn" class="btn btn-sm btn-outline-danger">Remove Payment</button>
     </div>
 </div>

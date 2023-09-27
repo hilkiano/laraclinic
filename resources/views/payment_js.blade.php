@@ -34,7 +34,7 @@
 
                 </div>
             </div>
-            <div class="col-auto">
+            <div class="col-auto d-none">
                 <label for="totalDiscountPctg" class="form-label">Discount</label>
                 <div class="input-group input-group-sm">
                     <select id="payment-discount-type-${nextPaymentOpt}" name="payment-discount-type-${nextPaymentOpt}" autocomplete="off"
@@ -65,6 +65,12 @@
         $(`#payment-amount-${nextPaymentOpt}`).click(function(e) {
             $(this).select();
         });
+        $(`#payment-amount-${nextPaymentOpt}`).keyup(function(e) {
+            calculateChange();
+            checkAmountPaid();
+        });
+        paymentAmountImask[nextPaymentOpt].typedValue = 0;
+        paymentAmountImask[nextPaymentOpt].updateValue();
         setTimeout(() => {
             $(`#payment-discount-type-${nextPaymentOpt - 1}`).change((e) => {
                 if (paymentDiscountImask[nextPaymentOpt - 1]) {
@@ -96,6 +102,10 @@
         $("#payment-amount-0").click(function(e) {
             $(this).select();
         });
+        $("#payment-amount-0").keyup(function(e) {
+            calculateChange();
+            checkAmountPaid();
+        });
         $("#payment-discount-type-0").change((e) => {
             if (paymentDiscountImask[0]) {
                 paymentDiscountImask[0].typedValue = "";
@@ -106,6 +116,8 @@
             toggleSuffix(value, 1);
         });
         $("#payment-discount-type-0").trigger("change");
+        paymentAmountImask[0].typedValue = 0;
+        paymentAmountImask[0].updateValue();
     }
 
     const toggleSuffix = (value, optionIndex) => {
@@ -162,8 +174,9 @@
     }
 
     const removePayment = () => {
-
         $(`#option-${nextPaymentOpt - 1}`).remove();
+        paymentAmountImask[nextPaymentOpt - 1] = null;
+        paymentDiscountImask[nextPaymentOpt - 1] = null;
         $('#payment-form').trigger("change");
         nextPaymentOpt -= 1;
         if (nextPaymentOpt <= maxPaymentOpts) {
@@ -174,6 +187,9 @@
         } else {
             $('#remove-payment-btn').removeClass("disabled");
         }
+
+        calculateChange();
+        checkAmountPaid();
     }
 
     const formChangeHandler = (e) => {
@@ -204,7 +220,82 @@
         return indexed;
     }
 
+    const calculateChange = () => {
+        const amountImasks = paymentAmountImask.filter(imask => imask);
+        let amountPaid = 0;
+        amountImasks.map(imask => {
+            amountPaid += imask.typedValue;
+        });
+        $("#amountPaid").html(amountPaid.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }));
+        const totalPrice = $("#totalPrice")[0].innerText;
+        let changeAmt = amountPaid - Number(totalPrice.replace(/\D/g, ""));
+        if (changeAmt < 0) {
+            changeAmt = 0;
+        }
+        $("#amountChange").html(changeAmt.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }));
+    }
+
+    const checkAmountPaid = () => {
+        const amountImasks = paymentAmountImask.filter(imask => imask);
+        let total = 0;
+        amountImasks.map(imask => {
+            total += imask.typedValue;
+        });
+        const totalPrice = $("#totalPrice")[0].innerText;
+        const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
+        if (total >= totalPriceNum) {
+            if ($("#submitBtn").hasClass("disabled")) {
+                $("#submitBtn").removeClass("disabled");
+            }
+        } else {
+            if (!$("#submitBtn").hasClass("disabled")) {
+                $("#submitBtn").addClass("disabled");
+            }
+        }
+    }
+
+    const resetPayment = () => {
+        // remove other options
+        [2, 1].map(idx => {
+            $(`#option-${idx}`).remove();
+            paymentAmountImask[idx] = null;
+            paymentDiscountImask[idx] = null;
+            $('#payment-form').trigger("change");
+        })
+        // reset nextPaymentOpt
+        nextPaymentOpt = 1;
+        if (nextPaymentOpt <= maxPaymentOpts) {
+            $('#add-payment-btn').removeClass("disabled");
+        }
+        if (nextPaymentOpt <= 1) {
+            $('#remove-payment-btn').addClass("disabled");
+        } else {
+            $('#remove-payment-btn').removeClass("disabled");
+        }
+        // reset option 0
+        $("#payment-with-0").val("CASH");
+        $("#payment-discount-type-0").val("pctg");
+        $("#payment-discount-type-0").trigger("change");
+        paymentAmountImask[0].typedValue = 0;
+        paymentAmountImask[0].updateValue();
+        paymentDiscountImask[0].typedValue = 0;
+        paymentDiscountImask[0].updateValue();
+        $("#payment-amount-0").trigger("keyup");
+        localStorage.setItem('payments', JSON.stringify([]));
+    }
+
     window.removePayment = removePayment;
+    window.resetPayment = resetPayment;
 
     $(document).ready(function() {
         // Initialize payment storage
@@ -214,6 +305,7 @@
         }
 
         initializePayment();
+        calculateChange();
 
         // Control events
         $('#add-payment-btn').click(() => addPayment());

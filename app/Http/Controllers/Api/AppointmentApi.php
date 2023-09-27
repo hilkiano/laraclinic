@@ -144,6 +144,8 @@ class AppointmentApi extends Controller
                 ->when(!$fromFilter && !$toFilter, function ($query) {
                     $query->whereDate('visit_time', Carbon::now()->toDateString());
                 })
+                ->whereNot('status', config('constants.status.completed'))
+                ->whereNot('status', config('constants.status.canceled'))
                 ->orderBy('visit_time', 'asc')
                 ->limit(10);
 
