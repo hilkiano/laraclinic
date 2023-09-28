@@ -23,12 +23,14 @@ class Transaction extends Model
         'discount_type',
         'discount_amount',
         'additional_info',
-        'source'
+        'source',
+        'payment_details'
     ];
 
     protected $casts = [
         'prescription' => 'array',
-        'additional_info' => 'array'
+        'additional_info' => 'array',
+        'payment_details' => 'array'
     ];
 
     protected static function boot()

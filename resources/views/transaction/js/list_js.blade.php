@@ -80,6 +80,7 @@
             $("#transferTotal").html(`Rp ${response.summary.transfer.toLocaleString('id-ID')}`);
             $("#debitTotal").html(`Rp ${response.summary.debit.toLocaleString('id-ID')}`);
             $("#ccTotal").html(`Rp ${response.summary.cc.toLocaleString('id-ID')}`);
+            $("#changeTotal").html(`-Rp ${response.summary.change.toLocaleString('id-ID')}`)
         }).catch(error => {
             showToast(error, true);
         })
@@ -97,12 +98,30 @@
                 <td>${ row.patient_name ? row.patient_name : '<span class="fst-italic text-muted">Guest</span>' }</td>
                 <td><button class="btn btn-sm btn-outline-primary" onclick="window.showReceipt(${i})">Cart Content</button></td>
                 <td>${ row.total_amount }</td>
-                <td>${ row.payment_type }</td>
+                <td>${ getPaymentType(row) }</td>
                 <td>${ row.additional_info ? row.additional_info : '-' }</td>
             </tr>
         `;
 
         $("#trxRows").append(html);
+    }
+
+    const getPaymentType = (row) => {
+        if (row.payment_details) {
+            return row.payment_details.map(detail => {
+                if (detail["payment-with"] === "CASH") {
+                    return "Cash";
+                } else if (detail["payment-with"] === "CREDIT_CARD") {
+                    return "Credit Card"
+                } else if (detail["payment-with"] === "DEBIT_CARD") {
+                    return "Debit Card"
+                } else if (detail["payment-with"] === "BANK_TRANSFER") {
+                    return "Bank Transfer"
+                }
+            }).join(", ");
+        } else {
+            return row.payment_type
+        }
     }
 
     // Show toast message
@@ -165,10 +184,10 @@
         $("#totalAmount").html(tableData[tableRowIndex].total_amount);
         $("#paidAmount").html(
             `Rp ${Number(tableData[tableRowIndex].payment_amount).toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`
-            );
+        );
         $("#changeAmount").html(
             `Rp ${Number(tableData[tableRowIndex].change).toLocaleString('id-ID', {style: 'decimal', minimumFractionDigits: 0})}`
-            );
+        );
         receiptModal.toggle();
     }
 

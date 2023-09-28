@@ -9,13 +9,12 @@
     let liveToast;
     if (_cancelModal) {
         cancelModal = new bootstrap.Modal('#cancelAssignmentModal', {});
-        _cancelModal.addEventListener("hidden.bs.modal", function (e) {
+        _cancelModal.addEventListener("hidden.bs.modal", function(e) {
             $("#cancelAssignmentForm")[0].reset();
         });
     }
     let prescription;
     let assignedUuid;
-    let amountImask;
     let discountAmtImask;
     let discountPctgImask;
     let fullPrice;
@@ -57,6 +56,8 @@
             initiateItemImask(itemLength);
             setTakeLoading(false);
             checkAmountPaid();
+        } else if (assigned.data && onlyCards) {
+            $(".take-assignment-btn").addClass("disabled");
         }
     }
 
@@ -239,10 +240,8 @@
             $("#submitBtn").attr("data-uuid", response.data.uuid);
             document.getElementById("submitLoading").remove();
             setTakeLoading(false);
-            amountImask.typedValue = 0;
             discountPctgImask.typedValue = 0;
             discountAmtImask.typedValue = 0;
-            amountImask.updateValue();
             discountPctgImask.updateValue();
             discountAmtImask.updateValue();
             $('#pctgRadio').prop('checked', true);
@@ -255,7 +254,8 @@
 
     const updateMainContent = (data) => {
         // Patient info
-        $("#patientPotrait").attr("src", data.patient.patient_potrait ? data.patient.patient_potrait.url[data.patient.patient_potrait.url.length - 1] : `{{ asset('images/potrait-placeholder.png') }}`);
+        $("#patientPotrait").attr("src", data.patient.patient_potrait ? data.patient.patient_potrait.url[data
+            .patient.patient_potrait.url.length - 1] : `{{ asset('images/potrait-placeholder.png') }}`);
         $("#patientName").html(data.patient.name);
         $("#patientAddress").html(data.patient.address ? data.patient.address : '-');
         $("#patientEmail").html(data.patient.email ? data.patient.email : '-');
@@ -335,7 +335,8 @@
                 filtered.map(a => {
                     if (a.data.length > 0) {
                         a.data.map((item, idx) => {
-                            const itemPrice = calculateItemPrice(item.price, item.discount_type, item.discount_value);
+                            const itemPrice = calculateItemPrice(item.price, item.discount_type,
+                                item.discount_value);
                             const subTotalPrice = itemPrice * item.qty;
 
                             fullPrice += subTotalPrice;
@@ -347,12 +348,13 @@
                                 minimumFractionDigits: 0,
                                 maximumFractionDigits: 0
                             }));
-                            $(`#itemSubtotalPrice-${idx}`).html(subTotalPrice.toLocaleString('id-ID', {
-                                style: 'currency',
-                                currency: 'IDR',
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 0
-                            }));
+                            $(`#itemSubtotalPrice-${idx}`).html(subTotalPrice.toLocaleString(
+                                'id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR',
+                                    minimumFractionDigits: 0,
+                                    maximumFractionDigits: 0
+                                }));
                         })
                     }
                 })
@@ -365,7 +367,6 @@
         } else if ($('#amtRadio').is(':checked')) {
             $("#totalDiscountAmt").trigger("keyup");
         }
-        calculateChange();
     }
 
     const initiateItemImask = (length) => {
@@ -544,6 +545,8 @@
         const method = e.target.getAttribute("data-method");
         const totalPrice = $("#totalPrice")[0].innerText;
         const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
+        const amountPaid = $("#amountPaid")[0].innerText;
+        const amountPaidNum = Number(amountPaid.replace(/\D/g, ""));
         const amountChg = $("#amountChange")[0].innerText;
         const amountChgNum = Number(amountChg.replace(/\D/g, ""));
         setTakeLoading(true);
@@ -557,12 +560,14 @@
         const param = {
             uuid: uuid,
             method: method,
-            prescription: localStorage.getItem(`prescription`) ? localStorage.getItem(`prescription`) : null,
-            payment_with: $("#payment").val(),
-            payment_amount: amountImask.typedValue,
+            prescription: localStorage.getItem(`prescription`) ? localStorage.getItem(`prescription`) :
+                null,
+            payment_with: "CASH",
+            payment_amount: amountPaidNum,
             total_discount_type: document.querySelector('input[name="totalDiscType"]:checked').value,
             total_amount: totalPriceNum,
-            change: amountChgNum
+            change: amountChgNum,
+            payment_details: localStorage.getItem("payments")
         };
         if (param.total_discount_type === 'pctg') {
             param['total_discount'] = discountPctgImask.typedValue;
@@ -612,6 +617,7 @@
             _approvalModal.hide();
             $("#cashierForm")[0].reset();
             localStorage.setItem('prescription', JSON.stringify([]));
+            resetPayment();
         }).catch(error => {
             showToast(error, true);
             btn.classList.remove('disabled');
@@ -621,7 +627,7 @@
     }
 
     const checkAmountPaid = () => {
-        const amountPaid = amountImask.typedValue;
+        const amountPaid = 0;
         const totalPrice = $("#totalPrice")[0].innerText;
         const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
         if (amountPaid >= totalPriceNum) {
@@ -633,39 +639,6 @@
                 $("#submitBtn").addClass("disabled");
             }
         }
-    }
-
-    const handleFullPrice = () => {
-        const totalPrice = $("#totalPrice")[0].innerText;
-        const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
-        $("#amount").val(totalPriceNum);
-        amountImask.typedValue = totalPriceNum;
-        amountImask.updateValue();
-        $("#amount").trigger("input");
-        $("#amount").trigger("change");
-
-        calculateChange();
-    }
-
-    const calculateChange = () => {
-        let amountPaid = parseInt(amountImask.unmaskedValue !== "" ? amountImask.unmaskedValue : 0);
-        $("#amountPaid").html(amountPaid.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }));
-        const totalPrice = $("#totalPrice")[0].innerText;
-        let changeAmt = amountPaid - Number(totalPrice.replace(/\D/g, ""));
-        if (changeAmt < 0) {
-            changeAmt = 0;
-        }
-        $("#amountChange").html(changeAmt.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }));
     }
 
     const calculateTotalPrice = (isPctg, amount) => {
@@ -684,8 +657,6 @@
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
         }));
-
-        calculateChange();
     }
 
     const subtractItem = (idx) => {
@@ -715,7 +686,8 @@
         if (rx) {
             const parsedRx = JSON.parse(rx);
             parsedRx[0].data[idx].discount_type = $(`#itemDiscountType-${idx}`).val();
-            parsedRx[0].data[idx].discount_value = parseInt(itemImask[idx].unmaskedValue !== "" ? itemImask[idx].unmaskedValue : 0);
+            parsedRx[0].data[idx].discount_value = parseInt(itemImask[idx].unmaskedValue !== "" ? itemImask[idx]
+                .unmaskedValue : 0);
             localStorage.setItem("prescription", JSON.stringify(parsedRx));
             updateRxBody(assignedUuid, true);
         }
@@ -777,14 +749,14 @@
     window.Echo.channel("assignment_created").listen(
         "AssignmentCreated",
         (event) => {
-            getMyAssignment();
+            getMyAssignment(true);
         }
     );
     // Listen when assignment is taken
     window.Echo.channel("assignment_taken").listen(
         "AssignmentTaken",
         (event) => {
-            getMyAssignment();
+            getMyAssignment(true);
         }
     );
 
@@ -831,14 +803,6 @@
         if (!prescription) {
             localStorage.setItem('prescription', JSON.stringify([]));
         }
-        amountImask = IMask(document.getElementById("amount"), {
-            mask: Number,
-            scale: 0,
-            thousandsSeparator: '.',
-            padFractionalZeros: false,
-            normalizeZeros: true,
-            radix: ',',
-        });
         discountAmtImask = IMask(document.getElementById("totalDiscountAmt"), {
             mask: Number,
             scale: 0,
@@ -898,27 +862,16 @@
         $("#cashierForm").submit(function(e) {
             e.preventDefault();
         });
-        $("#fullPriceBtn").click(function(e) {
-            handleFullPrice();
-        });
-        $("#amount").keyup(function(e) {
-            calculateChange();
-            checkAmountPaid();
-        });
-        $("#amount").change(function(e) {
-            checkAmountPaid();
-        });
-        $("#amount").click(function(e) {
-            $(this).select();
-        });
         $("#totalDiscountPctg").keyup(function(e) {
-            calculateTotalPrice(true, parseInt(e.target.value !== "" ? Number(e.target.value.replace(/\D/g, "")) : 0));
+            calculateTotalPrice(true, parseInt(e.target.value !== "" ? Number(e.target.value.replace(
+                /\D/g, "")) : 0));
         });
         $("#totalDiscountPctg").click(function(e) {
             $(this).select();
         });
         $("#totalDiscountAmt").keyup(function(e) {
-            calculateTotalPrice(false, parseInt(e.target.value !== "" ? Number(e.target.value.replace(/\D/g, "")) : 0));
+            calculateTotalPrice(false, parseInt(e.target.value !== "" ? Number(e.target.value.replace(
+                /\D/g, "")) : 0));
         });
         $("#totalDiscountAmt").click(function(e) {
             $(this).select();

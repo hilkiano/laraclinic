@@ -72,7 +72,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12">
+                                        <div class="col-12 mb-5">
                                             <div class="row gy-3">
                                                 <div class="col-sm-12 col-md-6 col-lg-5">
                                                     <div class="row">
@@ -100,67 +100,40 @@
                                                             <ul class="list-group mb-3" id="rxBody">
                                                             </ul>
                                                         </div>
-                                                        <form id="cashierForm" class="px-0 mb-5">
-                                                            <div class="col-12 p-3 bg-body-secondary rounded">
-                                                                <div class="mb-3">
-                                                                    <label for="payment" class="form-label">Payment
-                                                                        with</label>
-                                                                    <div class="input-group">
-                                                                        <select class="form-select" id="payment"
-                                                                            name="payment" autocomplete="off">
-                                                                            <option value="CASH">Cash</option>
-                                                                            <option value="CREDIT_CARD">Credit Card
-                                                                            </option>
-                                                                            <option value="DEBIT_CARD">Debit Card
-                                                                            </option>
-                                                                            <option value="BANK_TRANSFER">Bank Transfer
-                                                                            </option>
-                                                                        </select>
-                                                                        <button id="fullPriceBtn"
-                                                                            class="btn btn-primary"
-                                                                            style="z-index: 0">Full Price</button>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row mb-2 gy-3">
-                                                                    <div class="col-sm-12 col-lg-7">
-                                                                        <label for="amount"
-                                                                            class="form-label">Payment
-                                                                            amount</label>
-                                                                        <div class="input-group">
-                                                                            <span class="input-group-text">Rp</span>
-                                                                            <input type="text" id="amount"
-                                                                                name="amount" class="form-control"
-                                                                                autocomplete="off">
+                                                        <div
+                                                            class="col-12 gx-3 align-items-center p-3 bg-body-secondary rounded w-100">
+                                                            <form id="cashierForm" class="px-0">
+                                                                <div class="row">
+                                                                    <div class="col">
+                                                                        <div id="totalDiscountPctgDiv">
+                                                                            <label for="totalDiscountPctg"
+                                                                                class="form-label">Total
+                                                                                Discount</label>
+                                                                            <div class="input-group">
+                                                                                <input type="text"
+                                                                                    id="totalDiscountPctg"
+                                                                                    class="form-control"
+                                                                                    autocomplete="off">
+                                                                                <span class="input-group-text">%</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div id="totalDiscountAmtDiv">
+                                                                            <label for="totalDiscountAmt"
+                                                                                class="form-label">Total
+                                                                                Discount</label>
+                                                                            <div class="input-group">
+                                                                                <span
+                                                                                    class="input-group-text">Rp</span>
+                                                                                <input type="text"
+                                                                                    id="totalDiscountAmt"
+                                                                                    class="form-control"
+                                                                                    autocomplete="off">
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div id="totalDiscountPctgDiv"
-                                                                        class="col-sm-12 col-lg-5">
-                                                                        <label for="totalDiscountPctg"
-                                                                            class="form-label">Discount</label>
-                                                                        <div class="input-group">
-                                                                            <input type="text"
-                                                                                id="totalDiscountPctg"
-                                                                                class="form-control"
-                                                                                autocomplete="off">
-                                                                            <span class="input-group-text">%</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div id="totalDiscountAmtDiv"
-                                                                        class="col-sm-12 col-lg-5">
-                                                                        <label for="totalDiscountAmt"
-                                                                            class="form-label">Discount</label>
-                                                                        <div class="input-group">
-                                                                            <span class="input-group-text">Rp</span>
-                                                                            <input type="text"
-                                                                                id="totalDiscountAmt"
-                                                                                class="form-control"
-                                                                                autocomplete="off">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <label class="form-label">Discount Type</label>
-                                                                    </div>
-                                                                    <div class="col-sm-12 mt-0">
+                                                                    <div class="col">
+                                                                        <label class="form-label d-block">Discount
+                                                                            Type</label>
                                                                         <div class="form-check form-check-inline">
                                                                             <input class="form-check-input"
                                                                                 type="radio" name="totalDiscType"
@@ -177,12 +150,14 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </form>
+                                                            </form>
+                                                        </div>
+
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        @include('payment')
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="freeTabPane" role="tabpanel" tabindex="0">

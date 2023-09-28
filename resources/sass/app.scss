@@ -136,6 +136,13 @@ hr {
     margin-left: -22px;
 }
 
+#paymentContainer,
+#freePaymentContainer {
+    backdrop-filter: blur(20px) saturate(1.5);
+    width: calc(100% + 48px);
+    margin-left: -22px;
+}
+
 @-moz-document url-prefix() {
     #mainContent {
         margin-left: 280px;
