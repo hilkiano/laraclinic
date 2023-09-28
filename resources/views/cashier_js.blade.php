@@ -56,6 +56,8 @@
             initiateItemImask(itemLength);
             setTakeLoading(false);
             checkAmountPaid();
+        } else if (assigned.data && onlyCards) {
+            $(".take-assignment-btn").addClass("disabled");
         }
     }
 
