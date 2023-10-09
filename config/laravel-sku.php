@@ -45,7 +45,7 @@ return [
          * Shall SKUs be re-generated on update
          *
          */
-        'generate_on_update' => true,
+        'generate_on_update' => false,
     ],
 
     /*
