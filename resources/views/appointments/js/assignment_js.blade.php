@@ -777,14 +777,14 @@
     window.Echo.channel("assignment_created").listen(
         "AssignmentCreated",
         (event) => {
-            getMyAssignment();
+            getMyAssignment(true);
         }
     );
     // Listen when assignment is taken
     window.Echo.channel("assignment_taken").listen(
         "AssignmentTaken",
         (event) => {
-            getMyAssignment();
+            getMyAssignment(true);
         }
     );
 
