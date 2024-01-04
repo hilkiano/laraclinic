@@ -33,5 +33,11 @@ jobs:
           php artisan cache:clear
           php artisan route:clear
           php artisan config:clear
+      - name: Stop PM michelle
+        run: pm2 stop michelle
+      - name: Run Process Manager
+        run: pm2 start ecosystem.config.js
+      - name: Save PM
+        run: pm2 save
       - name: Directory Permissions Backend
-        run: echo N0hansen!z | sudo -S chmod -R 777 storage bootstrap/cache
+        run: echo ${{ secrets.DROPLET_PASS }} | sudo -S chmod -R 777 storage bootstrap/cache
