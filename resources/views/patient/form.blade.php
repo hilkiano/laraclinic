@@ -178,8 +178,10 @@
                     let html = '';
                     response.data.map(d => {
                         html += `<div class="position-relative" style="width: 150px;">`;
-                        html += `<img id="patientPotrait" class="img-thumbnail me-2" src="${d}" alt="potrait placeholder" style="width: 150px;">`;
-                        html += `<button class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="window.removeImg('${d}')">Delete</button>`;
+                        html +=
+                            `<img id="patientPotrait" class="img-thumbnail me-2" src="${d}" alt="potrait placeholder" style="width: 150px;">`;
+                        html +=
+                            `<button class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="window.removeImg('${d}')">Delete</button>`;
                         html += `</div>`;
                     })
                     $("#potraits").html(html);
@@ -196,7 +198,8 @@
     const removeImg = async (src) => {
         const requestBody = new FormData();
         requestBody.append("url", src);
-        requestBody.append("patient_id", "{{ array_key_exists('patient', $data) ? $data['patient']->id : '' }}");
+        requestBody.append("patient_id",
+        "{{ array_key_exists('patient', $data) ? $data['patient']->id : '' }}");
 
         await fetch(`/api/v1/patient/remove-potrait`, {
                 headers: {
@@ -281,7 +284,8 @@
         });
         birthDatePicker = new TempusDominus(document.getElementById("birth_date_picker"), tDConfigs);
 
-        phoneNumberMask.value = "{{ array_key_exists('patient', $data) ? $data['patient']->phone_number : '' }}";
+        phoneNumberMask.value =
+        "{{ array_key_exists('patient', $data) ? $data['patient']->phone_number : '' }}";
         weightMask.value = "{{ array_key_exists('patient', $data) ? $data['patient']->weight : '' }}";
         heightMask.value = "{{ array_key_exists('patient', $data) ? $data['patient']->height : '' }}";
 
