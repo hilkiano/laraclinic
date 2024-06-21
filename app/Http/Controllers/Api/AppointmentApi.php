@@ -368,7 +368,7 @@ class AppointmentApi extends Controller
                 ->where('status', $request->input("status"))
                 ->first();
 
-            Log::info(print_r($model, true));
+            // Log::info(print_r($model, true));
 
             if ($model) {
                 if ($model->patient->birth_date) {
@@ -408,7 +408,8 @@ class AppointmentApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage(),
+                'trace'     => env('APP_ENV') === 'production' ? null : $e->getTrace()
             ], 500);
         }
     }
