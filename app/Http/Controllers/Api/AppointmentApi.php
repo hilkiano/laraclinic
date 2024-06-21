@@ -368,6 +368,8 @@ class AppointmentApi extends Controller
                 ->where('status', $request->input("status"))
                 ->first();
 
+            Log::info(print_r($model, true));
+
             if ($model) {
                 if ($model->patient->birth_date) {
                     $model->patient->birth_date = Carbon::make($model->patient->birth_date)->isoFormat("D MMMM YYYY");
