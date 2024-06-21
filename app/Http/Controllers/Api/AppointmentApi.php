@@ -406,6 +406,7 @@ class AppointmentApi extends Controller
             ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
+            Log::error($e->getTrace());
             return response()->json([
                 'status'    => false,
                 'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage(),
