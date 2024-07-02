@@ -120,6 +120,7 @@
                                 <th scope="col" style="width: 150px">Created By</th>
                                 <th scope="col" style="width: 150px">Last Updated By</th>
                                 <th scope="col" style="width: 100px">Type</th>
+                                <th scope="col" style="width: 60px; text-align: center">Action</th>
                             </tr>
                         </thead>
                         <tbody id="prescriptionModalRow">
@@ -138,12 +139,15 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="prescriptionModalSubmitBtn">Submit
+                    Changes</button>
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal"
                     id="prescriptionModalCloseBtn">Close</button>
             </div>
         </div>
     </div>
 </div>
+
 
 </html>
 

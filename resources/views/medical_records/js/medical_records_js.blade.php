@@ -4,6 +4,9 @@
     let prescriptionModal;
     let liveToast;
     let tableData;
+    let deletedId = null;
+    let deletedSku = [];
+    let deletedTrxId = null;
 
     const csrfToken = document
         .querySelector('meta[name="csrf-token"]')
@@ -130,16 +133,18 @@
         const source = tableData[index].source;
         let html = '';
         $("#prescriptionModalRow").html(html);
-        list.map(rx => {
+
+        list.map((rx, id) => {
             html += `
-                <tr class="${source === "DOCTOR" ? 'table-primary' : source === "SELF" ? 'table-danger' : source === "ONLINE" ? 'table-warning' : 'table-secondary'}">
+                <tr id="row-${id}" class="${source === "DOCTOR" ? 'table-primary' : source === "SELF" ? 'table-danger' : source === "ONLINE" ? 'table-warning' : 'table-secondary'}">
                     <td>${rx.sku}</td>
                     <td>${rx.label}</td>
                     <td style="text-align: right">${rx.qty}</td>
                     <td>${rx.notes ? rx.notes : '-'}</td>
                     <td>${tableData[index].created_by}</td>
                     <td>${tableData[index].updated_by}</td>
-                    <td><h5><span class="badge ${source === "DOCTOR" ? 'text-bg-primary' : source === "SELF" ? 'text-bg-danger' : source === "ONLINE" ? 'text-bg-warning' : 'text-bg-secondary'}">${source}</span></h5></td>
+                    <td style="text-align: center; vertical-align: middle;"><h5><span class="badge ${source === "DOCTOR" ? 'text-bg-primary' : source === "SELF" ? 'text-bg-danger' : source === "ONLINE" ? 'text-bg-warning' : 'text-bg-secondary'}">${source}</span></h5></td>
+                    <td style="text-align: center; vertical-align: middle;">${source === "ONLINE" ? `<button class="btn btn-sm rounded-pill btn-danger" onclick="window.deleteItem(${id}, '${rx.sku}', ${tableData[index].id}, '${tableData[index].transaction_id}')"><i class="bi bi-trash"></i></button>` : ""}</td>
                 </tr>
             `;
         });
@@ -147,12 +152,68 @@
         prescriptionModal.toggle();
     }
 
+    const deleteItem = (rowId, sku, prescriptionId, trxId) => {
+        $("#prescriptionModalSubmitBtn").show();
+        deletedSku.push(sku);
+        deletedId = prescriptionId;
+        deletedTrxId = trxId;
+        $(`#row-${rowId}`).remove();
+    }
+
+    const submitChanges = async () => {
+        const param = {
+            id: deletedId,
+            sku: deletedSku,
+            trx_id: deletedTrxId
+        };
+        const formData = new FormData();
+        for (var key in param) {
+            if (typeof param[key] !== "undefined") {
+                formData.append(key, param[key]);
+            }
+        }
+
+        await fetch("/api/v1/records/update", {
+            headers: {
+                Accept: "application/json, text-plain, */*",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            method: "post",
+            credentials: "same-origin",
+            body: formData
+        }).then(response => {
+            if (!response.ok) {
+                return response.json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({
+                        message
+                    }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+
+            return response.json();
+        }).then(response => {
+            showToast(response.message, false);
+            prescriptionModal.toggle();
+        }).catch(error => {
+            showToast(error, true);
+            prescriptionModal.toggle();
+        })
+    }
+
     window.getList = getList;
     window.showPrescription = showPrescription;
+    window.deleteItem = deleteItem;
 
     $(document).ready(function() {
         liveToast = new bootstrap.Toast(_liveToast);
         prescriptionModal = new bootstrap.Modal(_prescriptionModal);
+
+        $("#prescriptionModalSubmitBtn").hide();
 
         // Check for additional URL
         const url = new URL(window.location.href);
@@ -178,5 +239,18 @@
             $("#tableForm").trigger("reset");
             getList();
         });
+
+        $("#prescriptionModalSubmitBtn").click(function(e) {
+            submitChanges();
+        });
+
+        _prescriptionModal.addEventListener("hide.bs.modal", function(e) {
+            getList();
+            deletedSku = [];
+            deletedId = null;
+            deletedTrxId = null;
+            $("#prescriptionModalSubmitBtn").hide();
+        });
+
     });
 </script>

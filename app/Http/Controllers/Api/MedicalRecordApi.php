@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\UpdateOnlineTrxRequest;
 use App\Models\MedicalRecord;
 use App\Models\Prescription;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
 class MedicalRecordApi extends Controller
@@ -87,6 +90,39 @@ class MedicalRecordApi extends Controller
                     'page'      => $page,
                     'pageCount' => ceil($count / $dataPerPage)
                 ]
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateOnlineTrx(UpdateOnlineTrxRequest $request)
+    {
+        try {
+            $model = Prescription::find($request->id);
+            $modelTrx = Transaction::find($request->trx_id);
+            $arrSku = explode(",", $request->sku);
+
+            $modifiedList = Arr::where($model->list, function ($value, $key) use ($arrSku) {
+                return !in_array($value["sku"], $arrSku);
+            });
+            $modifiedTrxList = Arr::where($model->list, function ($value, $key) use ($arrSku) {
+                return !in_array($value["sku"], $arrSku);
+            });
+
+            $model->list = array_values($modifiedList);
+            $model->update();
+
+            $modelTrx->prescription = array_values($modifiedTrxList);
+            $modelTrx->update();
+
+            return response()->json([
+                'status'        => true,
+                'message'       => "Medical records has been updated."
             ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
