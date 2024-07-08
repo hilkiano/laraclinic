@@ -60,7 +60,8 @@
             setLoading(false);
 
             if (response.data.length === 50) {
-                showToast(`Search result: ${response.data.length}+ patients. Please add more query.`, false);
+                showToast(`Search result: ${response.data.length}+ patients. Please add more query.`,
+                    false);
             } else if (response.data.length !== 1 && response.data.length !== 0) {
                 showToast(`Search result: ${response.data.length} patients. `, false);
             } else if (response.data.length === 0) {
@@ -112,8 +113,9 @@
 
         selectedPatient = patient;
 
-        $("#patientPotrait").attr("src", patient.patient_potrait ? patient.patient_potrait.url[patient.patient_potrait.url.length - 1] : `{{ asset('images/potrait-placeholder.png') }}`);
-        $("#patientName").html(patient.name);
+        $("#patientPotrait").attr("src", patient.patient_potrait ? patient.patient_potrait.url[patient
+            .patient_potrait.url.length - 1] : `{{ asset('images/potrait-placeholder.png') }}`);
+        $("#patientName").html(`${patient.name} (${patient.code ? patient.code : '-'})`);
         $("#patientAddress").html(patient.address ? patient.address : '-');
         $("#patientEmail").html(patient.email ? patient.email : '-');
         $("#patientPhone").html(patient.phone_number ? `+62 ${patient.phone_number}` : '-');
