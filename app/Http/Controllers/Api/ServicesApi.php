@@ -77,7 +77,7 @@ class ServicesApi extends Controller
                     ], 403);
                 }
 
-                $service = Services::find($request->input('id'));
+                $service = Services::withTrashed()->find($request->input('id'));
             } else {
                 if (!in_array("MEDICINE_SERVICE_CREATE", $privileges)) {
                     return response()->json([

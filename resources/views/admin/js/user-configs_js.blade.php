@@ -30,8 +30,8 @@
             name: nameField.value,
             email: emailField.value,
             phone_number: phoneField.value,
-            new_password: newPassword.value,
-            confirm_password: confirmPassword.value,
+            new_password: newPassword.value !== "" ? newPassword.value : undefined,
+            confirm_password: confirmPassword.value !== "" ? confirmPassword.value : undefined,
             schedule: localStorage.getItem('schedule') ? JSON.parse(localStorage.getItem('schedule')) :
                 null,
             npwp: npwpMask.unmaskedValue

@@ -87,7 +87,7 @@ class MedicinesApi extends Controller
                     ], 403);
                 }
 
-                $medicine = Medicine::find($request->input('id'));
+                $medicine = Medicine::withTrashed()->find($request->input('id'));
             } else {
                 if (!in_array("MEDICINE_SERVICE_CREATE", $privileges)) {
                     return response()->json([

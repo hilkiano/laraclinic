@@ -17,7 +17,7 @@
         .getAttribute("content");
 
     const getList = async (p) => {
-        showTableLoading( canEdit || canDelete ? 5 : 4, "#serviceRows");
+        showTableLoading(canEdit || canDelete ? 5 : 4, "#serviceRows");
         const page = p ? p : 0;
         const param = {
             limit: $("#itemPerPage").val(),
@@ -88,7 +88,7 @@
                 <td>${ row.label }</td>
                 <td>${ row.sell_price ? formatIdr(row.sell_price) : '-' }</td>
                 ${ canEdit && canDelete ? `<td class="text-center">
-                    ${ canEdit ? `<button class="btn btn-sm btn-outline-primary me-1" data-row='${ JSON.stringify(row) }' onclick="window.handleEdit(event)">Edit</button>` : '' }
+                    ${ canEdit ? `<button class="btn btn-sm btn-outline-primary me-1" data-row='${ JSON.stringify(row).replace(/[\/\(\)\']/g, "&apos;") }' onclick="window.handleEdit(event)">Edit</button>` : '' }
                     ${ canDelete ? getDelResButton(row) : '' }
                 </td>` : '' }
             </tr>
@@ -97,9 +97,11 @@
         function getDelResButton(row) {
             let html = '';
             if (row.deleted_at) {
-                html = `<button class="btn btn-sm btn-outline-success" onclick="window.showConfirmModal(${row.id}, '${row.label}', false)">Restore</button>`;
+                html =
+                    `<button class="btn btn-sm btn-outline-success" onclick="window.showConfirmModal(event)" data-row='${ JSON.stringify(row).replace(/[\/\(\)\']/g, "&apos;") }'>Restore</button>`;
             } else {
-                html = `<button class="btn btn-sm btn-outline-danger" onclick="window.showConfirmModal(${row.id}, '${row.label}', true)">Delete</button>`;
+                html =
+                    `<button class="btn btn-sm btn-outline-danger" onclick="window.showConfirmModal(event)" data-row='${ JSON.stringify(row).replace(/[\/\(\)\']/g, "&apos;") }'>Delete</button>`;
             }
 
             return html;
@@ -113,7 +115,7 @@
             style: "currency",
             currency: "IDR",
             maximumFractionDigits: 0
-            }).format(num);
+        }).format(num);
     }
 
     const showModalAdd = (e) => {
@@ -121,15 +123,16 @@
         serviceModal.toggle();
     }
 
-    const showConfirmModal = (id, label, isDelete) => {
-        $("#confirmModalHead").html(isDelete ? 'Delete Service' : 'Restore Service');
+    const showConfirmModal = (e) => {
+        const data = JSON.parse(e.target.getAttribute("data-row"));
+        $("#confirmModalHead").html(!data.deleted_at ? 'Delete Service' : 'Restore Service');
         $("#confirmModalBody").html(
-            isDelete ?
-            `<p>Do you want to delete this service?</p><div class="p-3 rounded bg-body-secondary">${label}</div>` :
-            `<p>Do you want to restore this service?</p><div class="p-3 rounded bg-body-secondary">${label}</div>`
+            !data.deleted_at ?
+            `<p>Do you want to delete this service?</p><div class="p-3 rounded bg-body-secondary">${data.label}</div>` :
+            `<p>Do you want to restore this service?</p><div class="p-3 rounded bg-body-secondary">${data.label}</div>`
         );
 
-        $("#confirmModalSubmitBtn").attr('data-id', id);
+        $("#confirmModalSubmitBtn").attr('data-id', data.id);
 
         confirmModal.toggle();
     }

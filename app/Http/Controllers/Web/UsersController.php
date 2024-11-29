@@ -273,7 +273,10 @@ class UsersController extends Controller
             $user->configs = [
                 "schedule" => $request->schedule
             ];
-            $user->password = Hash::make($request->new_password);
+            if ($request->has("new_password")) {
+                $user->password = Hash::make($request->new_password);
+            }
+
             $user->npwp = $request->npwp;
 
             $user->save();
