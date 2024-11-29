@@ -271,7 +271,13 @@
                 if (rx) {
                     let parsedRx = JSON.parse(rx);
                     // Check if there is an item with same SKU already inside data. If found, just delete and add quantity to said item.
-                    parsedRx[0].data[$("#index").val()] = obj;
+                    parsedRx[0].data[$("#index").val()] = {
+                        ...parsedRx[0].data[$("#index").val()],
+                        sku: obj.sku,
+                        price: obj.price,
+                        qty: obj.qty,
+                        notes: obj.notes
+                    };
                     localStorage.setItem("freePrescription", JSON.stringify(parsedRx));
                     medSelectorModal.toggle();
                     window.updateRxBody();
