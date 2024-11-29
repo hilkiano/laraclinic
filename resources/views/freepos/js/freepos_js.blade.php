@@ -462,6 +462,12 @@
 
     const freeInitiateItemImask = (length) => {
         for (let i = 1; i <= length; i++) {
+            const rx = localStorage.getItem("freePrescription");
+            if (rx) {
+                const parsedRx = JSON.parse(rx);
+                $(`#free-itemDiscountType-${i - 1}`).val(parsedRx[0].data[i - 1].discount_type)
+            }
+
             $(`#free-itemDiscountType-${i - 1}`).change(function(e) {
                 let opt = null;
                 if ($(this).val() === "pctg") {
@@ -491,12 +497,20 @@
                     $(`#free-itemSuffix-${i - 1}`).hide();
                     $(`#free-itemPrefix-${i - 1}`).show();
                 }
+
                 if (freeItemImask[i - 1] !== null) {
                     $(`#free-itemDiscount-${i - 1}`).val("");
                     freeItemImask[i - 1].destroy();
                 }
 
                 const imask = IMask(document.getElementById(`free-itemDiscount-${i - 1}`), opt);
+                if (rx) {
+                    const parsedRx = JSON.parse(rx);
+                    const discountVal = parsedRx[0].data[i - 1].discount_value;
+                    if (discountVal) {
+                        imask.value = String(discountVal);
+                    }
+                }
                 freeItemImask[i - 1] = imask;
                 freeHandleItemDiscount(i - 1);
             });

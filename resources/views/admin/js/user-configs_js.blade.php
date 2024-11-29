@@ -2,10 +2,12 @@
     const nameField = document.getElementById("name");
     const emailField = document.getElementById("email");
     const phoneField = document.getElementById("phone_number");
+    const npwpField = document.getElementById("npwp");
     const newPassword = document.getElementById("new_password");
     const confirmPassword = document.getElementById("confirm_password");
     const liveToast = document.getElementById("liveToast");
     let userData;
+    let npwpMask;
 
     const handleSave = async () => {
         // Remove invalid class
@@ -28,9 +30,11 @@
             name: nameField.value,
             email: emailField.value,
             phone_number: phoneField.value,
-            new_password: newPassword.value,
-            confirm_password: confirmPassword.value,
-            schedule: localStorage.getItem('schedule') ? JSON.parse(localStorage.getItem('schedule')) : null
+            new_password: newPassword.value !== "" ? newPassword.value : undefined,
+            confirm_password: confirmPassword.value !== "" ? confirmPassword.value : undefined,
+            schedule: localStorage.getItem('schedule') ? JSON.parse(localStorage.getItem('schedule')) :
+                null,
+            npwp: npwpMask.unmaskedValue
         };
 
         const req = await fetch("/api/v1/user/save-configs", {
@@ -111,10 +115,16 @@
             signed: false,
         });
 
+        npwpMask = IMask(npwpField, {
+            mask: '00.000.000.0-000.000',
+            signed: false
+        });
+
         userData = JSON.parse('{!! $user !!}');
         nameField.value = userData.name;
         emailField.value = userData.email;
         phoneField.value = userData.phone_number;
+        npwpMask.value = userData.npwp || '';
 
         $("#save-btn").on('click', handleSave);
     });

@@ -14,17 +14,18 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="input-group">
-                                        @if (in_array("CREATE_USER", $privs))
-                                        <button data-bs-toggle="modal" href="#usersModal" class="btn btn-primary">
-                                            <i class="bi bi-plus"></i>
-                                            Add User
-                                        </button>
+                                        @if (in_array('CREATE_USER', $privs))
+                                            <button data-bs-toggle="modal" href="#usersModal" class="btn btn-primary">
+                                                <i class="bi bi-plus"></i>
+                                                Add User
+                                            </button>
                                         @endif
-                                        <input id="filterUsersField" placeholder="Filter results..." type="text" class="form-control">
-                                        @if ($data["hasFilter"])
-                                        <button id="clearFilterUsersBtn" class="btn btn-secondary">
-                                            <i class="bi bi-eraser"></i>
-                                        </button>
+                                        <input id="filterUsersField" placeholder="Filter results..." type="text"
+                                            class="form-control">
+                                        @if ($data['hasFilter'])
+                                            <button id="clearFilterUsersBtn" class="btn btn-secondary">
+                                                <i class="bi bi-eraser"></i>
+                                            </button>
                                         @endif
                                         <button id="filterUsersBtn" class="btn btn-primary">
                                             <i class="bi bi-funnel"></i>
@@ -37,7 +38,8 @@
                     <div class="row">
                         <div class="col">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped table-hover caption-top" style="min-width: 1450px;">
+                                <table class="table table-bordered table-striped table-hover caption-top"
+                                    style="min-width: 1650px;">
                                     <caption>List of users</caption>
                                     <thead class="table-primary">
                                         <tr>
@@ -46,6 +48,7 @@
                                             <th scope="col" style="width: 200px">Group</th>
                                             <th scope="col" style="width: 200px;">Name</th>
                                             <th scope="col" style="width: 200px;">Email</th>
+                                            <th scope="col" style="width: 200px;">NPWP</th>
                                             <th scope="col" style="width: 150px;">Phone</th>
                                             <th scope="col" style="width: 250px;">Created At</th>
                                             <th scope="col" style="width: 100px; text-align: center;">Is Active?</th>
@@ -54,38 +57,50 @@
                                     </thead>
                                     <tbody>
                                         @if (count($data['rows']) > 0)
-                                        @php
-                                        $i = 1;
-                                        @endphp
-                                        @foreach ($data['rows'] as $row)
-                                        <tr class="{{ $row->deleted_at ? 'table-danger' : '' }}">
-                                            <td scope="row">{{ $i }}</td>
-                                            <td>{{ $row->username }}</td>
-                                            <td>{{ $row->group->name }}</td>
-                                            <td>{{ $row->name }}</td>
-                                            <td>{{ $row->email }}</td>
-                                            <td>+62 {{ $row->phone_number }}</td>
-                                            <td>{{ $row->created_at }}</td>
-                                            <td style="text-align: center;"><i class="bi {{ $row->deleted_at ? 'bi-x-lg text-danger' : 'bi-check-lg text-success' }}"></i></td>
-                                            <td style="text-align: center;">
-                                                @if (in_array("UPDATE_USER", $privs))
-                                                <button data-bs-toggle="modal" href="#usersModal" data-row="{{ $row }}" class="btn btn-sm btn-secondary">Edit</button>
-                                                @endif
-                                                @if (in_array("DELETE_USER", $privs))
-                                                <button data-bs-toggle="modal" href="#chgStateModal" data-row="{{ $row }}" class="btn btn-sm {{ $row->deleted_at ? 'btn-success' : 'btn-danger' }}">
-                                                    {{ $row->deleted_at ? 'Activate' : 'Deactivate' }}
-                                                </button>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        @php
-                                        $i++;
-                                        @endphp
-                                        @endforeach
+                                            @php
+                                                $i = 1;
+                                            @endphp
+                                            @foreach ($data['rows'] as $row)
+                                                <tr class="{{ $row->deleted_at ? 'table-danger' : '' }}">
+                                                    <td scope="row">{{ $i }}</td>
+                                                    <td>{{ $row->username }}</td>
+                                                    <td>{{ $row->group->name }}</td>
+                                                    <td>{{ $row->name }}</td>
+                                                    <td>{{ $row->email }}</td>
+                                                    <td>{{ preg_replace(
+                                                        '~.*(\d{2})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{3})(\d{1})(\d{3})(\d{3}).*~',
+                                                        "$1.$2.$3.$4-$5.$6",
+                                                        $row->npwp,
+                                                    ) }}
+                                                    </td>
+                                                    <td>+62 {{ $row->phone_number }}</td>
+                                                    <td>{{ $row->created_at }}</td>
+                                                    <td style="text-align: center;"><i
+                                                            class="bi {{ $row->deleted_at ? 'bi-x-lg text-danger' : 'bi-check-lg text-success' }}"></i>
+                                                    </td>
+                                                    <td style="text-align: center;">
+                                                        @if (in_array('UPDATE_USER', $privs))
+                                                            <button data-bs-toggle="modal" href="#usersModal"
+                                                                data-row="{{ $row }}"
+                                                                class="btn btn-sm btn-secondary">Edit</button>
+                                                        @endif
+                                                        @if (in_array('DELETE_USER', $privs))
+                                                            <button data-bs-toggle="modal" href="#chgStateModal"
+                                                                data-row="{{ $row }}"
+                                                                class="btn btn-sm {{ $row->deleted_at ? 'btn-success' : 'btn-danger' }}">
+                                                                {{ $row->deleted_at ? 'Activate' : 'Deactivate' }}
+                                                            </button>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                                @php
+                                                    $i++;
+                                                @endphp
+                                            @endforeach
                                         @else
-                                        <tr>
-                                            <td colspan="9">No Data.</td>
-                                        </tr>
+                                            <tr>
+                                                <td colspan="9">No Data.</td>
+                                            </tr>
                                         @endif
                                     </tbody>
                                 </table>

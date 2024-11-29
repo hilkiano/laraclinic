@@ -61,6 +61,19 @@
                             </div>
                         </div>
                     </div>
+                    <h5 class="mt-4">NPWP</h5>
+                    <div class="row gy-2">
+                        <div class="col-sm-12 col-md-3">
+                            <label for="newPassword" class="form-label">NPWP</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1"><i
+                                        class="bi bi-credit-card-fill"></i></span>
+                                <input autocomplete="off" type="text" class="form-control" id="npwp"
+                                    name="npwp">
+                                <div id="npwp_feedback" class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
                     <hr class="my-4" />
                     {{-- @if ($user->group_id === 3)
                     @include('admin.user-configs-doctor', ['user' => $user])

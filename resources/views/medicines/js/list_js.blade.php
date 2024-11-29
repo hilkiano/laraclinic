@@ -89,7 +89,7 @@
                 <td>${ row.package }</td>
                 <td>${ row.sell_price ? formatIdr(row.sell_price) : '-' }</td>
                 ${ canEdit && canDelete ? `<td class="text-center">
-                    ${ canEdit ? `<button class="btn btn-sm btn-outline-primary me-1" data-row='${ JSON.stringify(row) }' onclick="window.handleEdit(event)">Edit</button>` : '' }
+                    ${ canEdit ? `<button class="btn btn-sm btn-outline-primary me-1" data-row='${ JSON.stringify(row).replace(/[\/\(\)\']/g, "&apos;") }' onclick="window.handleEdit(event)">Edit</button>` : '' }
                     ${ canDelete ? getDelResButton(row) : '' }
                 </td>` : '' }
             </tr>
@@ -97,10 +97,13 @@
 
         function getDelResButton(row) {
             let html = '';
+
             if (row.deleted_at) {
-                html = `<button class="btn btn-sm btn-outline-success" onclick="window.showConfirmModal(${row.id}, '${row.label}', false)">Restore</button>`;
+                html =
+                    `<button class="btn btn-sm btn-outline-success" onclick="window.showConfirmModal(event)" data-row='${ JSON.stringify(row).replace(/[\/\(\)\']/g, "&apos;") }'>Restore</button>`;
             } else {
-                html = `<button class="btn btn-sm btn-outline-danger" onclick="window.showConfirmModal(${row.id}, '${row.label}', true)">Delete</button>`;
+                html =
+                    `<button class="btn btn-sm btn-outline-danger" onclick="window.showConfirmModal(event)" data-row='${ JSON.stringify(row).replace(/[\/\(\)\']/g, "&apos;") }'>Delete</button>`;
             }
 
             return html;
@@ -114,7 +117,7 @@
             style: "currency",
             currency: "IDR",
             maximumFractionDigits: 0
-            }).format(num);
+        }).format(num);
     }
 
     const showModalAdd = (e) => {
@@ -122,15 +125,16 @@
         medicineModal.toggle();
     }
 
-    const showConfirmModal = (id, label, isDelete) => {
-        $("#confirmModalHead").html(isDelete ? 'Delete Medicine' : 'Restore Medicine');
+    const showConfirmModal = (e) => {
+        const data = JSON.parse(e.target.getAttribute("data-row"));
+        $("#confirmModalHead").html(!data.deleted_at ? 'Delete Medicine' : 'Restore Medicine');
         $("#confirmModalBody").html(
-            isDelete ?
-            `<p>Do you want to delete this medicine?</p><div class="p-3 rounded bg-body-secondary">${label}</div>` :
-            `<p>Do you want to restore this medicine?</p><div class="p-3 rounded bg-body-secondary">${label}</div>`
+            !data.deleted_at ?
+            `<p>Do you want to delete this medicine?</p><div class="p-3 rounded bg-body-secondary">${data.label}</div>` :
+            `<p>Do you want to restore this medicine?</p><div class="p-3 rounded bg-body-secondary">${data.label}</div>`
         );
 
-        $("#confirmModalSubmitBtn").attr('data-id', id);
+        $("#confirmModalSubmitBtn").attr('data-id', data.id);
 
         confirmModal.toggle();
     }
