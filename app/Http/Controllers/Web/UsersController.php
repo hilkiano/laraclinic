@@ -255,7 +255,8 @@ class UsersController extends Controller
                 'phone_number'  => 'nullable|digits_between:8,15',
                 'schedule'      => 'nullable|array',
                 'new_password'      => 'nullable|min:6|required_with:password_confirmation',
-                'confirm_password'  => 'same:new_password'
+                'confirm_password'  => 'same:new_password',
+                'npwp'          => 'nullable|string|min:15'
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -273,6 +274,7 @@ class UsersController extends Controller
                 "schedule" => $request->schedule
             ];
             $user->password = Hash::make($request->new_password);
+            $user->npwp = $request->npwp;
 
             $user->save();
 

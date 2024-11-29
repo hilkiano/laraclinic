@@ -27,7 +27,8 @@ class Users extends Authenticatable implements JWTSubject
         'group_id',
         'extended_login',
         'configs',
-        'logged_in_at'
+        'logged_in_at',
+        'npwp'
     ];
 
     protected $hidden = [
