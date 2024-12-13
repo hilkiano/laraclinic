@@ -99,7 +99,7 @@
             const end = moment.parseZone(toDTPicker.dates.lastPicked).endOf('day');
 
             if (end.diff(start, 'months') > 1) {
-                showToast("Download detailed report only support maximum 3 months range.", true);
+                showToast("Download detailed report only support maximum 1 month range.", true);
 
                 return false;
             }
