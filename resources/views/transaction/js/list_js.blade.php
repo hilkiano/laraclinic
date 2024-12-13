@@ -119,6 +119,8 @@
             method: "get",
             credentials: "same-origin",
         }).then(response => {
+            $("#downloadBtn").removeClass("disabled");
+            $("#submitLoading").remove();
             if (!response.ok) {
                 throw new Error("Failed download data");
             }
@@ -395,6 +397,8 @@
         }
 
         $("#downloadBtn").click(function(e) {
+            $(this).addClass("disabled");
+            $(this).prepend('<div id="submitLoading" class="spinner-grow spinner-grow-sm me-2"></div>');
             handleDownload();
         });
     });
