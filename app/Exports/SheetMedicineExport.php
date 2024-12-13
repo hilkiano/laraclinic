@@ -8,11 +8,14 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 
-class SheetMedicineExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithEvents
+class SheetMedicineExport extends DefaultValueBinder implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithEvents
 {
     protected $data;
     protected $count;
@@ -31,7 +34,7 @@ class SheetMedicineExport implements FromArray, WithHeadings, WithTitle, ShouldA
                 $workSheet->freezePane('A2');
 
                 // DATA
-                $workSheet->getStyle('A1:C1')->applyFromArray([
+                $workSheet->getStyle('A1:D1')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 14
@@ -44,7 +47,7 @@ class SheetMedicineExport implements FromArray, WithHeadings, WithTitle, ShouldA
                     ]
                 ]);
 
-                $workSheet->getStyle("A1:C{$this->count}")->applyFromArray([
+                $workSheet->getStyle("A1:D{$this->count}")->applyFromArray([
                     'borders' => [
                         'outline' => [
                             'borderStyle' => Border::BORDER_THICK,
@@ -66,9 +69,22 @@ class SheetMedicineExport implements FromArray, WithHeadings, WithTitle, ShouldA
         ];
     }
 
+    public function bindValue(Cell $cell, $value)
+    {
+        if (is_string($value)) {
+            $cell->setValueExplicit($value, DataType::TYPE_STRING);
+
+            return true;
+        }
+
+        // else return default behavior
+        return parent::bindValue($cell, $value);
+    }
+
     public function headings(): array
     {
         return [
+            "Transaction ID",
             "SKU",
             "Label",
             "Quantity"

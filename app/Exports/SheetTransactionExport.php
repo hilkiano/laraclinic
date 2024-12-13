@@ -69,8 +69,9 @@ class SheetTransactionExport extends DefaultValueBinder implements FromArray, Wi
                 $workSheet->freezePane('A9');
 
                 // SUMMARY
+                $workSheet->mergeCells("A1:B1");
                 $workSheet->setCellValue("A1", 'Summary');
-                $workSheet->getStyle('A1')->applyFromArray([
+                $workSheet->getStyle('A1:B1')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 14
@@ -83,12 +84,17 @@ class SheetTransactionExport extends DefaultValueBinder implements FromArray, Wi
                     ]
                 ]);
 
-                $workSheet->setCellValue("A2", 'Cash: ' . $this->summary["cash"]);
-                $workSheet->setCellValue("A3", 'Bank Transfer: ' . $this->summary["transfer"]);
-                $workSheet->setCellValue("A4", 'Debit Card: ' . $this->summary["debit"]);
-                $workSheet->setCellValue("A5", 'Credit Card: ' . $this->summary["cc"]);
-                $workSheet->setCellValue("A6", 'Change: ' . $this->summary["change"]);
-                $workSheet->getStyle("A1:A6")->applyFromArray([
+                $workSheet->setCellValue("A2", 'Cash');
+                $workSheet->setCellValue("A3", 'Bank Transfer');
+                $workSheet->setCellValue("A4", 'Debit Card');
+                $workSheet->setCellValue("A5", 'Credit Card');
+                $workSheet->setCellValue("A6", 'Change');
+                $workSheet->setCellValue("B2", $this->summary["cash"]);
+                $workSheet->setCellValue("B3", $this->summary["transfer"]);
+                $workSheet->setCellValue("B4", $this->summary["debit"]);
+                $workSheet->setCellValue("B5", $this->summary["cc"]);
+                $workSheet->setCellValue("B6", $this->summary["change"] * -1);
+                $workSheet->getStyle("A1:B6")->applyFromArray([
                     'borders' => [
                         'outline' => [
                             'borderStyle' => Border::BORDER_THICK,
@@ -101,6 +107,19 @@ class SheetTransactionExport extends DefaultValueBinder implements FromArray, Wi
                             'color' => [
                                 'argb' => Color::COLOR_BLACK
                             ],
+                        ]
+                    ]
+                ]);
+                $workSheet->getStyle("B2:B6")->applyFromArray([
+                    'font' => [
+                        'bold' => true
+                    ]
+                ]);
+                $workSheet->getStyle("A6:B6")->applyFromArray([
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'color' => [
+                            'argb' => "f8d7da"
                         ]
                     ]
                 ]);
@@ -138,6 +157,49 @@ class SheetTransactionExport extends DefaultValueBinder implements FromArray, Wi
                 ]);
 
                 $workSheet->setShowGridlines(false);
+
+                // Loop through each row and apply conditional formatting
+                for ($row = 9; $row <= $this->count + 7; $row++) {
+                    $trxType = $workSheet->getCell('P' . $row)->getValue();
+                    $patient = $workSheet->getCell('C' . $row)->getValue();
+
+                    if ($patient === "Guest") {
+                        $workSheet->getStyle('C' . $row)->applyFromArray([
+                            'font' => [
+                                'italic' => true
+                            ]
+                        ]);
+                    }
+
+                    if ($trxType === "ONLINE") {
+                        $workSheet->getStyle('A' . $row . ':S' . $row)->applyFromArray([
+                            'fill' => [
+                                'fillType' => Fill::FILL_SOLID,
+                                'color' => [
+                                    'argb' => "fff3cd"
+                                ]
+                            ]
+                        ]);
+                    } else if ($trxType === "APPOINTMENT") {
+                        $workSheet->getStyle('A' . $row . ':S' . $row)->applyFromArray([
+                            'fill' => [
+                                'fillType' => Fill::FILL_SOLID,
+                                'color' => [
+                                    'argb' => "cfe2ff"
+                                ]
+                            ]
+                        ]);
+                    } else if ($trxType === "SELF") {
+                        $workSheet->getStyle('A' . $row . ':S' . $row)->applyFromArray([
+                            'fill' => [
+                                'fillType' => Fill::FILL_SOLID,
+                                'color' => [
+                                    'argb' => "f8d7da"
+                                ]
+                            ]
+                        ]);
+                    }
+                }
             }
         ];
     }

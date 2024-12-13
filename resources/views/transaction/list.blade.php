@@ -67,13 +67,18 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 d-flex justify-content-end">
-                                                        <button id="resetFilterBtn" class="btn btn-light"
-                                                            type="button"><i class="me-2 bi bi-eraser"></i>Reset
-                                                            Filter</button>
-                                                        <button id="applyFilterBtn" class="btn btn-primary ms-2"
-                                                            type="submit"><i class="me-2 bi bi-check-lg"></i>Apply
-                                                            Filter</button>
+                                                    <div class="col-12 d-flex justify-content-between">
+                                                        <button id="downloadBtn" class="btn btn-secondary"
+                                                            type="button"><i
+                                                                class="me-2 bi bi-cloud-arrow-down"></i>Download Detail
+                                                            Report</button>
+                                                        <div><button id="resetFilterBtn" class="btn btn-light"
+                                                                type="button"><i class="me-2 bi bi-eraser"></i>Reset
+                                                                Filter</button>
+                                                            <button id="applyFilterBtn" class="btn btn-primary ms-2"
+                                                                type="submit"><i class="me-2 bi bi-check-lg"></i>Apply
+                                                                Filter</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </form>

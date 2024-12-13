@@ -200,6 +200,7 @@ class TransactionsApi extends Controller
                     if (array_key_exists($prescription["label"], $meds)) {
                         $meds[$prescription["label"]]["qty"] = $meds[$prescription["label"]]["qty"] + $this->getSubtotal($prescription)["qty"];
                     } else {
+                        $meds[$prescription["label"]]["trx_id"] = (string) $collection->id;
                         $meds[$prescription["label"]]["sku"] = $prescription["sku"];
                         $meds[$prescription["label"]]["label"] = $prescription["label"];
                         $meds[$prescription["label"]]["qty"] = $this->getSubtotal($prescription)["qty"];
@@ -232,6 +233,7 @@ class TransactionsApi extends Controller
                     if (array_key_exists($prescription["label"], $meds)) {
                         $meds[$prescription["label"]]["qty"] = $meds[$prescription["label"]]["qty"] + $this->getSubtotal($prescription)["qty"];
                     } else {
+                        $meds[$prescription["label"]]["trx_id"] = (string) $collection->id;
                         $meds[$prescription["label"]]["sku"] = $prescription["sku"];
                         $meds[$prescription["label"]]["label"] = $prescription["label"];
                         $meds[$prescription["label"]]["qty"] = $this->getSubtotal($prescription)["qty"];
@@ -243,6 +245,7 @@ class TransactionsApi extends Controller
         $formattedMeds = [];
         foreach ($meds as $med) {
             array_push($formattedMeds, [
+                "trx_id" => $med["trx_id"],
                 "sku" => $med["sku"],
                 "med" => $med["label"],
                 "qty" => $med["qty"]
