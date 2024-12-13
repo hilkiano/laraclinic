@@ -86,6 +86,57 @@
         })
     }
 
+    // Handle download
+    const handleDownload = async () => {
+        let startDate;
+        let endDate;
+        let formattedStartDate;
+        let formattedEndDate;
+
+        if (fromDTPicker.dates.lastPicked && toDTPicker.dates.lastPicked) {
+            // Diff
+            const start = moment.parseZone(fromDTPicker.dates.lastPicked).startOf('day');
+            const end = moment.parseZone(toDTPicker.dates.lastPicked).endOf('day');
+
+            if (end.diff(start, 'months') > 1) {
+                showToast("Download detailed report only support maximum 1 month range.", true);
+
+                return false;
+            }
+
+            startDate = moment.parseZone(fromDTPicker.dates.lastPicked).startOf('day').utc().format();
+            endDate = moment.parseZone(toDTPicker.dates.lastPicked).endOf('day').utc().format();
+            formattedStartDate = moment.parseZone(fromDTPicker.dates.lastPicked).startOf('day').format(
+                "YYYY-MM-DD_HH:mm:ss");
+            formattedEndDate = moment.parseZone(toDTPicker.dates.lastPicked).endOf('day').format(
+                "YYYY-MM-DD_HH:mm:ss");
+        }
+
+        await fetch(`/api/v1/transactions/report?startDate=${startDate}&endDate=${endDate}`, {
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            method: "get",
+            credentials: "same-origin",
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error("Failed download data");
+            }
+            return response.blob();
+        }).then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `TrxDetailReport_${formattedStartDate}-${formattedEndDate}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }).catch(error => {
+            showToast(error, true);
+        })
+    }
+
     // Iterate from getList and returns row html
     const iteratePaginationData = (page, row, i) => {
         const num = page * 10;
@@ -343,5 +394,8 @@
             });
         }
 
+        $("#downloadBtn").click(function(e) {
+            handleDownload();
+        });
     });
 </script>

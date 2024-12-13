@@ -67,28 +67,28 @@ class Transaction extends Model
     public function createdAt(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => Carbon::make($value)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss')
+            get: fn($value) => Carbon::make($value)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss')
         );
     }
 
     public function updatedAt(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => Carbon::make($value)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss')
+            get: fn($value) => Carbon::make($value)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss')
         );
     }
 
     public function paymentType(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $this->getPaymentType($value)
+            get: fn($value) => $this->getPaymentType($value)
         );
     }
 
     public function totalAmount(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $this->moneyFormat($value)
+            get: fn($value) => $this->moneyFormat($value)
         );
     }
 
@@ -128,6 +128,6 @@ class Transaction extends Model
     {
         $number = (float)$val;
         $formatted = number_format($number, 0, ',', '.');
-        return $result = "Rp. " . $formatted;
+        return "Rp. " . $formatted;
     }
 }
