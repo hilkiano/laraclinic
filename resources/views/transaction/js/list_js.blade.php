@@ -100,7 +100,8 @@
 
             if (end.diff(start, 'months') > 1) {
                 showToast("Download detailed report only support maximum 1 month range.", true);
-
+                $("#downloadBtn").removeClass("disabled");
+                $("#submitLoading").remove();
                 return false;
             }
 
