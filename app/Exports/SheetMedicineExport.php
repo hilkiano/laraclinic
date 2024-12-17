@@ -34,7 +34,7 @@ class SheetMedicineExport extends DefaultValueBinder implements FromArray, WithH
                 $workSheet->freezePane('A2');
 
                 // DATA
-                $workSheet->getStyle('A1:D1')->applyFromArray([
+                $workSheet->getStyle('A1:C1')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 14
@@ -47,7 +47,7 @@ class SheetMedicineExport extends DefaultValueBinder implements FromArray, WithH
                     ]
                 ]);
 
-                $workSheet->getStyle("A1:D{$this->count}")->applyFromArray([
+                $workSheet->getStyle("A1:C{$this->count}")->applyFromArray([
                     'borders' => [
                         'outline' => [
                             'borderStyle' => Border::BORDER_THICK,
@@ -84,7 +84,6 @@ class SheetMedicineExport extends DefaultValueBinder implements FromArray, WithH
     public function headings(): array
     {
         return [
-            "Transaction ID",
             "SKU",
             "Label",
             "Quantity"
