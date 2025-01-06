@@ -166,6 +166,16 @@ class MenusSeeder extends Seeder
                 'parent'    => null,
                 'order'     => 8
             ],
+            // Stock
+            [
+                'name'      => 'stocks',
+                'label'     => 'Stocks',
+                'icon'      => 'bi-box2',
+                'route'     => '/stocks',
+                'is_parent' => false,
+                'parent'    => null,
+                'order'     => 9
+            ],
         ];
 
         foreach ($data as $data) {

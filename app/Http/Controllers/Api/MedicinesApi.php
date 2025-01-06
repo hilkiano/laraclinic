@@ -37,6 +37,7 @@ class MedicinesApi extends Controller
 
             // Query the database for Medicine objects matching the provided filters.
             $model = Medicine::withTrashed()
+                ->with("stocks")
                 ->when($filterVal && $filterCol, function ($query) use ($filterVal, $filterCol) {
                     $query->where($filterCol, 'ILIKE', "%$filterVal%");
                 });

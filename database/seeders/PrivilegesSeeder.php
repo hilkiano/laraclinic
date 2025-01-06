@@ -129,6 +129,10 @@ class PrivilegesSeeder extends Seeder
                 'name'  => 'ONLINE_TRX_CREATE',
                 'description'   => 'Ability to record online transaction'
             ],
+            [
+                'name'  => 'STOCK_SERVICE_CREATE',
+                'description' => 'Ability to create stock'
+            ]
         ];
 
         foreach ($data as $data) {

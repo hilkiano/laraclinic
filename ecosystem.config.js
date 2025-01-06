@@ -1,8 +1,12 @@
 module.exports = {
     apps: [
         {
-            name: "michelle",
+            name: "schedule",
             script: "php artisan schedule:work",
+        },
+        {
+            name: "queue",
+            script: "php artisan queue:work",
         },
     ],
 };

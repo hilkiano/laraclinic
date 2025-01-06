@@ -21,4 +21,9 @@ class Medicine extends Model
         'prescription',
         'description'
     ];
+
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class, 'medicine_id', 'id');
+    }
 }

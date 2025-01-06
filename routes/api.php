@@ -108,5 +108,13 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
             $router->post('find-patient', '\App\Http\Controllers\Api\OnlineTransactionsApi@findPatient');
             $router->post('make-trx', '\App\Http\Controllers\Api\OnlineTransactionsApi@makeTransaction');
         });
+        // stock
+        $router->group(['prefix' => 'stocks'], function () use ($router) {
+            $router->post('list', '\App\Http\Controllers\Api\StockController@list');
+            $router->post('save', '\App\Http\Controllers\Api\StockController@save');
+            $router->post('make-history', '\App\Http\Controllers\Api\StockController@makeHistory');
+            $router->get('register', '\App\Http\Controllers\Api\StockController@getRegistrationTemplate');
+            $router->post('register', '\App\Http\Controllers\Api\StockController@registerStock');
+        });
     });
 });
