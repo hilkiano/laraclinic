@@ -24,6 +24,6 @@ class Medicine extends Model
 
     public function stocks()
     {
-        return $this->hasMany(Stock::class, 'medicine_id', 'id');
+        return $this->hasMany(Stock::class, 'medicine_id', 'id')->orderBy('created_at', 'asc');
     }
 }

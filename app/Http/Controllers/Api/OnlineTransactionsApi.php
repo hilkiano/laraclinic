@@ -7,8 +7,10 @@ use App\Http\Controllers\PrivilegeController;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Api\OnlineTransaction\FindPatientRequest;
 use App\Http\Requests\Api\OnlineTransaction\MakeTransactionRequest;
+use App\Models\Medicine;
 use App\Models\Patients;
 use App\Models\Prescription;
+use App\Models\StockHistory;
 use App\Models\Transaction;
 
 class OnlineTransactionsApi extends Controller
@@ -90,6 +92,25 @@ class OnlineTransactionsApi extends Controller
             $rx->source = 'ONLINE';
             $rx->transaction_id = $trx->id;
             $rx->save();
+
+            // Update stock history
+            $prescription = json_decode($request->prescription);
+            foreach ($prescription as $item) {
+                $med = Medicine::select("id")->with("stocks")->where("sku", $item->sku)->first();
+                if ($med) {
+                    if (count($med->stocks) > 0) {
+                        $latestStock = $med->stocks->first();
+
+                        $history = new StockHistory();
+                        $history->stock_id = $latestStock->id;
+                        $history->type = "OUT";
+                        $history->quantity = $item->qty;
+                        $history->transaction_id = $trx->id;
+
+                        $history->save();
+                    }
+                }
+            }
 
             return response()->json([
                 'status'    => true,

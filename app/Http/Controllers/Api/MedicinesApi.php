@@ -47,6 +47,20 @@ class MedicinesApi extends Controller
                 ->orderBy("label", "asc");
             $data = $model->get();
 
+            // Remap data
+            foreach ($data as $row) {
+                $row->available_stock = null;
+
+                if (count($row->stocks) > 0) {
+                    $row->available_stock = 0;
+                    foreach ($row->stocks as $stock) {
+                        $stockController = new StockController();
+                        $stockOut = $stockController->checkHistories($stock->id);
+                        $row->available_stock = $row->available_stock + ($stock->base_quantity - $stockOut);
+                    }
+                }
+            }
+
             // Return a JSON response with the list of Medicine objects and pagination data.
             return response()->json([
                 'status'        => true,

@@ -8,8 +8,10 @@ use App\Models\Appointments;
 use App\Models\AppointmentsDetail;
 use App\Events\AssignmentTaken;
 use App\Events\PrintReceipt;
+use App\Models\Medicine;
 use App\Models\Transaction;
 use App\Models\Prescription;
+use App\Models\StockHistory;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
@@ -109,6 +111,23 @@ class CashierApi extends Controller
 
             $trx->save();
 
+            foreach ($data as $item) {
+                $med = Medicine::select("id")->with("stocks")->where("sku", $item->sku)->first();
+                if ($med) {
+                    if (count($med->stocks) > 0) {
+                        $latestStock = $med->stocks->first();
+
+                        $history = new StockHistory();
+                        $history->stock_id = $latestStock->id;
+                        $history->type = "OUT";
+                        $history->quantity = $item->qty;
+                        $history->transaction_id = $trx->id;
+
+                        $history->save();
+                    }
+                }
+            }
+
             // If there is patient, make prescription with SELF source
             if ($request->has("patient")) {
                 $rx = new Prescription();
@@ -139,6 +158,8 @@ class CashierApi extends Controller
     private function handleCheckout(array $data)
     {
         try {
+            $prescription = json_decode($data['prescription']);
+
             // Find appointment by its uuid
             $appointment = Appointments::where('uuid', $data['uuid'])->first();
 
@@ -162,6 +183,24 @@ class CashierApi extends Controller
             PrintReceipt::dispatch($trx->toArray());
 
             if ($trx) {
+                // Update stock history
+                foreach ($prescription[0]->data as $item) {
+                    $med = Medicine::select("id")->with("stocks")->where("sku", $item->sku)->first();
+                    if ($med) {
+                        if (count($med->stocks) > 0) {
+                            $latestStock = $med->stocks->first();
+
+                            $history = new StockHistory();
+                            $history->stock_id = $latestStock->id;
+                            $history->type = "OUT";
+                            $history->quantity = $item->qty;
+                            $history->transaction_id = $trx->id;
+
+                            $history->save();
+                        }
+                    }
+                }
+
                 $appointment->status = config('constants.status.completed');
                 $appointment->save();
 

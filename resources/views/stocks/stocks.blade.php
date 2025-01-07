@@ -2,6 +2,12 @@
 <html>
 @include('template.header', ['title' => 'Stocks'])
 
+<style>
+    .selectize-control.single .selectize-input:after {
+        display: none !important;
+    }
+</style>
+
 <body>
     @include('template.navbar', ['title' => 'Stocks'])
     <div class="container-fluid">
@@ -26,8 +32,8 @@
                                         class="bi bi-cloud-upload"></i>&nbsp;Submit</button>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <h4 class="fw-semibold">Table Settings</h4>
+                        <div class="col-md-6 p-4">
+                            <h4 class="fw-semibold">Filters</h4>
                             <form id="filterForm" class="d-flex flex-column">
                                 <div class="mb-3">
                                     <label for="filterName" class="form-label">Medicine name</label>
@@ -55,9 +61,11 @@
                                         <tr>
                                             <th scope="col">#</th>
                                             <th scope="col">Registered At</th>
+                                            <th scope="col">Last Updated At</th>
                                             <th scope="col">Medicine Name</th>
                                             <th scope="col">Stock In</th>
                                             <th scope="col">Stock Out</th>
+                                            <th scope="col">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="stockRows"></tbody>
@@ -79,6 +87,59 @@
         </div>
     </div>
 </body>
+<div id="progressModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Stock Registration Progress</h5>
+            </div>
+            <div class="modal-body d-flex flex-column gap-2">
+                <div class="progress mt-2" role="progressbar" aria-label="Example with label" aria-valuemin="0"
+                    aria-valuemax="100">
+                    <div class="progress-bar" style="width: 0%">0%</div>
+                </div>
+                <div id="errorMsg"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="dismissProgressBtn" data-bs-dismiss="modal"
+                    disabled>Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="editModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="editModalBody">
+                <form id="stockForm">
+                    <input type="hidden" name="id" value="" id="id" />
+                    <div class="row gy-2">
+                        <div class="col-sm-12 col-md-8">
+                            <label for="medicineId" class="form-label">Medicines</label>
+                            <select placeholder="Search..." id="medicineId" name="medicine_id"
+                                style="flex-grow: 1"></select>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <label for="quantity" class="form-label">Base Quantity</label>
+                            <input type="text" class="form-control" id="baseQuantity" name="label" required>
+                            <div class="invalid-feedback" id="invalidQtyFeedback"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal"
+                    id="editModalCloseBtn">Cancel</button>
+                <button type="submit" form="stockForm" class="btn btn-primary"
+                    id="editModalSubmitBtn">Submit</button>
+            </div>
+        </div>
+    </div>
 
 </html>
 @include('toasts.live_toast')

@@ -11,6 +11,7 @@ use App\Http\Requests\Api\StockListRequest;
 use App\Http\Requests\Api\StockSaveRequest;
 use App\Http\Requests\Api\StockUpdateRequest;
 use App\Imports\RegisterStock;
+use App\Jobs\HandleStockRegistration;
 use App\Models\Medicine;
 use App\Models\Stock;
 use App\Models\StockHistory;
@@ -55,12 +56,7 @@ class StockController extends Controller
 
             // Get stock out
             foreach ($data as $row) {
-                $histories = StockHistory::where("stock_id", $row->id)->get();
-                if (count($histories) > 0) {
-                    // Count stock out
-                } else {
-                    $row->quantity_out = 0;
-                }
+                $row->quantity_out = $this->checkHistories($row->id);
             }
 
             // Return a JSON response with the list of Stock objects and pagination data.
@@ -97,6 +93,20 @@ class StockController extends Controller
             }
 
             $stock = Stock::find($request->input("id"));
+
+            if ($request->input("base_quantity") <= 0) {
+                throw new \Exception("Base quantity must be greater than 0.");
+            }
+
+            $stockOut = $this->checkHistories($request->input("id"));
+
+            if ($stockOut > 0 && $stock->medicine_id !== $request->input("medicine_id")) {
+                throw new \Exception("This item cannot be modified since some of the stock already out.");
+            }
+
+            if ($stockOut > $request->input("base_quantity")) {
+                throw new \Exception("Stock out is bigger than requested quantity.");
+            }
 
             $stock->medicine_id = $request->input("medicine_id");
             $stock->base_quantity = $request->input("base_quantity");
@@ -176,19 +186,53 @@ class StockController extends Controller
             $import = (new RegisterStock())->toArray($request->file("file"));
             $data = $import[0];
 
-            foreach ($data as $row) {
-                $stock = new Stock();
-                $stock->medicine_id = Medicine::select("id")->where("label", $row[0])->first()->id;
-                $stock->base_quantity = $row[1];
-                $stock->created_by = auth()->id();
-                $stock->updated_by = auth()->id();
-                $stock->save();
-            }
+            HandleStockRegistration::dispatch($data, auth()->id());
 
             return response()->json([
                 'status' => true,
-                'message' => 'Stock registered successfully.'
+                'message' => 'Stock registration job dispatched.'
             ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getMedicineList($query)
+    {
+        try {
+            $data = Medicine::select('id', 'label')
+                ->where('label', 'ILIKE', "%$query%")->get();
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $data
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function checkHistories($id)
+    {
+        try {
+            $histories = StockHistory::where("stock_id", $id)->get();
+            $stockOut = 0;
+
+            foreach ($histories as $row) {
+                if ($row->type === "OUT") {
+                    $stockOut += $row->quantity;
+                }
+            }
+
+            return $stockOut;
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([

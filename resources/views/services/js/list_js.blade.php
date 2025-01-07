@@ -88,7 +88,7 @@
                 <td>${ row.label }</td>
                 <td>${ row.sell_price ? formatIdr(row.sell_price) : '-' }</td>
                 ${ canEdit && canDelete ? `<td class="text-center">
-                    ${ canEdit ? `<button class="btn btn-sm btn-outline-primary me-1" data-row='${ JSON.stringify(row).replace(/[\/\(\)\']/g, "&apos;") }' onclick="window.handleEdit(event)">Edit</button>` : '' }
+                    ${ canEdit ? `<button class="btn btn-sm btn-outline-primary me-1" data-row='${ JSON.stringify(row).replace(/[\']/g, "&apos;") }' onclick="window.handleEdit(event)">Edit</button>` : '' }
                     ${ canDelete ? getDelResButton(row) : '' }
                 </td>` : '' }
             </tr>
@@ -98,10 +98,10 @@
             let html = '';
             if (row.deleted_at) {
                 html =
-                    `<button class="btn btn-sm btn-outline-success" onclick="window.showConfirmModal(event)" data-row='${ JSON.stringify(row).replace(/[\/\(\)\']/g, "&apos;") }'>Restore</button>`;
+                    `<button class="btn btn-sm btn-outline-success" onclick="window.showConfirmModal(event)" data-row='${ JSON.stringify(row).replace(/[\']/g, "&apos;") }'>Restore</button>`;
             } else {
                 html =
-                    `<button class="btn btn-sm btn-outline-danger" onclick="window.showConfirmModal(event)" data-row='${ JSON.stringify(row).replace(/[\/\(\)\']/g, "&apos;") }'>Delete</button>`;
+                    `<button class="btn btn-sm btn-outline-danger" onclick="window.showConfirmModal(event)" data-row='${ JSON.stringify(row).replace(/[\']/g, "&apos;") }'>Delete</button>`;
             }
 
             return html;
