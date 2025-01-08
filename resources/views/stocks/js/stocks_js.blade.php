@@ -89,7 +89,6 @@
                 <td>${ new Intl.NumberFormat().format(row.base_quantity) }</td>
                 <td>${ new Intl.NumberFormat().format(row.quantity_out) }</td>
                 <td class="text-center">
-                    <button class="btn btn-sm btn-primary me-1" data-row='${ JSON.stringify(row).replace(/[\']/g, "&apos;") }' onclick="window.seeHistories(event)">See Histories</button>
                     <button class="btn btn-sm btn-outline-primary" data-row='${ JSON.stringify(row).replace(/[\']/g, "&apos;") }' onclick="window.handleEdit(event)" ${row.quantity_out >= row.base_quantity ? "disabled" : ""}>Edit</button>
                 </td>
             </tr>

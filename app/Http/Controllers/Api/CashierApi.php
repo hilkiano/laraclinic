@@ -86,6 +86,8 @@ class CashierApi extends Controller
     public function checkout(Request $request)
     {
         try {
+            $stockController = new StockController();
+
             // Parse JSON string
             $data = $request->input("data");
             $payment = $request->input("payment");
@@ -94,6 +96,23 @@ class CashierApi extends Controller
             }
             if (gettype($payment) === "string") {
                 $payment = json_decode($payment);
+            }
+
+            // Check stock availability
+            $stockRequest = new Request();
+            $stockRequest->replace([
+                'prescription' => json_encode($data)
+            ]);
+            $getCurrentStock = $stockController->getCurrentStock($stockRequest);
+            if ($getCurrentStock->getData()->status) {
+                $currentStock = (array) $getCurrentStock->getData()->data;
+                foreach ($data as $item) {
+                    if ($currentStock[$item->sku] !== null && $currentStock[$item->sku] < (int) $item->qty) {
+                        throw new \Exception("Stock for item {$item->label} is smaller than available stock.");
+                    }
+                }
+            } else {
+                throw new \Exception("Error getting stock availability");
             }
 
             // Create new transaction
@@ -111,19 +130,45 @@ class CashierApi extends Controller
 
             $trx->save();
 
+            // Make stock history
             foreach ($data as $item) {
-                $med = Medicine::select("id")->with("stocks")->where("sku", $item->sku)->first();
+                $med = Medicine::select("id")->with("stocks.histories")->where("sku", $item->sku)->first();
                 if ($med) {
                     if (count($med->stocks) > 0) {
-                        $latestStock = $med->stocks->first();
+                        $requestedStock = (int) $item->qty;
+                        foreach ($med->stocks as $stock) {
+                            if ($requestedStock === 0) {
+                                break;
+                            }
 
-                        $history = new StockHistory();
-                        $history->stock_id = $latestStock->id;
-                        $history->type = "OUT";
-                        $history->quantity = $item->qty;
-                        $history->transaction_id = $trx->id;
+                            // Deduct availability from this batch
+                            $stockOut = $stockController->checkHistories($stock->id);
+                            $availableStock = $stock->base_quantity - $stockOut;
 
-                        $history->save();
+                            if ($availableStock === 0) {
+                                continue;
+                            }
+
+                            $historyStock = 0;
+                            if ($requestedStock > $availableStock) {
+                                $historyStock = $availableStock;
+                            } else {
+                                $historyStock = $requestedStock;
+                            }
+
+                            // Insert to stock_histories
+                            $history = new StockHistory();
+                            $history->stock_id = $stock->id;
+                            $history->type = "OUT";
+                            $history->quantity = $historyStock;
+                            $history->transaction_id = $trx->id;
+                            $history->created_by = auth()->id();
+                            $history->updated_by = auth()->id();
+
+                            $history->save();
+
+                            $requestedStock = $requestedStock - $historyStock;
+                        }
                     }
                 }
             }
@@ -158,16 +203,35 @@ class CashierApi extends Controller
     private function handleCheckout(array $data)
     {
         try {
-            $prescription = json_decode($data['prescription']);
+            $prescription = json_decode($data['prescription'])[0]->data;
+            $stockController = new StockController();
 
             // Find appointment by its uuid
             $appointment = Appointments::where('uuid', $data['uuid'])->first();
+
+            // Check stock availability
+            $stockRequest = new Request();
+
+            $stockRequest->replace([
+                'prescription' => json_encode($prescription)
+            ]);
+            $getCurrentStock = $stockController->getCurrentStock($stockRequest);
+            if ($getCurrentStock->getData()->status) {
+                $currentStock = (array) $getCurrentStock->getData()->data;
+                foreach ($prescription as $item) {
+                    if ($currentStock[$item->sku] !== null && $currentStock[$item->sku] < (int) $item->qty) {
+                        throw new \Exception("Stock for item {$item->label} is smaller than available stock.");
+                    }
+                }
+            } else {
+                throw new \Exception("Error getting stock availability");
+            }
 
             // Create new transaction
             $trx = new Transaction();
             $trx->appointment_uuid = $data['uuid'];
             $trx->patient_id = $appointment->patient_id;
-            $trx->prescription = json_decode($data['prescription']);
+            $trx->prescription = $prescription;
             $trx->payment_type = $data['payment_with'];
             $trx->total_amount = $data['total_amount'];
             $trx->payment_amount = $data['payment_amount'];
@@ -183,20 +247,45 @@ class CashierApi extends Controller
             PrintReceipt::dispatch($trx->toArray());
 
             if ($trx) {
-                // Update stock history
-                foreach ($prescription[0]->data as $item) {
-                    $med = Medicine::select("id")->with("stocks")->where("sku", $item->sku)->first();
+                // Make stock history
+                foreach ($prescription as $item) {
+                    $med = Medicine::select("id")->with("stocks.histories")->where("sku", $item->sku)->first();
                     if ($med) {
                         if (count($med->stocks) > 0) {
-                            $latestStock = $med->stocks->first();
+                            $requestedStock = (int) $item->qty;
+                            foreach ($med->stocks as $stock) {
+                                if ($requestedStock === 0) {
+                                    break;
+                                }
 
-                            $history = new StockHistory();
-                            $history->stock_id = $latestStock->id;
-                            $history->type = "OUT";
-                            $history->quantity = $item->qty;
-                            $history->transaction_id = $trx->id;
+                                // Deduct availability from this batch
+                                $stockOut = $stockController->checkHistories($stock->id);
+                                $availableStock = $stock->base_quantity - $stockOut;
 
-                            $history->save();
+                                if ($availableStock === 0) {
+                                    continue;
+                                }
+
+                                $historyStock = 0;
+                                if ($requestedStock > $availableStock) {
+                                    $historyStock = $availableStock;
+                                } else {
+                                    $historyStock = $requestedStock;
+                                }
+
+                                // Insert to stock_histories
+                                $history = new StockHistory();
+                                $history->stock_id = $stock->id;
+                                $history->type = "OUT";
+                                $history->quantity = $historyStock;
+                                $history->transaction_id = $trx->id;
+                                $history->created_by = auth()->id();
+                                $history->updated_by = auth()->id();
+
+                                $history->save();
+
+                                $requestedStock = $requestedStock - $historyStock;
+                            }
                         }
                     }
                 }

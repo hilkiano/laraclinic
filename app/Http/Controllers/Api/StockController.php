@@ -15,7 +15,7 @@ use App\Jobs\HandleStockRegistration;
 use App\Models\Medicine;
 use App\Models\Stock;
 use App\Models\StockHistory;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
 class StockController extends Controller
@@ -233,6 +233,39 @@ class StockController extends Controller
             }
 
             return $stockOut;
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json([
+                'status'    => false,
+                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getCurrentStock(Request $request)
+    {
+        try {
+            $prescription = json_decode($request->input("prescription"));
+            $response = [];
+
+            foreach ($prescription as $rx) {
+                $response[$rx->sku] = null;
+                $med = Medicine::with("stocks")->withTrashed()->where("sku", $rx->sku)->first();
+                if ($med) {
+                    if (count($med->stocks) > 0) {
+                        $response[$rx->sku] = 0;
+                        foreach ($med->stocks as $stock) {
+                            $stockOut = $this->checkHistories($stock->id);
+                            $response[$rx->sku] = $response[$rx->sku] + ($stock->base_quantity - $stockOut);
+                        }
+                    }
+                }
+            }
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $response
+            ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([

@@ -274,6 +274,7 @@
                     parsedRx[0].data[$("#index").val()] = {
                         ...parsedRx[0].data[$("#index").val()],
                         sku: obj.sku,
+                        label: obj.label,
                         price: obj.price,
                         qty: obj.qty,
                         notes: obj.notes

@@ -422,6 +422,88 @@
         })
     }
 
+    const getCurrentStock = async (uuid) => {
+        const storageRx = localStorage.getItem('prescription');
+        const parsedRx = JSON.parse(storageRx);
+        const prescription = parsedRx[0].data;
+
+        const param = {
+            prescription: JSON.stringify(prescription),
+        }
+        const formData = new FormData();
+        for (var key in param) {
+            if (typeof param[key] !== "undefined") {
+                formData.append(key, param[key]);
+            }
+        }
+
+        $("#approvementModalBody").html("");
+        $("#approvementModalSubmit").attr("disabled", false);
+
+        return await fetch("/api/v1/stocks/current-stock", {
+            headers: {
+                Accept: "application/json, text-plain, */*",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            method: "post",
+            credentials: "same-origin",
+            body: formData
+        }).then(response => {
+            if (!response.ok) {
+                return response.json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({
+                        message
+                    }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+
+            return response.json();
+        }).then(response => {
+            let items = '';
+            let canProceed = true;
+            prescription.map((p, idx) => {
+                let color = "";
+
+                if (response.data[p.sku] !== null) {
+                    const stockLeft = response.data[p.sku] - p.qty;
+                    if (stockLeft < 0) {
+                        color = "list-group-item-danger";
+                        $("#approvementModalSubmit").attr("disabled", true);
+                        canProceed = false;
+                    } else if (stockLeft < 10) {
+                        color = "list-group-item-warning";
+                    }
+                }
+
+                items += `
+                    <li class="list-group-item d-flex justify-content-between align-items-start ${color}">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">${p.label}</div>
+                            ${p.sku}
+                        </div>
+                        <h5><span class="badge text-bg-light rounded-pill">Stock ${response.data[p.sku] !== null ? Intl.NumberFormat("id").format(response.data[p.sku]) : "♾️" }</span></h5>
+                    </li>
+                `;
+            });
+            let list =
+                `
+                    <ol class="list-group list-group-numbered">${items}</ol>
+                    <p class="fw-bold mt-4">${canProceed ? "The transaction will be made and stock will be deducted after this point. Are you sure?" : "There is an out-of-stock item, or requested items are bigger than available stock. Please check the inventory."}</p>
+                `;
+
+            $("#approvementModalBody").html(list);
+
+            return response.data;
+        }).catch(error => {
+            showToast(error, true);
+        })
+    }
+
     window.medModal = medModal;
     window.editItem = editItem;
     window.deleteItem = deleteItem;
@@ -457,8 +539,9 @@
             $("#clearPrescriptionBtn").click();
         });
 
-        $("#submitBtn").click(function(e) {
+        $("#submitBtn").click(async function(e) {
             if (placeholderUuid) {
+                const stocks = await getCurrentStock();
                 $("#approvementModalHeader").html("Submit Assignment");
                 $("#approvementModalSubmit").attr("data-method", "submit");
                 $("#approvementModalSubmit").attr("data-uuid", placeholderUuid);

@@ -116,6 +116,7 @@ Route::group(['prefix' => 'v1'], function () use ($router) {
             $router->get('register', '\App\Http\Controllers\Api\StockController@getRegistrationTemplate');
             $router->post('register', '\App\Http\Controllers\Api\StockController@registerStock');
             $router->get('medicine-list/{query}', '\App\Http\Controllers\Api\StockController@getMedicineList');
+            $router->post('current-stock', '\App\Http\Controllers\Api\StockController@getCurrentStock');
         });
     });
 });

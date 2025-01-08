@@ -253,17 +253,21 @@
         amountImasks.map(imask => {
             total += imask.typedValue;
         });
-        const totalPrice = $("#free-totalPrice")[0].innerText;
-        const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
-        if (total >= totalPriceNum && freePrescription[0].data.length > 0) {
-            if ($("#free-submitBtn").hasClass("disabled")) {
-                $("#free-submitBtn").removeClass("disabled");
+
+        setTimeout(() => {
+            const totalPrice = $("#free-totalPrice")[0].innerText;
+            const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
+
+            if (total >= totalPriceNum && freePrescription[0].data.length > 0) {
+                if ($("#free-submitBtn").hasClass("disabled")) {
+                    $("#free-submitBtn").removeClass("disabled");
+                }
+            } else {
+                if (!$("#free-submitBtn").hasClass("disabled")) {
+                    $("#free-submitBtn").addClass("disabled");
+                }
             }
-        } else {
-            if (!$("#free-submitBtn").hasClass("disabled")) {
-                $("#free-submitBtn").addClass("disabled");
-            }
-        }
+        }, 100);
     }
 
     const freeResetPayment = () => {
