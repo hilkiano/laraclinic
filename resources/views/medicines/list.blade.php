@@ -81,6 +81,7 @@
                                                 <th scope="col">Name</th>
                                                 <th scope="col">Package</th>
                                                 <th scope="col">Sell Price</th>
+                                                <th scope="col">Stock</th>
                                                 @if (in_array('MEDICINE_SERVICE_UPDATE', $privs) || in_array('MEDICINE_SERVICE_DELETE', $privs))
                                                     <th style="width: 170px" scope="col"></th>
                                                 @endif

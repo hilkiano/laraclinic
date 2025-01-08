@@ -440,12 +440,12 @@
                     <div class="pt-2 border-top mb-2 mt-2">
                         <label for="free-itemDiscount-${idx}" class="form-label">Item Discount Type</label>
                         <div class="input-group">
-                            <select id="free-itemDiscountType-${idx}" class="form-select" style="max-width: 150px; z-index: 0">
+                            <select id="free-itemDiscountType-${idx}" class="form-select" onchange="window.freeCheckAmountPaid()" style="max-width: 150px; z-index: 0">
                                 <option value="pctg">Percentage</option>
                                 <option value="amt">Amount</option>
                             </select>
                             <span id="free-itemPrefix-${idx}" class="input-group-text">Rp</span>
-                            <input type="text" id="free-itemDiscount-${idx}" class="form-control" style="z-index: 0">
+                            <input type="text" id="free-itemDiscount-${idx}" onkeyup="window.freeCheckAmountPaid()" class="form-control" style="z-index: 0">
                             <span id="free-itemSuffix-${idx}" class="input-group-text">%</span>
                         </div>
                     </div>
@@ -570,6 +570,7 @@
             localStorage.setItem('freePrescription', JSON.stringify(parsedRx));
             updateRxBody();
         }
+        freeCheckAmountPaid();
     }
 
     const editItem = (event) => {
@@ -760,6 +761,88 @@
         liveToast.show();
     }
 
+    const getCurrentStock = async (uuid) => {
+        const storageRx = localStorage.getItem('freePrescription');
+        const parsedRx = JSON.parse(storageRx);
+        const prescription = parsedRx[0].data;
+
+        const param = {
+            prescription: JSON.stringify(prescription),
+        }
+        const formData = new FormData();
+        for (var key in param) {
+            if (typeof param[key] !== "undefined") {
+                formData.append(key, param[key]);
+            }
+        }
+
+        $("#checkoutModalBody").html("");
+        $("#checkoutModalSubmit").attr("disabled", false);
+
+        return await fetch("/api/v1/stocks/current-stock", {
+            headers: {
+                Accept: "application/json, text-plain, */*",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            method: "post",
+            credentials: "same-origin",
+            body: formData
+        }).then(response => {
+            if (!response.ok) {
+                return response.json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({
+                        message
+                    }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+
+            return response.json();
+        }).then(response => {
+            let items = '';
+            let canProceed = true;
+            prescription.map((p, idx) => {
+                let color = "";
+
+                if (response.data[p.sku] !== null) {
+                    const stockLeft = response.data[p.sku] - p.qty;
+                    if (stockLeft < 0) {
+                        color = "list-group-item-danger";
+                        $("#checkoutModalSubmit").attr("disabled", true);
+                        canProceed = false;
+                    } else if (stockLeft < 10) {
+                        color = "list-group-item-warning";
+                    }
+                }
+
+                items += `
+                    <li class="list-group-item d-flex justify-content-between align-items-start ${color}">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">${p.label}</div>
+                            ${p.sku}
+                        </div>
+                        <h5><span class="badge text-bg-light rounded-pill">Stock ${response.data[p.sku] !== null ? Intl.NumberFormat("id").format(response.data[p.sku]) : "♾️" }</span></h5>
+                    </li>
+                `;
+            });
+            let list =
+                `
+                    <ol class="list-group list-group-numbered">${items}</ol>
+                    <p class="fw-bold mt-4">${canProceed ? "The transaction will be made and stock will be deducted after this point. Are you sure?" : "There is an out-of-stock item, or requested items are bigger than available stock. Please check the inventory."}</p>
+                `;
+
+            $("#checkoutModalBody").html(list);
+
+            return response.data;
+        }).catch(error => {
+            showToast(error, true);
+        })
+    }
+
     window.medSelectorModal = medSelectorModal;
     window.updateRxBody = updateRxBody;
     window.freeAddItem = freeAddItem;
@@ -786,7 +869,8 @@
         const parentB = parentA.parent();
         parentB.css('z-index', 0);
 
-        $("#free-submitBtn").click(function() {
+        $("#free-submitBtn").click(async function() {
+            const stocks = await getCurrentStock();
             _checkoutModal.show();
         });
 

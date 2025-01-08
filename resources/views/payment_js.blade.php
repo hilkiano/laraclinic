@@ -247,21 +247,25 @@
 
     const checkAmountPaid = () => {
         const amountImasks = paymentAmountImask.filter(imask => imask);
+        const prescription = JSON.parse(localStorage.getItem("prescription"));
         let total = 0;
         amountImasks.map(imask => {
             total += imask.typedValue;
         });
-        const totalPrice = $("#totalPrice")[0].innerText;
-        const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
-        if (total >= totalPriceNum) {
-            if ($("#submitBtn").hasClass("disabled")) {
-                $("#submitBtn").removeClass("disabled");
+
+        setTimeout(() => {
+            const totalPrice = $("#totalPrice")[0].innerText;
+            const totalPriceNum = Number(totalPrice.replace(/\D/g, ""));
+            if (total >= totalPriceNum && prescription[0].data.length > 0) {
+                if ($("#submitBtn").hasClass("disabled")) {
+                    $("#submitBtn").removeClass("disabled");
+                }
+            } else {
+                if (!$("#submitBtn").hasClass("disabled")) {
+                    $("#submitBtn").addClass("disabled");
+                }
             }
-        } else {
-            if (!$("#submitBtn").hasClass("disabled")) {
-                $("#submitBtn").addClass("disabled");
-            }
-        }
+        }, 100);
     }
 
     const resetPayment = () => {
@@ -296,6 +300,7 @@
 
     window.removePayment = removePayment;
     window.resetPayment = resetPayment;
+    window.checkAmountPaid = checkAmountPaid;
 
     $(document).ready(function() {
         // Initialize payment storage

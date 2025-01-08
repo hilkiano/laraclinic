@@ -7,9 +7,13 @@ use App\Http\Controllers\PrivilegeController;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Api\OnlineTransaction\FindPatientRequest;
 use App\Http\Requests\Api\OnlineTransaction\MakeTransactionRequest;
+use App\Models\Medicine;
 use App\Models\Patients;
 use App\Models\Prescription;
+use App\Models\StockHistory;
 use App\Models\Transaction;
+use App\Http\Controllers\Api\StockController;
+use Illuminate\Http\Request;
 
 class OnlineTransactionsApi extends Controller
 {
@@ -68,10 +72,30 @@ class OnlineTransactionsApi extends Controller
     public function makeTransaction(MakeTransactionRequest $request)
     {
         try {
+            $prescription = json_decode($request->prescription);
+            $stockController = new StockController();
+
+            // Check stock availability
+            $stockRequest = new Request();
+            $stockRequest->replace([
+                'prescription' => json_encode($prescription)
+            ]);
+            $getCurrentStock = $stockController->getCurrentStock($stockRequest);
+            if ($getCurrentStock->getData()->status) {
+                $currentStock = (array) $getCurrentStock->getData()->data;
+                foreach ($prescription as $item) {
+                    if ($currentStock[$item->sku] !== null && $currentStock[$item->sku] < (int) $item->qty) {
+                        throw new \Exception("Stock for item {$item->label} is smaller than available stock.");
+                    }
+                }
+            } else {
+                throw new \Exception("Error getting stock availability");
+            }
+
             // New Transaction
             $trx = new Transaction();
             $trx->patient_id = $request->patient_id;
-            $trx->prescription = json_decode($request->prescription);
+            $trx->prescription = $prescription;
             $trx->additional_info = $request->notes;
             $trx->total_amount = 0;
             $trx->payment_type = "BANK_TRANSFER";
@@ -82,10 +106,53 @@ class OnlineTransactionsApi extends Controller
             $trx->source = 'ONLINE';
             $trx->save();
 
+            // Make stock history
+            foreach ($prescription as $item) {
+                $med = Medicine::select("id")->with("stocks.histories")->where("sku", $item->sku)->first();
+                if ($med) {
+                    if (count($med->stocks) > 0) {
+                        $requestedStock = (int) $item->qty;
+                        foreach ($med->stocks as $stock) {
+                            if ($requestedStock === 0) {
+                                break;
+                            }
+
+                            // Deduct availability from this batch
+                            $stockOut = $stockController->checkHistories($stock->id);
+                            $availableStock = $stock->base_quantity - $stockOut;
+
+                            if ($availableStock === 0) {
+                                continue;
+                            }
+
+                            $historyStock = 0;
+                            if ($requestedStock > $availableStock) {
+                                $historyStock = $availableStock;
+                            } else {
+                                $historyStock = $requestedStock;
+                            }
+
+                            // Insert to stock_histories
+                            $history = new StockHistory();
+                            $history->stock_id = $stock->id;
+                            $history->type = "OUT";
+                            $history->quantity = $historyStock;
+                            $history->transaction_id = $trx->id;
+                            $history->created_by = auth()->id();
+                            $history->updated_by = auth()->id();
+
+                            $history->save();
+
+                            $requestedStock = $requestedStock - $historyStock;
+                        }
+                    }
+                }
+            }
+
             // New Prescription
             $rx = new Prescription();
             $rx->patient_id = $request->patient_id;
-            $rx->list = json_decode($request->prescription);
+            $rx->list = $prescription;
             $rx->additional_info = $request->notes;
             $rx->source = 'ONLINE';
             $rx->transaction_id = $trx->id;

@@ -309,12 +309,12 @@
                                 <div class="pt-2 border-top mb-2 mt-2">
                                     <label for="itemDiscount-${idx}" class="form-label">Item Discount Type</label>
                                     <div class="input-group">
-                                        <select id="itemDiscountType-${idx}" class="form-select" style="max-width: 150px; z-index: 0">
+                                        <select id="itemDiscountType-${idx}" class="form-select" onchange="window.checkAmountPaid()" style="max-width: 150px; z-index: 0">
                                             <option value="pctg">Percentage</option>
                                             <option value="amt">Amount</option>
                                         </select>
                                         <span id="itemPrefix-${idx}" class="input-group-text">Rp</span>
-                                        <input type="text" id="itemDiscount-${idx}" class="form-control" style="z-index: 0">
+                                        <input type="text" id="itemDiscount-${idx}" onkeyup="window.checkAmountPaid()" class="form-control" style="z-index: 0">
                                         <span id="itemSuffix-${idx}" class="input-group-text">%</span>
                                     </div>
                                 </div>
@@ -441,6 +441,8 @@
             localStorage.setItem('prescription', JSON.stringify(parsedRx));
             updateRxBody(assignedUuid, false);
         }
+
+        window.checkAmountPaid();
     }
 
     const setTakeLoading = (status) => {
@@ -669,6 +671,8 @@
                 updateRxBody(assignedUuid, true);
             }
         }
+
+        window.checkAmountPaid();
     }
 
     const addItem = (idx) => {
@@ -679,6 +683,8 @@
             localStorage.setItem("prescription", JSON.stringify(parsedRx));
             updateRxBody(assignedUuid, true);
         }
+
+        window.checkAmountPaid();
     }
 
     const handleItemDiscount = (idx) => {
@@ -760,6 +766,88 @@
         }
     );
 
+    const getCurrentStock = async (uuid) => {
+        const storageRx = localStorage.getItem('prescription');
+        const parsedRx = JSON.parse(storageRx);
+        const prescription = parsedRx[0].data;
+
+        const param = {
+            prescription: JSON.stringify(prescription),
+        }
+        const formData = new FormData();
+        for (var key in param) {
+            if (typeof param[key] !== "undefined") {
+                formData.append(key, param[key]);
+            }
+        }
+
+        $("#approvementModalBody").html("");
+        $("#approvementModalSubmit").attr("disabled", false);
+
+        return await fetch("/api/v1/stocks/current-stock", {
+            headers: {
+                Accept: "application/json, text-plain, */*",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            method: "post",
+            credentials: "same-origin",
+            body: formData
+        }).then(response => {
+            if (!response.ok) {
+                return response.json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({
+                        message
+                    }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+
+            return response.json();
+        }).then(response => {
+            let items = '';
+            let canProceed = true;
+            prescription.map((p, idx) => {
+                let color = "";
+
+                if (response.data[p.sku] !== null) {
+                    const stockLeft = response.data[p.sku] - p.qty;
+                    if (stockLeft < 0) {
+                        color = "list-group-item-danger";
+                        $("#approvementModalSubmit").attr("disabled", true);
+                        canProceed = false;
+                    } else if (stockLeft < 10) {
+                        color = "list-group-item-warning";
+                    }
+                }
+
+                items += `
+                    <li class="list-group-item d-flex justify-content-between align-items-start ${color}">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">${p.label}</div>
+                            ${p.sku}
+                        </div>
+                        <h5><span class="badge text-bg-light rounded-pill">Stock ${response.data[p.sku] !== null ? Intl.NumberFormat("id").format(response.data[p.sku]) : "♾️" }</span></h5>
+                    </li>
+                `;
+            });
+            let list =
+                `
+                    <ol class="list-group list-group-numbered">${items}</ol>
+                    <p class="fw-bold mt-4">${canProceed ? "The transaction will be made and stock will be deducted after this point. Are you sure?" : "There is an out-of-stock item, or requested items are bigger than available stock. Please check the inventory."}</p>
+                `;
+
+            $("#approvementModalBody").html(list);
+
+            return response.data;
+        }).catch(error => {
+            showToast(error, true);
+        })
+    }
+
     window.calculateItemPrice = calculateItemPrice;
     window.takeAssignment = takeAssignment;
     window.subtractItem = subtractItem;
@@ -829,6 +917,8 @@
         $("#cancelBtn").click(function(e) {
             const uuid = $(this).get(0).getAttribute("data-uuid");
             if (uuid) {
+                $("#approvementModalBody").html("Are you sure?");
+                $("#approvementModalSubmit").attr("disabled", false);
                 $("#approvementModalHeader").html("Cancel Payment");
                 $("#approvementModalSubmit").attr("data-method", "cancel");
                 $("#approvementModalSubmit").attr("data-uuid", uuid);
@@ -841,7 +931,8 @@
                 showToast('No UUID Found. Try to click the button again.', true);
             }
         });
-        $("#submitBtn").click(function(e) {
+        $("#submitBtn").click(async function(e) {
+            const stocks = await getCurrentStock();
             const uuid = $(this).get(0).getAttribute("data-uuid");
             if (uuid) {
                 $("#approvementModalHeader").html("Submit Payment");

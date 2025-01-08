@@ -65,4 +65,8 @@ Route::group(['middleware' => 'web.auth.jwt'], function () use ($router) {
     $router->group(['prefix' => 'online-trx'], function () use ($router) {
         $router->get('/', '\App\Http\Controllers\Web\OnlineTransactionsController@index');
     });
+
+    $router->group(['prefix' => 'stocks'], function () use ($router) {
+        $router->get('/', '\App\Http\Controllers\Web\StocksController@index');
+    });
 });

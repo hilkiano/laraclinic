@@ -6,14 +6,13 @@ use App\Exports\TransactionsExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\PrivilegeController;
-use App\Models\Medicine;
 use App\Models\Patients;
-use App\Models\Services;
 use App\Models\Transaction;
 use App\Models\Users;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
 
 class TransactionsApi extends Controller
 {
