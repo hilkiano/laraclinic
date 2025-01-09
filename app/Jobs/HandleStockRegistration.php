@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class HandleStockRegistration implements ShouldQueue
@@ -50,6 +51,8 @@ class HandleStockRegistration implements ShouldQueue
         }
 
         $id = $this->id;
+
+        Log::info(print_r($data, true));
 
         Bus::batch([
             Arr::map($data, function ($row, $index) use ($id, $data) {

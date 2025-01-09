@@ -542,7 +542,7 @@
         $("#submitBtn").click(async function(e) {
             if (placeholderUuid) {
                 const stocks = await getCurrentStock();
-                $("#approvementModalHeader").html("Submit Assignment");
+                $("#approvementModalHeader").html("Make Transaction");
                 $("#approvementModalSubmit").attr("data-method", "submit");
                 $("#approvementModalSubmit").attr("data-uuid", placeholderUuid);
                 if (!$("#approvementModalSubmit").hasClass("btn-success")) {
