@@ -122,13 +122,13 @@ class AppointmentApi extends Controller
             $group = $this->userData->group_id;
             // Query the appointments table and eager-load the patient and patientPotrait relationships.
             $model = Appointments::with(['patient', 'patient.patientPotrait'])
-                ->when($group === config('constants.group.doctor'), function ($query) {
+                ->when($group === config('constants.group.doctor') || $group === config('constants.group.doctor-stock'), function ($query) {
                     $query->where('status', config('constants.status.doctor_waiting'));
                 })
                 ->when($group === config('constants.group.pharmacy'), function ($query) {
                     $query->where('status', config('constants.status.pharmacy_waiting'));
                 })
-                ->when($group === config('constants.group.cashier'), function ($query) {
+                ->when($group === config('constants.group.cashier') || $group === config('constants.group.cashier-stock'), function ($query) {
                     $query->where('status', config('constants.status.payment_waiting'));
                 })
                 // Add a filter based on the nameFilter parameter if it is set.

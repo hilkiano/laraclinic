@@ -22,6 +22,9 @@ return [
         'pharmacy'      => 4,
         'cashier'       => 5,
         'olshop'        => 6,
-        'owner'         => 7
+        'owner'         => 7,
+        'doctor-stock' => 8,
+        'olshop-stock' => 9,
+        'cashier-stock' => 10
     ]
 ];
