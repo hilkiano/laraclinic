@@ -184,7 +184,7 @@ class StockController extends Controller
             }
 
             $import = (new RegisterStock())->toArray($request->file("file"));
-            $data = $import[0];
+            $data = $import["Stock Registration"];
 
             HandleStockRegistration::dispatch($data, auth()->id());
 
