@@ -4,6 +4,7 @@
         .getAttribute("content");
     const _liveToast = document.getElementById("liveToast");
     const _checkoutModal = new bootstrap.Modal("#checkoutModal", {});
+    const _freeEditPriceModal = document.getElementById("freeEditPriceModal");
     let freePrescription;
     let patientSelector;
     let liveToast;
@@ -20,6 +21,10 @@
     let amountPaid = 0;
     let amountChange = 0;
     let freeItemImask = {};
+
+    let freeEditPriceModal;
+    let freeOriginalPriceMask;
+    let freeEditPriceMask;
 
     const calculateSum = () => {
         const storage = localStorage.getItem("freePrescription");
@@ -450,7 +455,28 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-between bg-body-secondary rounded p-2 mt-3 mb-3">
-                        <p class="mb-0">Price: <span id="free-itemPrice-${idx}">${item.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span></p>
+                        <p class="mb-0">
+                        Price:
+                        <span id="free-itemPrice-${idx}">
+                            ${item.price.toLocaleString('id-ID', {
+                            style: 'currency',
+                            currency: 'IDR',
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                            })}
+                        </span>
+
+                        <button
+                            class="btn ms-1 rounded-pill btn-secondary"
+                            style="--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .45rem; --bs-btn-font-size: .75rem;"
+                            onclick="window.freeEditPrice(${idx})"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title="Edit price"
+                        >
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        </p>
                         <p class="mb-0 fw-bold">Subtotal: <span id="free-itemSubtotalPrice-${idx}">${totalPrice.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span></p>
                     </div>
                 </li>
@@ -576,6 +602,78 @@
     const editItem = (event) => {
         if (event.target) {
             medSelectorModal.toggle(event.target);
+        }
+    }
+
+    const freeEditPrice = async (idx) => {
+        $("#freeEditPriceInput").val("");
+        const storage = localStorage.getItem("freePrescription");
+        if (storage) {
+            // get original price
+            let parsedRx = JSON.parse(storage);
+            const rxData = parsedRx[0].data;
+            const sku = rxData[idx].sku;
+
+            let originalPrice;
+
+            await fetch(`api/v1/appointment/item-price/${sku}`, {
+                headers: {
+                    Accept: "application/json, text-plain, */*",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": csrfToken,
+                },
+                method: "get",
+                credentials: "same-origin"
+            }).then(response => {
+                if (!response.ok) {
+                    return response.json()
+                        .catch(() => {
+                            throw new Error(response.status);
+                        })
+                        .then(({
+                            message
+                        }) => {
+                            throw new Error(message || response.status);
+                        });
+                }
+
+                return response.json();
+            }).then(response => {
+                originalPrice = response.data;
+
+                // apply to input field
+                $("#freeRxId").val(idx);
+                freeOriginalPriceMask.typedValue = originalPrice;
+                freeOriginalPriceMask.updateValue();
+                freeEditPriceMask.updateValue();
+
+                // Show modal
+                freeEditPriceModal.toggle();
+            }).catch(error => {
+                showToast(error, true);
+                return null;
+            })
+        }
+    }
+
+    const handleFreeSavePriceBtn = () => {
+        const rxId = $("#freeRxId").val();
+        const newPrice = freeEditPriceMask.unmaskedValue;
+
+        const storage = localStorage.getItem("freePrescription");
+        if (storage) {
+            // update price
+            let parsedRx = JSON.parse(storage);
+            const rxData = parsedRx[0].data;
+            rxData[rxId].price = parseInt(newPrice);
+
+            // overwrite prescription data
+            localStorage.setItem("freePrescription", JSON.stringify(parsedRx));
+
+            // update UI
+            updateRxBody(true);
+
+            freeEditPriceModal.toggle();
         }
     }
 
@@ -850,6 +948,7 @@
     window.freeDeleteItem = freeDeleteItem;
     window.editItem = editItem;
     window.checkSubmitBtn = checkSubmitBtn;
+    window.freeEditPrice = freeEditPrice;
 
     $(document).ready(function() {
         localStorage.setItem('freePrescription', JSON.stringify([]));
@@ -863,6 +962,8 @@
         updatePatientDetails();
         updateLocalStorage();
         updateRxBody();
+
+        freeEditPriceModal = new bootstrap.Modal(_freeEditPriceModal);
 
         // Fix CSS issue regarding patient selector
         const parentA = $("#patient-selectized").parent();
@@ -880,6 +981,27 @@
 
         $("#checkoutModalSubmit").click(function(e) {
             handleFreeSubmit(e);
+        });
+
+        freeOriginalPriceMask = IMask(document.getElementById("freeOriginalPriceInput"), {
+            mask: Number,
+            scale: 0,
+            thousandsSeparator: '.',
+            padFractionalZeros: false,
+            normalizeZeros: true,
+            radix: ',',
+        });
+        freeEditPriceMask = IMask(document.getElementById("freeEditPriceInput"), {
+            mask: Number,
+            scale: 0,
+            thousandsSeparator: '.',
+            padFractionalZeros: false,
+            normalizeZeros: true,
+            radix: ',',
+        });
+
+        $("#freeSavePriceBtn").click(function(e) {
+            handleFreeSavePriceBtn();
         });
 
     });

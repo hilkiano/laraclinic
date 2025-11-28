@@ -5,6 +5,7 @@
     const _liveToast = document.getElementById("liveToast");
     const _approvalModal = new bootstrap.Modal("#approvementModal", {});
     const _cancelModal = document.getElementById("cancelAssignmentModal");
+    const _editPriceModal = document.getElementById("editPriceModal");
     let cancelModal;
     let liveToast;
     if (_cancelModal) {
@@ -13,8 +14,11 @@
             $("#cancelAssignmentForm")[0].reset();
         });
     }
+    let editPriceModal;
     let prescription;
     let assignedUuid;
+    let originalPriceMask;
+    let editPriceMask;
     let discountAmtImask;
     let discountPctgImask;
     let fullPrice;
@@ -319,7 +323,28 @@
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-between bg-body-secondary rounded p-2 mt-3 mb-3">
-                                    <p class="mb-0">Price: <span id="itemPrice-${idx}">${item.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span></p>
+                                    <p class="mb-0">
+                                        Price:
+                                        <span id="itemPrice-${idx}">
+                                            ${item.price.toLocaleString('id-ID', {
+                                            style: 'currency',
+                                            currency: 'IDR',
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0
+                                            })}
+                                        </span>
+
+                                        <button
+                                            class="btn ms-1 rounded-pill btn-secondary"
+                                            style="--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .45rem; --bs-btn-font-size: .75rem;"
+                                            onclick="window.editPrice(${idx})"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="Edit price"
+                                        >
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        </p>
                                     <p class="mb-0 fw-bold">Subtotal: <span id="itemSubtotalPrice-${idx}">${totalPrice.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span></p>
                                 </div>
                             </li>
@@ -443,6 +468,79 @@
         }
 
         window.checkAmountPaid();
+    }
+
+    const editPrice = async (idx) => {
+        $("#editPriceInput").val("");
+        const storage = localStorage.getItem("prescription");
+        if (storage) {
+            // get original price
+            let parsedRx = JSON.parse(storage);
+            const rxData = parsedRx[0].data;
+            const sku = rxData[idx].sku;
+            let originalPrice
+
+            await fetch(`api/v1/appointment/item-price/${sku}`, {
+                headers: {
+                    Accept: "application/json, text-plain, */*",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": csrfToken,
+                },
+                method: "get",
+                credentials: "same-origin"
+            }).then(response => {
+                if (!response.ok) {
+                    return response.json()
+                        .catch(() => {
+                            throw new Error(response.status);
+                        })
+                        .then(({
+                            message
+                        }) => {
+                            throw new Error(message || response.status);
+                        });
+                }
+
+                return response.json();
+            }).then(response => {
+                originalPrice = response.data;
+
+                // apply to input field
+                $("#rxId").val(idx);
+                originalPriceMask.typedValue = originalPrice;
+                originalPriceMask.updateValue();
+                editPriceMask.updateValue();
+
+                // Show modal
+                editPriceModal.toggle();
+            }).catch(error => {
+                showToast(error, true);
+                return null;
+            })
+
+
+        }
+    }
+
+    const handleSavePriceBtn = () => {
+        const rxId = $("#rxId").val();
+        const newPrice = editPriceMask.unmaskedValue;
+
+        const storage = localStorage.getItem("prescription");
+        if (storage) {
+            // update price
+            let parsedRx = JSON.parse(storage);
+            const rxData = parsedRx[0].data;
+            rxData[rxId].price = parseInt(newPrice);
+
+            // overwrite prescription data
+            localStorage.setItem("prescription", JSON.stringify(parsedRx));
+
+            // update UI
+            updateRxBody(assignedUuid, true);
+
+            editPriceModal.toggle();
+        }
     }
 
     const setTakeLoading = (status) => {
@@ -852,6 +950,7 @@
     window.takeAssignment = takeAssignment;
     window.subtractItem = subtractItem;
     window.deleteItem = deleteItem;
+    window.editPrice = editPrice;
     window.addItem = addItem;
     window.cancelAssignment = (e) => {
         const uuid = e.target.getAttribute("data-uuid");
@@ -864,6 +963,7 @@
         liveToast = new bootstrap.Toast(_liveToast);
         fromDTPicker = new TempusDominus(document.getElementById("fromDate"), tDConfigsNoClear);
         toDTPicker = new TempusDominus(document.getElementById("toDate"), tDConfigsNoClear);
+        editPriceModal = new bootstrap.Modal(_editPriceModal);
         fromDTPicker.updateOptions({
             restrictions: {
                 maxDate: new DateTime().endOf('hours')
@@ -891,6 +991,23 @@
         if (!prescription) {
             localStorage.setItem('prescription', JSON.stringify([]));
         }
+
+        originalPriceMask = IMask(document.getElementById("originalPriceInput"), {
+            mask: Number,
+            scale: 0,
+            thousandsSeparator: '.',
+            padFractionalZeros: false,
+            normalizeZeros: true,
+            radix: ',',
+        });
+        editPriceMask = IMask(document.getElementById("editPriceInput"), {
+            mask: Number,
+            scale: 0,
+            thousandsSeparator: '.',
+            padFractionalZeros: false,
+            normalizeZeros: true,
+            radix: ',',
+        });
         discountAmtImask = IMask(document.getElementById("totalDiscountAmt"), {
             mask: Number,
             scale: 0,
@@ -999,6 +1116,9 @@
             $("#cancelUuid").val(assignedUuid);
             $("#cancelStatus").val("CANCELED");
             cancelModal.toggle();
+        });
+        $("#savePriceBtn").click(function(e) {
+            handleSavePriceBtn();
         });
     });
 </script>
