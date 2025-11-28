@@ -282,6 +282,39 @@
     </div>
 </div>
 
+<div class="modal fade" id="editPriceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Price</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="editPriceForm">
+                    <input type="hidden" name="id" value="" id="rxId" />
+                    <label for="originalPriceInput" class="form-label">Original Price</label>
+                    <div class="input-group">
+                        <span class="input-group-text">Rp</span>
+                        <input type="text" id="originalPriceInput" class="form-control" disabled>
+                    </div>
+                    <label for="editPriceInput" class="form-label mt-2">New Price</label>
+                    <div class="input-group">
+                        <span class="input-group-text">Rp</span>
+                        <input type="text" id="editPriceInput" class="form-control"
+                            placeholder="Enter new price">
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="savePriceBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </html>
 @include('toasts.live_toast')
 @include('cashier_js')

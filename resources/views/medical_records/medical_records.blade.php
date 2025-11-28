@@ -53,26 +53,48 @@
                         </div>
                         <div class="col-12 mb-4">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-hover caption-top" style="min-width: 2260px;">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Transaction</th>
-                                            <th scope="col" style="width: 350px">Record No.</th>
-                                            <th scope="col" style="width: 180px">Patient</th>
-                                            <th scope="col" style="width: 150px; text-align: center">Prescription
-                                            </th>
-                                            <th scope="col">Doctor Notes</th>
-                                            <th scope="col">Pharmacy Notes</th>
-                                            <th scope="col" style="width: 180px">Created By</th>
-                                            <th scope="col" style="width: 180px">Created At</th>
-                                            <th scope="col" style="width: 180px">Last Updated By</th>
-                                            <th scope="col" style="width: 180px">Last Updated At</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="medicalRecordsRow">
-                                    </tbody>
-                                </table>
+                                @if ($user->group_id === 3 || $user->group_id === 8)
+                                    <table class="table table-bordered table-hover caption-top"
+                                        style="min-width: 1500px;">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col" style="width: 180px">Created At</th>
+                                                <th scope="col" style="width: 180px">Patient</th>
+                                                <th scope="col" style="width: 180px">Created By</th>
+                                                <th scope="col" style="width: 150px; text-align: center">Prescription
+                                                </th>
+                                                <th scope="col">Doctor Notes</th>
+                                                <th scope="col">Pharmacy Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="medicalRecordsRow">
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <table class="table table-bordered table-hover caption-top"
+                                        style="min-width: 2260px;">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Transaction</th>
+                                                <th scope="col" style="width: 350px">Record No.</th>
+                                                <th scope="col" style="width: 180px">Patient</th>
+                                                <th scope="col" style="width: 150px; text-align: center">Prescription
+                                                </th>
+                                                <th scope="col">Doctor Notes</th>
+                                                <th scope="col">Pharmacy Notes</th>
+                                                <th scope="col" style="width: 180px">Created By</th>
+                                                <th scope="col" style="width: 180px">Created At</th>
+                                                <th scope="col" style="width: 180px">Last Updated By</th>
+                                                <th scope="col" style="width: 180px">Last Updated At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="medicalRecordsRow">
+                                        </tbody>
+                                    </table>
+                                @endif
+
                             </div>
                             <div class="mt-2 mb-2 d-flex row">
                                 <div class="col">

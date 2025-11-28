@@ -7,6 +7,7 @@
     let deletedId = null;
     let deletedSku = [];
     let deletedTrxId = null;
+    let group = {{ $user->group_id }};
 
     const csrfToken = document
         .querySelector('meta[name="csrf-token"]')
@@ -82,7 +83,23 @@
         const num = page * 50;
         const iteration = i + 1;
         let html;
-        html += `
+
+        const isDoctor = group === 3 || group === 8;
+
+        if (isDoctor) {
+            html += `
+            <tr class="${row.source === "DOCTOR" ? 'table-primary' : row.source === "SELF" ? 'table-danger' : row.source === "ONLINE" ? 'table-warning' : 'table-secondary'}">
+                <td scope="row">${ num + iteration }</td>
+                <td>${ row.created_at }</td>
+                <td>${ row.patient.name }</td>
+                <td>${ row.created_by }</td>
+                <td style="text-align: center"><button class="btn btn-sm btn-outline-primary me-1" onclick="window.showPrescription(${i})">See Prescription</button></td>
+                <td>${ getNotes(row) }</td>
+                <td>${ getPharmacyNotes(row) }</td>
+            </tr>
+        `;
+        } else {
+            html += `
             <tr class="${row.source === "DOCTOR" ? 'table-primary' : row.source === "SELF" ? 'table-danger' : row.source === "ONLINE" ? 'table-warning' : 'table-secondary'}">
                 <td scope="row">${ num + iteration }</td>
                 <td>${ row.transaction_id ? `${row.transaction_id} <i class="bi bi-check2-circle text-success"></i>` : '<i class="bi bi-x-circle text-danger"></i>' }</td>
@@ -97,7 +114,7 @@
                 <td>${ row.updated_at }</td>
             </tr>
         `;
-
+        }
 
 
         function getNotes(row) {

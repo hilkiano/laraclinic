@@ -148,5 +148,38 @@
     </div>
 </div>
 
+<div class="modal fade" id="freeEditPriceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Price</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="freeEditPriceForm">
+                    <input type="hidden" name="id" value="" id="freeRxId" />
+                    <label for="freeOriginalPriceInput" class="form-label">Original Price</label>
+                    <div class="input-group">
+                        <span class="input-group-text">Rp</span>
+                        <input type="text" id="freeOriginalPriceInput" class="form-control" disabled>
+                    </div>
+                    <label for="freeEditPriceInput" class="form-label mt-2">New Price</label>
+                    <div class="input-group">
+                        <span class="input-group-text">Rp</span>
+                        <input type="text" id="freeEditPriceInput" class="form-control"
+                            placeholder="Enter new price">
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="freeSavePriceBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @include('freepos.js.freepos_js')
 @include('freepos.meds_selector')
