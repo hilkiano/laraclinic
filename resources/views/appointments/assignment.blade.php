@@ -32,15 +32,15 @@
                         <div class="container-fluid p-0">
                             <div id="loadingList" class="d-flex flex-row flex-nowrap overflow-scroll pb-4">
                                 @foreach ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as $idx => $card)
-                                    <div class="card ms-4 {{ $idx === 9 ? 'me-4' : 'ms-4' }} flex-shrink-0 border-0"
-                                        style="width: 360px">
-                                        <div class="card-body p-0">
-                                            <span class="placeholder-glow">
-                                                <span class="placeholder border-0 bg-dark-subtle col-12 rounded"
-                                                    style="height: 247.733px"></span>
-                                            </span>
-                                        </div>
+                                <div class="card ms-4 {{ $idx === 9 ? 'me-4' : 'ms-4' }} flex-shrink-0 border-0"
+                                    style="width: 360px">
+                                    <div class="card-body p-0">
+                                        <span class="placeholder-glow">
+                                            <span class="placeholder border-0 bg-dark-subtle col-12 rounded"
+                                                style="height: 247.733px"></span>
+                                        </span>
                                     </div>
+                                </div>
                                 @endforeach
                             </div>
                             <div id="myList" class="d-none flex-row flex-nowrap overflow-scroll pb-4">
@@ -64,10 +64,10 @@
                                             class="btn btn-light rounded-pill text-danger-emphasis me-2"><i
                                                 class="bi bi-x-lg me-2"></i>Mark As Cancelled</button>
                                         @if ($group === 4)
-                                            <button id="sendToDocBtn" type="button"
-                                                class="btn btn-light rounded-pill text-primary-emphasis"><i
-                                                    class="bi bi-clipboard2-pulse me-2"></i>Need Doctor
-                                                Consultation</button>
+                                        <button id="sendToDocBtn" type="button"
+                                            class="btn btn-light rounded-pill text-primary-emphasis"><i
+                                                class="bi bi-clipboard2-pulse me-2"></i>Need Doctor
+                                            Consultation</button>
                                         @endif
                                     </div>
                                     <div class="col d-flex justify-content-end align-items-center gap-2 flex-grow-0">
@@ -157,23 +157,23 @@
                                         <div class="col-12">
                                             <p class="fs-5"><i class="bi bi-sticky me-2 text-primary"></i>Doctor
                                                 Notes</p>
-                                            @if ($group === 3)
-                                                <textarea id="medicalNotes" class="form-control" rows="3" autocomplete="off"></textarea>
+                                            @if ($group === 3 || $group === 8)
+                                            <textarea id="medicalNotes" class="form-control" rows="3" autocomplete="off"></textarea>
                                             @else
-                                                <div id="medicalNotes"
-                                                    class="p-3 bg-body-secondary rounded text-break">
-                                                </div>
+                                            <div id="medicalNotes"
+                                                class="p-3 bg-body-secondary rounded text-break">
+                                            </div>
                                             @endif
                                         </div>
                                         <div class="col-12 mt-3">
                                             <p class="fs-5"><i class="bi bi-sticky me-2 text-primary"></i>Pharmacy
                                                 Notes</p>
                                             @if ($group === 4)
-                                                <textarea id="pharmacyNotes" class="form-control" rows="3" autocomplete="off"></textarea>
+                                            <textarea id="pharmacyNotes" class="form-control" rows="3" autocomplete="off"></textarea>
                                             @else
-                                                <div id="pharmacyNotes"
-                                                    class="p-3 bg-body-secondary rounded text-break">
-                                                </div>
+                                            <div id="pharmacyNotes"
+                                                class="p-3 bg-body-secondary rounded text-break">
+                                            </div>
                                             @endif
                                         </div>
                                     </div>
