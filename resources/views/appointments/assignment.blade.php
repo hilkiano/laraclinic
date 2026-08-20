@@ -112,6 +112,13 @@
                                                 </div>
                                                 <hr class="mt-3 mb-3" />
                                                 <div class="col-12">
+                                                    <p class="mb-1 fw-bold">Patient Portraits</p>
+                                                    <div id="assignmentPotraits" class="d-flex flex-row gap-3 overflow-x-auto pb-2">
+                                                        <p class="text-muted">Loading portraits...</p>
+                                                    </div>
+                                                </div>
+                                                <hr class="mt-3 mb-3" />
+                                                <div class="col-12">
                                                     <p class="mb-1 fw-bold">Medical Records</p>
                                                     <div class="table-responsive">
                                                         <table class="table table-bordered table-hover caption-top"
@@ -252,6 +259,24 @@
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal"
                     id="sendToDocCloseBtn">Cancel</button>
                 <button type="button" class="btn btn-primary" id="sendToDocSubmitBtn">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="potraitPreviewModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="potraitPreviewModalHead">Patient Portrait</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-3">
+                <img id="potraitPreviewImg" src="" class="img-fluid rounded shadow-sm" alt="Patient Portrait" style="max-height: 75vh; width: auto;" />
+                <p id="potraitPreviewDate" class="text-muted mt-2 mb-0"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

@@ -7,9 +7,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <meta name="description" content="Melayani Perawatan Estetika, Terbaik di Tasikmalaya.">
     @if (App::environment())
-        <title>{{ config('app.name', 'Apotek') }}</title>
+    <title>{{ config('app.name', 'Apotek') }}</title>
     @else
-        <title>{{ $title }} ~ DEVELOPMENT ~</title>
+    <title>{{ $title }} ~ DEVELOPMENT ~</title>
     @endif
     <link rel="icon" href="{{ asset('favicon.ico') }}">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])

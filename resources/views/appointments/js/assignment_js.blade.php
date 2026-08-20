@@ -7,9 +7,11 @@
     const _medModal = document.getElementById("medSelectorModal");
     const _cancelModal = document.getElementById("cancelAssignmentModal");
     const _sendToDocModal = document.getElementById("sendToDocModal");
+    const _potraitPreviewModal = document.getElementById("potraitPreviewModal");
     let medModal;
     let cancelModal;
     let sendToDocModal;
+    let potraitPreviewModal;
     let prescription;
     if (_medModal) {
         medModal = new bootstrap.Modal('#medSelectorModal', {});
@@ -25,6 +27,9 @@
         _sendToDocModal.addEventListener("hidden.bs.modal", function(e) {
             $("#sendToDocForm")[0].reset();
         });
+    }
+    if (_potraitPreviewModal) {
+        potraitPreviewModal = new bootstrap.Modal("#potraitPreviewModal", {});
     }
     let liveToast;
     let assignedUuid;
@@ -422,6 +427,82 @@
                 "-");
         }
 
+        // Load patient portraits with upload dates
+        loadAssignmentPotraits(data.patient.id);
+    }
+
+    const loadAssignmentPotraits = async (patientId) => {
+        $("#assignmentPotraits").html('<p class="text-muted">Loading portraits...</p>');
+        await fetch(`/api/v1/patient/get-potraits/${patientId}`, {
+            headers: {
+                Accept: "application/json, text-plain, */*",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            method: "get",
+            credentials: "same-origin",
+        }).then(response => {
+            if (!response.ok) {
+                return response.json()
+                    .catch(() => {
+                        throw new Error(response.status);
+                    })
+                    .then(({
+                        message
+                    }) => {
+                        throw new Error(message || response.status);
+                    });
+            }
+            return response.json();
+        }).then(response => {
+            if (response.data.length > 0) {
+                // Sort: dated items latest-first; undated items by original JSON index bottom-to-top (last index first)
+                const sorted = response.data
+                    .map((d, i) => ({
+                        ...d,
+                        _idx: i
+                    }))
+                    .sort((a, b) => {
+                        if (!a.upload_date && !b.upload_date) return b._idx - a._idx;
+                        if (!a.upload_date) return 1;
+                        if (!b.upload_date) return -1;
+                        return new Date(b.upload_date) - new Date(a.upload_date);
+                    });
+
+                const fmt = new Intl.DateTimeFormat('id-ID', {
+                    timeZone: 'Asia/Jakarta',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                });
+
+                let html = '';
+                sorted.forEach(d => {
+                    const dateLabel = d.upload_date ?
+                        fmt.format(new Date(d.upload_date.replace(' ', 'T') + 'Z')) :
+                        'Date not found';
+                    html += `
+                        <div class="d-flex flex-column align-items-start gap-1 flex-shrink-0">
+                            <img src="${d.url}" alt="Patient portrait"
+                                class="img-thumbnail"
+                                role="button"
+                                style="width: 160px; height: 160px; object-fit: cover; cursor: pointer;"
+                                onclick="window.showPortraitModal('${d.url}', '${dateLabel}')" />
+                            <small class="text-muted" style="max-width: 160px;">${dateLabel}</small>
+                        </div>
+                    `;
+                });
+                $("#assignmentPotraits").html(html);
+            } else {
+                $("#assignmentPotraits").html('<p class="text-muted">No portraits saved.</p>');
+            }
+        }).catch(error => {
+            $("#assignmentPotraits").html('<p class="text-danger">Failed to load portraits.</p>');
+        });
     }
 
     const createMedicalRows = (data) => {
@@ -760,12 +841,26 @@
             });
     }
 
+    const showPortraitModal = (url, dateLabel = '') => {
+        if (!url) return;
+        $("#potraitPreviewImg").attr("src", url);
+        if (dateLabel && dateLabel !== '') {
+            $("#potraitPreviewDate").text(dateLabel).removeClass("d-none");
+        } else {
+            $("#potraitPreviewDate").text("").addClass("d-none");
+        }
+        if (potraitPreviewModal) {
+            potraitPreviewModal.show();
+        }
+    };
+
     window.takeAssignment = takeAssignment;
     window.medModal = medModal;
     window.editItem = editItem;
     window.deleteItem = deleteItem;
     window.checkPrescription = checkPrescription;
     window.getPrescription = getPrescription;
+    window.showPortraitModal = showPortraitModal;
     window.cancelAssignment = (e) => {
         const uuid = e.target.getAttribute("data-uuid");
         $("#cancelUuid").val(uuid);
@@ -796,6 +891,13 @@
         }
 
         getMyAssignment();
+
+        $("#patientPotrait").css("cursor", "pointer").click(function() {
+            const src = $(this).attr("src");
+            if (src && !src.includes("potrait-placeholder.png")) {
+                showPortraitModal(src, "");
+            }
+        });
 
         $("#cancelBtn").click(function(e) {
             const uuid = $(this).get(0).getAttribute("data-uuid");
