@@ -179,9 +179,9 @@
                     response.data.map(d => {
                         html += `<div class="position-relative" style="width: 150px;">`;
                         html +=
-                            `<img id="patientPotrait" class="img-thumbnail me-2" src="${d}" alt="potrait placeholder" style="width: 150px;">`;
+                            `<img id="patientPotrait" class="img-thumbnail me-2" src="${d.url}" alt="potrait placeholder" style="width: 150px;">`;
                         html +=
-                            `<button class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="window.removeImg('${d}')">Delete</button>`;
+                            `<button class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="window.removeImg('${d.url}')">Delete</button>`;
                         html += `</div>`;
                     })
                     $("#potraits").html(html);

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PrivilegeController;
 use App\Models\PatientPotraits;
+use App\Models\PotraitDates;
 use App\Models\Patients;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -258,6 +259,12 @@ class PatientFormController extends Controller
             }
             $potraits->save();
 
+            // Log the upload in potrait_dates
+            PotraitDates::create([
+                'url'         => $url,
+                'upload_date' => Carbon::now(),
+            ]);
+
             return response()->json([
                 'status'    => true,
                 'message'   => 'Image saved.',
@@ -327,15 +334,21 @@ class PatientFormController extends Controller
     public function getPotraits(int $patientId)
     {
         try {
-            $urls = [];
+            $result = [];
             $patientPotraits = PatientPotraits::select('url')->where('patient_id', $patientId)->first();
             if ($patientPotraits) {
-                $urls = $patientPotraits->url;
+                foreach ($patientPotraits->url as $url) {
+                    $potraitDate = PotraitDates::where('url', $url)->first();
+                    $result[] = [
+                        'url'         => $url,
+                        'upload_date' => $potraitDate ? $potraitDate->upload_date : null,
+                    ];
+                }
             }
 
             return response()->json([
                 'status'    => true,
-                'data'      => $urls
+                'data'      => $result
             ], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());

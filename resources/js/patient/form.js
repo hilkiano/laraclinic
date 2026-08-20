@@ -381,8 +381,8 @@ if (takePotraitBtn) {
             const imgInstance = $("#capturedImg");
             imgInstance.cropper({
                 viewMode: 2,
-                minContainerHeight: 480,
-                minContainerWidth: 640,
+                minContainerHeight: 720,
+                minContainerWidth: 960,
                 aspectRatio: 2 / 3,
             });
 
