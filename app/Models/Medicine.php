@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Medicine extends Model
 {
-    use HasSku, SoftDeletes;
+    use HasSku;
+    use SoftDeletes;
 
     protected $table = 'medicines';
 

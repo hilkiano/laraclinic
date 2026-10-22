@@ -26,7 +26,9 @@ class DashboardController extends Controller
     {
         try {
             if ($this->userData->logged_in_at) {
-                $this->userData->logged_in_at = Carbon::make($this->userData->logged_in_at)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss');
+                $this->userData->logged_in_at = Carbon::make($this->userData->logged_in_at)
+                    ->setTimezone(env('APP_TIME_ZONE'))
+                    ->isoFormat('DD MMMM YYYY HH:mm:ss');
             }
 
             $data = [

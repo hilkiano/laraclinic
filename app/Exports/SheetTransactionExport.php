@@ -17,13 +17,20 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 
-class SheetTransactionExport extends DefaultValueBinder implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithCustomValueBinder, WithEvents, WithCustomStartCell
+class SheetTransactionExport extends DefaultValueBinder implements
+    FromArray,
+    WithHeadings,
+    WithTitle,
+    ShouldAutoSize,
+    WithCustomValueBinder,
+    WithEvents,
+    WithCustomStartCell
 {
     protected $data;
     protected $summary;
     protected $count;
 
-    public function __construct($data = [], $summary)
+    public function __construct($data, $summary)
     {
         $this->data = $data;
         $this->count = count($data) + 1;
@@ -180,7 +187,7 @@ class SheetTransactionExport extends DefaultValueBinder implements FromArray, Wi
                                 ]
                             ]
                         ]);
-                    } else if ($trxType === "APPOINTMENT") {
+                    } elseif ($trxType === "APPOINTMENT") {
                         $workSheet->getStyle('A' . $row . ':S' . $row)->applyFromArray([
                             'fill' => [
                                 'fillType' => Fill::FILL_SOLID,
@@ -189,7 +196,7 @@ class SheetTransactionExport extends DefaultValueBinder implements FromArray, Wi
                                 ]
                             ]
                         ]);
-                    } else if ($trxType === "SELF") {
+                    } elseif ($trxType === "SELF") {
                         $workSheet->getStyle('A' . $row . ':S' . $row)->applyFromArray([
                             'fill' => [
                                 'fillType' => Fill::FILL_SOLID,

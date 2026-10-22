@@ -23,7 +23,7 @@ class PrivilegeController extends Controller
         try {
             $user = Users::with('group')->find(Auth::id());
             $privIds = [];
-            // Get menu from each role id 
+            // Get menu from each role id
             foreach ($user->group->role_ids as $roleId) {
                 $role = Roles::find($roleId);
                 foreach ($role->privilege_ids as $privId) {

@@ -15,7 +15,12 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 
-class SheetMedicineExport extends DefaultValueBinder implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithEvents
+class SheetMedicineExport extends DefaultValueBinder implements
+    FromArray,
+    WithHeadings,
+    WithTitle,
+    ShouldAutoSize,
+    WithEvents
 {
     protected $data;
     protected $count;

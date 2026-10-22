@@ -23,7 +23,8 @@ class MedicalRecordApi extends Controller
     /**
      * Retrieves a Prescription object from the database based on a given ID
      * @param int $id The ID of the Prescription object to retrieve
-     * @return \Illuminate\Http\JsonResponse Returns a JSON response containing the Prescription object's data if the retrieval is successful
+     * @return \Illuminate\Http\JsonResponse Returns a JSON response containing the Prescription object's data
+     * if the retrieval is successful
      * or a JSON response indicating that an error occurred if the retrieval failed.
      * @throws \Exception If an unexpected error occurs during the retrieval process
      */
@@ -39,7 +40,9 @@ class MedicalRecordApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -95,7 +98,9 @@ class MedicalRecordApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -128,7 +133,9 @@ class MedicalRecordApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }

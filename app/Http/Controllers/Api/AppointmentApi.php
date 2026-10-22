@@ -50,7 +50,9 @@ class AppointmentApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -99,7 +101,9 @@ class AppointmentApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -120,15 +124,19 @@ class AppointmentApi extends Controller
 
             // Get the user's group ID.
             $group = $this->userData->group_id;
+            $isDoctor = $group === config('constants.group.doctor')
+                || $group === config('constants.group.doctor-stock');
+            $isCashier = $group === config('constants.group.cashier')
+                || $group === config('constants.group.cashier-stock');
             // Query the appointments table and eager-load the patient and patientPotrait relationships.
             $model = Appointments::with(['patient', 'patient.patientPotrait'])
-                ->when($group === config('constants.group.doctor') || $group === config('constants.group.doctor-stock'), function ($query) {
+                ->when($isDoctor, function ($query) {
                     $query->where('status', config('constants.status.doctor_waiting'));
                 })
                 ->when($group === config('constants.group.pharmacy'), function ($query) {
                     $query->where('status', config('constants.status.pharmacy_waiting'));
                 })
-                ->when($group === config('constants.group.cashier') || $group === config('constants.group.cashier-stock'), function ($query) {
+                ->when($isCashier, function ($query) {
                     $query->where('status', config('constants.status.payment_waiting'));
                 })
                 // Add a filter based on the nameFilter parameter if it is set.
@@ -159,7 +167,9 @@ class AppointmentApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -217,7 +227,9 @@ class AppointmentApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -309,7 +321,9 @@ class AppointmentApi extends Controller
                     $newMedRecord->record_no = Str::uuid();
                     $newMedRecord->patient_id = $appointment->patient_id;
                     $newMedRecord->prescription_id = $rx->id;
-                    $newMedRecord->additional_note = $request->has('medical_note') ? $request->input('medical_note') : null;
+                    $newMedRecord->additional_note = $request->has('medical_note')
+                        ? $request->input('medical_note')
+                        : null;
                     $newMedRecord->save();
                 }
 
@@ -330,7 +344,9 @@ class AppointmentApi extends Controller
             Log::error($e->getTrace());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -407,7 +423,9 @@ class AppointmentApi extends Controller
             Log::error($e->getTrace());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage(),
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage(),
                 'trace'     => env('APP_ENV') === 'production' ? null : $e->getTrace()
             ], 500);
         }
@@ -432,7 +450,9 @@ class AppointmentApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -453,7 +473,9 @@ class AppointmentApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -505,7 +527,9 @@ class AppointmentApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }

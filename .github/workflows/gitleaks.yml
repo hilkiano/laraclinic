@@ -1,0 +1,26 @@
+name: Scan using Gitleaks
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Scan repository for secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        run: >-
+          docker run --rm
+          -v "$PWD:/repo"
+          -w /repo
+          ghcr.io/gitleaks/gitleaks:latest
+          detect --source=/repo --redact --verbose

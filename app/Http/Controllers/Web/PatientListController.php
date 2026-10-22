@@ -67,7 +67,9 @@ class PatientListController extends Controller
                 $row->birth_date_formatted = Carbon::make($row->birth_date)->isoFormat("D MMMM YYYY");
                 $row->age = Carbon::make($row->birth_date)->age;
             }
-            $row->joined_at = Carbon::make($row->created_at)->setTimezone(env('APP_TIME_ZONE'))->isoFormat("D MMMM YYYY, HH:mm:ss");
+            $row->joined_at = Carbon::make($row->created_at)
+                ->setTimezone(env('APP_TIME_ZONE'))
+                ->isoFormat("D MMMM YYYY, HH:mm:ss");
             $lastVisited = null;
             if (count($row->appointments) > 0) {
                 $lastVisited = $row->appointments->first()

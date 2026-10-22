@@ -78,7 +78,9 @@ class AppointmentController extends Controller
             ->orderBy('visit_time', 'desc');
         $paginated = $appointmentModel->paginate($limit);
         foreach ($paginated->items() as $row) {
-            $row->visit_time = Carbon::make($row->visit_time)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss');
+            $row->visit_time = Carbon::make($row->visit_time)
+                ->setTimezone(env('APP_TIME_ZONE'))
+                ->isoFormat('DD MMMM YYYY HH:mm:ss');
         }
 
         $data = [
@@ -114,7 +116,11 @@ class AppointmentController extends Controller
                     $status = config('constants.status.pharmacy_waiting');
                 }
 
-                $visitTime = Carbon::createFromIsoFormat('MM/DD/YYYY, HH:mm:ss A', $request->visit_time, env('APP_TIME_ZONE'))->setTimezone('UTC');
+                $visitTime = Carbon::createFromIsoFormat(
+                    'MM/DD/YYYY, HH:mm:ss A',
+                    $request->visit_time,
+                    env('APP_TIME_ZONE')
+                )->setTimezone('UTC');
 
                 $newAppointment = Appointments::create([
                     'uuid'          => Str::uuid(),
@@ -141,7 +147,8 @@ class AppointmentController extends Controller
                             'appointment' => $newAppointment,
                             'detail'      => $newAppointmentDetail
                         ],
-                        'message'   => 'New appointment created. <br /> <a href="/appointments/detail/' . $newAppointment->uuid . '" _target="blank">See details</a>'
+                        'message'   => 'New appointment created. <br /> <a href="/appointments/detail/'
+                            . $newAppointment->uuid . '" _target="blank">See details</a>'
                     ], 200);
                 }
             } else {
@@ -222,7 +229,9 @@ class AppointmentController extends Controller
             $data = $model->get();
 
             foreach ($data as $row) {
-                $row->visit_time = Carbon::make($row->visit_time)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss');
+                $row->visit_time = Carbon::make($row->visit_time)
+                    ->setTimezone(env('APP_TIME_ZONE'))
+                    ->isoFormat('DD MMMM YYYY HH:mm:ss');
             }
 
             return response()->json([
@@ -272,7 +281,9 @@ class AppointmentController extends Controller
             $uuid = $request->uuid;
             $model = Appointments::with(['detail', 'patient', 'patient.patientPotrait'])->where('uuid', $uuid)->first();
             if ($model) {
-                $model->visit_time = Carbon::make($model->visit_time)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss');
+                $model->visit_time = Carbon::make($model->visit_time)
+                    ->setTimezone(env('APP_TIME_ZONE'))
+                    ->isoFormat('DD MMMM YYYY HH:mm:ss');
             }
 
             $data = [
@@ -299,7 +310,9 @@ class AppointmentController extends Controller
             $uuid = $request->uuid;
             $model = Appointments::with(['detail', 'patient', 'patient.patientPotrait'])->where('uuid', $uuid)->first();
             if ($model) {
-                $model->visit_time = Carbon::make($model->visit_time)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss');
+                $model->visit_time = Carbon::make($model->visit_time)
+                    ->setTimezone(env('APP_TIME_ZONE'))
+                    ->isoFormat('DD MMMM YYYY HH:mm:ss');
             }
 
             $data = [

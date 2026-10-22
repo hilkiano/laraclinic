@@ -52,7 +52,9 @@ class ServicesApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -61,7 +63,8 @@ class ServicesApi extends Controller
      * Saves a Services object based on the provided request payload.
      *
      * @param ServiceRequest $request The HTTP request object.
-     * @return \Illuminate\Http\JsonResponse The JSON response containing the saved Services object or an error message.
+     * @return \Illuminate\Http\JsonResponse The JSON response containing the saved Services object
+     * or an error message.
      * @throws \Exception If an unexpected error occurs.
      */
     public function save(ServiceRequest $request)
@@ -107,7 +110,9 @@ class ServicesApi extends Controller
             Log::error($e->getTraceAsString());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -116,7 +121,8 @@ class ServicesApi extends Controller
      * Delete a service record from the database.
      *
      * @param \Illuminate\Http\Request $request the HTTP request object.
-     * @return \Illuminate\Http\JsonResponse the JSON response containing the status, data, and message of the operation.
+     * @return \Illuminate\Http\JsonResponse the JSON response containing the status, data, and message
+     * of the operation.
      */
     public function deleteRestore(Request $request)
     {
@@ -147,7 +153,9 @@ class ServicesApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
