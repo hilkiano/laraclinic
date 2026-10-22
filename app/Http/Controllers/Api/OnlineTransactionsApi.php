@@ -40,7 +40,12 @@ class OnlineTransactionsApi extends Controller
                 ], 400);
             }
 
-            $patient = Patients::with(['medicalRecords', 'patientPotrait', 'prescriptions', 'prescriptions.medicalRecord'])
+            $patient = Patients::with([
+                'medicalRecords',
+                'patientPotrait',
+                'prescriptions',
+                'prescriptions.medicalRecord'
+            ])
                 ->when($request->has("name"), function ($query) use ($request) {
                     $query->where("name", "ILIKE", "%" . $request->input("name") . "%");
                 })
@@ -64,7 +69,9 @@ class OnlineTransactionsApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -166,7 +173,9 @@ class OnlineTransactionsApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }

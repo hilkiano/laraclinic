@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Old rotated secrets"
+commits = ["a2745d13f907b0b61d659b0a4d85abd8963587c8"]

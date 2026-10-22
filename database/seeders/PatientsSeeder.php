@@ -37,7 +37,11 @@ class PatientsSeeder extends Seeder
                 $patient->address      = $this->getAddress($value["id"]);
                 $patient->phone_number = $phone;
                 $patient->email        = $value["email"] !== "NULL" ? $value["email"] : null;
-                $patient->created_at   = Carbon::createFromFormat("Y-m-d H:i:s", $value["createdate"], env("APP_TIME_ZONE"))->utc();
+                $patient->created_at   = Carbon::createFromFormat(
+                    "Y-m-d H:i:s",
+                    $value["createdate"],
+                    env("APP_TIME_ZONE")
+                )->utc();
                 $patient->save();
             }
         }

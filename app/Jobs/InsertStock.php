@@ -15,7 +15,11 @@ use Illuminate\Support\Facades\Validator;
 
 class InsertStock implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
+    use Batchable;
 
     protected $data;
     protected $position;

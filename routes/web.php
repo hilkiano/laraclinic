@@ -3,6 +3,8 @@
 use App\Events\AssignmentCreated;
 use Illuminate\Support\Facades\Route;
 
+/** @var \Illuminate\Routing\Router $router */
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes

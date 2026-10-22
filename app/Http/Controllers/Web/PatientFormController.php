@@ -273,7 +273,9 @@ class PatientFormController extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -316,7 +318,9 @@ class PatientFormController extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -325,10 +329,12 @@ class PatientFormController extends Controller
      * Retrieve the URLs of the portraits of a specific patient.
      *
      * @param int $patientId The ID of the patient whose portraits to retrieve.
-     * @return \Illuminate\Http\JsonResponse Returns a JSON response containing the status of the operation and the retrieved data.
+     * @return \Illuminate\Http\JsonResponse Returns a JSON response containing the status of the operation
+     * and the retrieved data.
      * The status will be "true" if the operation was successful, and "false" otherwise.
      * The data will contain an array of URLs of the patient's portraits if they exist, and an empty array otherwise.
-     * If an error occurs, the status will be "false", and the message will be returned either in the message field (in non-production environments),
+     * If an error occurs, the status will be "false", and the message will be returned either in the message field
+     * (in non-production environments),
      * or in the log (in production environments).
      */
     public function getPotraits(int $patientId)
@@ -354,7 +360,9 @@ class PatientFormController extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -373,7 +381,9 @@ class PatientFormController extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -404,7 +414,9 @@ class PatientFormController extends Controller
             Log::error($e->getTrace());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }

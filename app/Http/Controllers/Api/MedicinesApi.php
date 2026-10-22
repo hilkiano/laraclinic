@@ -77,7 +77,9 @@ class MedicinesApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -86,7 +88,8 @@ class MedicinesApi extends Controller
      * Saves a Medicine object based on the provided request payload.
      *
      * @param MedicineRequest $request The HTTP request object.
-     * @return \Illuminate\Http\JsonResponse The JSON response containing the saved Medicine object or an error message.
+     * @return \Illuminate\Http\JsonResponse The JSON response containing the saved Medicine object
+     * or an error message.
      * @throws \Exception If an unexpected error occurs.
      */
     public function save(MedicineRequest $request)
@@ -133,7 +136,9 @@ class MedicinesApi extends Controller
 
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -142,7 +147,8 @@ class MedicinesApi extends Controller
      * Change active status of a medicine record from the database.
      *
      * @param \Illuminate\Http\Request $request the HTTP request object.
-     * @return \Illuminate\Http\JsonResponse the JSON response containing the status, data, and message of the operation.
+     * @return \Illuminate\Http\JsonResponse the JSON response containing the status, data, and message
+     * of the operation.
      */
     public function deleteRestore(Request $request)
     {
@@ -173,7 +179,9 @@ class MedicinesApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }

@@ -26,14 +26,18 @@ class Prescription extends Model
     public function createdAt(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => Carbon::make($value)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss')
+            get: fn ($value) => Carbon::make($value)
+                ->setTimezone(env('APP_TIME_ZONE'))
+                ->isoFormat('DD MMMM YYYY HH:mm:ss')
         );
     }
 
     public function updatedAt(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => Carbon::make($value)->setTimezone(env('APP_TIME_ZONE'))->isoFormat('DD MMMM YYYY HH:mm:ss')
+            get: fn ($value) => Carbon::make($value)
+                ->setTimezone(env('APP_TIME_ZONE'))
+                ->isoFormat('DD MMMM YYYY HH:mm:ss')
         );
     }
 

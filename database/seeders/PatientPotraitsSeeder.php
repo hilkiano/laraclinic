@@ -48,7 +48,8 @@ class PatientPotraitsSeeder extends Seeder
                             $fileName = Arr::where($uploadFileArr, function ($file) use ($uploadId) {
                                 return $file["id"] === $uploadId["uploadfileid"];
                             });
-                            $url = "https://klinikmichellebucket.s3.ap-southeast-3.amazonaws.com/patients/" . Arr::first($fileName)["filename"];
+                            $url = "https://klinikmichellebucket.s3.ap-southeast-3.amazonaws.com/patients/"
+                                . Arr::first($fileName)["filename"];
                             array_push($arrLink, $url);
                         }
                         // Save new PatientPotraits

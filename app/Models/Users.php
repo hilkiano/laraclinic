@@ -10,7 +10,8 @@ use Illuminate\Support\Carbon;
 
 class Users extends Authenticatable implements JWTSubject
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'users';
 

@@ -73,7 +73,9 @@ class TransactionsApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -100,22 +102,22 @@ class TransactionsApi extends Controller
                 foreach ($trx->payment_details as $key => $value) {
                     if ($value["payment-with"] === "CASH") {
                         $summary["cash"] = $summary["cash"] + $this->convertRawInt($value["payment-amount"]);
-                    } else if ($value["payment-with"] === "DEBIT_CARD") {
+                    } elseif ($value["payment-with"] === "DEBIT_CARD") {
                         $summary["debit"] = $summary["debit"] + $this->convertRawInt($value["payment-amount"]);
-                    } else if ($value["payment-with"] === "CREDIT_CARD") {
+                    } elseif ($value["payment-with"] === "CREDIT_CARD") {
                         $summary["cc"] = $summary["cc"] + $this->convertRawInt($value["payment-amount"]);
-                    } else if ($value["payment-with"] === "BANK_TRANSFER") {
+                    } elseif ($value["payment-with"] === "BANK_TRANSFER") {
                         $summary["transfer"] = $summary["transfer"] + $this->convertRawInt($value["payment-amount"]);
                     }
                 }
             } else {
                 if ($trx->payment_type === "Cash") {
                     $summary["cash"] = $summary["cash"] + $this->convertRawInt($trx->total_amount);
-                } else if ($trx->payment_type === "Debit Card") {
+                } elseif ($trx->payment_type === "Debit Card") {
                     $summary["debit"] = $summary["debit"] + $this->convertRawInt($trx->total_amount);
-                } else if ($trx->payment_type === "Credit Card") {
+                } elseif ($trx->payment_type === "Credit Card") {
                     $summary["cc"] = $summary["cc"] + $this->convertRawInt($trx->total_amount);
-                } else if ($trx->payment_type === "Transfer Bank") {
+                } elseif ($trx->payment_type === "Transfer Bank") {
                     $summary["transfer"] = $summary["transfer"] + $this->convertRawInt($trx->total_amount);
                 }
             }
@@ -147,8 +149,12 @@ class TransactionsApi extends Controller
             $data = $this->getDataArray($query);
             $summary = $this->getSummary($startDate, $endDate);
 
-            $formattedStart = Carbon::parse($startDate)->setTimezone(env('APP_TIME_ZONE'))->isoFormat("DD-MM-YYYY_HH:mm:ss");
-            $formattedEnd = Carbon::parse($endDate)->setTimezone(env('APP_TIME_ZONE'))->isoFormat("DD-MM-YYYY_HH:mm:ss");
+            $formattedStart = Carbon::parse($startDate)
+                ->setTimezone(env('APP_TIME_ZONE'))
+                ->isoFormat("DD-MM-YYYY_HH:mm:ss");
+            $formattedEnd = Carbon::parse($endDate)
+                ->setTimezone(env('APP_TIME_ZONE'))
+                ->isoFormat("DD-MM-YYYY_HH:mm:ss");
 
             return Excel::download(
                 new TransactionsExport($data, $summary),
@@ -159,7 +165,9 @@ class TransactionsApi extends Controller
             Log::error($e->getMessage());
             return response()->json([
                 'status'    => false,
-                'message'   => env('APP_ENV') === 'production' ? 'Unexpected error. Please check log.' : $e->getMessage()
+                'message'   => env('APP_ENV') === 'production'
+                    ? 'Unexpected error. Please check log.'
+                    : $e->getMessage()
             ], 500);
         }
     }
@@ -197,7 +205,8 @@ class TransactionsApi extends Controller
                     ]);
 
                     if (array_key_exists($prescription["label"], $meds)) {
-                        $meds[$prescription["label"]]["qty"] = $meds[$prescription["label"]]["qty"] + $this->getSubtotal($prescription)["qty"];
+                        $meds[$prescription["label"]]["qty"] = $meds[$prescription["label"]]["qty"]
+                            + $this->getSubtotal($prescription)["qty"];
                     } else {
                         $meds[$prescription["label"]]["sku"] = $prescription["sku"];
                         $meds[$prescription["label"]]["label"] = $prescription["label"];
@@ -229,7 +238,8 @@ class TransactionsApi extends Controller
                     ]);
 
                     if (array_key_exists($prescription["label"], $meds)) {
-                        $meds[$prescription["label"]]["qty"] = $meds[$prescription["label"]]["qty"] + $this->getSubtotal($prescription)["qty"];
+                        $meds[$prescription["label"]]["qty"] = $meds[$prescription["label"]]["qty"]
+                            + $this->getSubtotal($prescription)["qty"];
                     } else {
                         $meds[$prescription["label"]]["sku"] = $prescription["sku"];
                         $meds[$prescription["label"]]["label"] = $prescription["label"];
@@ -263,7 +273,7 @@ class TransactionsApi extends Controller
             if ($prescription["discount_value"] > 0) {
                 if ($prescription["discount_type"] === "pctg") {
                     $discountAmount = $prescription["price"] * ($prescription["discount_value"] / 100);
-                } else if ($prescription["discount_type"] === "amt") {
+                } elseif ($prescription["discount_type"] === "amt") {
                     $discountAmount = $prescription["discount_value"];
                 }
 
@@ -290,11 +300,11 @@ class TransactionsApi extends Controller
             foreach ($transaction->payment_details as $payment) {
                 if ($payment["payment-with"] === "CASH") {
                     $paymentWith = "Cash";
-                } else if ($payment["payment-with"] === "DEBIT_CARD") {
+                } elseif ($payment["payment-with"] === "DEBIT_CARD") {
                     $paymentWith = "Debit Card";
-                } else if ($payment["payment-with"] === "CREDIT_CARD") {
+                } elseif ($payment["payment-with"] === "CREDIT_CARD") {
                     $paymentWith = "Credit Card";
-                } else if ($payment["payment-with"] === "BANK_TRANSFER") {
+                } elseif ($payment["payment-with"] === "BANK_TRANSFER") {
                     $paymentWith = "Bank Transfer";
                 }
                 array_push($detail, $paymentWith);

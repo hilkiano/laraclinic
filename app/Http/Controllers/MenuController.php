@@ -23,11 +23,14 @@ class MenuController extends Controller
         try {
             $user = Users::with('group')->find(Auth::id());
             $menuIds = [];
-            // Get menu from each role id 
+            // Get menu from each role id
             foreach ($user->group->role_ids as $roleId) {
                 $role = Roles::find($roleId);
                 foreach ($role->menu_ids as $menuId) {
-                    if (!in_array($menuId, $menuIds, true) && !Menus::withTrashed()->where('id', $menuId)->first()->trashed()) {
+                    if (
+                        !in_array($menuId, $menuIds, true)
+                        && !Menus::withTrashed()->where('id', $menuId)->first()->trashed()
+                    ) {
                         array_push($menuIds, $menuId);
                     }
                 }
@@ -96,7 +99,6 @@ class MenuController extends Controller
         $children = [];
         $requestPath = (request()->path() !== '/') ? '/' . request()->path() : request()->path();
         foreach ($menus as $menu) {
-
             if ($menu->parent === $parentName) {
                 array_push($children, (object)[
                     "name"      => $menu->name,

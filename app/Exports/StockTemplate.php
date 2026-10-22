@@ -90,7 +90,8 @@ class StockTemplate implements FromArray, WithEvents, WithHeadings, WithTitle, W
 
                     // Populate hidden sheet with dropdown values
                     foreach ($options as $index => $option) {
-                        $cellCoordinate = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . ($index + 1);
+                        $cellCoordinate = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1)
+                            . ($index + 1);
                         $hiddenSheet->setCellValue($cellCoordinate, $option);
                     }
                     $validation->setFormula1('HiddenBatch!$A$1:$A$' . count($options));
