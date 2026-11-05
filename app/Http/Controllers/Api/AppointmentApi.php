@@ -299,14 +299,14 @@ class AppointmentApi extends Controller
                 // Update or create prescription
                 $rx = Prescription::where('appointment_uuid', $request->input('uuid'))->first();
                 if ($rx) {
-                    $rx->list = $prescription ? $prescription[0]->data : null;
+                    $rx->list = $this->removeNullItems($prescription ? $prescription[0]->data : null);
                     $rx->additional_info = $request->has('pharmacy_note') ? $request->input('pharmacy_note') : null;
                     $rx->save();
                 } else {
                     $rx = new Prescription();
                     $rx->appointment_uuid = $request->input('uuid');
                     $rx->patient_id = $appointment->patient_id;
-                    $rx->list = $prescription ? $prescription[0]->data : null;
+                    $rx->list = $this->removeNullItems($prescription ? $prescription[0]->data : null);
                     $rx->additional_info = $request->has('pharmacy_note') ? $request->input('pharmacy_note') : null;
                     $rx->source = "DOCTOR";
 
@@ -349,6 +349,21 @@ class AppointmentApi extends Controller
                     : $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Drop null entries from a prescription list, leaving every other item untouched.
+     *
+     * @param mixed $list
+     * @return mixed
+     */
+    private function removeNullItems($list)
+    {
+        if (!is_array($list)) {
+            return $list;
+        }
+
+        return array_values(array_filter($list, fn ($item) => $item !== null));
     }
 
     public function getAssignation(Request $request)
